@@ -3,6 +3,7 @@ import { expect } from "chai";
 import { IncomingMessage } from "http";
 import { Readable } from "stream";
 import requestParams from "./requestParams";
+import { HTTPError } from "./errors";
 
 const mockRequest = ({
   url,
@@ -76,5 +77,18 @@ describe("requestParams", () => {
     expect(params).to.have.property("id", "1");
     expect(params.input).to.have.property("name", "Example");
     expect(params.files.file1).to.have.property("name", "file1.txt");
+  });
+
+  it("throws proper error", async () => {
+    const req = mockRequest({
+      type: "application/json",
+      body: "}",
+    });
+    try {
+      await requestParams(req);
+    } catch (err) {
+      expect(err).to.be.instanceOf(HTTPError);
+      expect(err.message).to.match(/json/i);
+    }
   });
 });

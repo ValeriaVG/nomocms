@@ -1,6 +1,9 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 import routeRequest from "./routeRequest";
+import { HTTPMethodNotAllowed, HTTPNotFound } from "./errors";
+
+const makeUrl = (url: string) => new URL(url, "http://localhost");
 
 describe("routeRequest", () => {
   it("routes existing requests", () => {
@@ -21,7 +24,6 @@ describe("routeRequest", () => {
         GET: getItems,
       },
     };
-    const makeUrl = (url: string) => new URL(url, "http://localhost");
 
     expect(routeRequest(makeUrl("/api/item?id=1"), "GET", resolvers)).to.equal(
       GET
@@ -42,5 +44,18 @@ describe("routeRequest", () => {
     expect(
       routeRequest(makeUrl("/api/items?limit=3"), "GET", resolvers)
     ).to.equal(getItems);
+  });
+  it("throws proper errors if endpoint does not exist", () => {
+    const resolvers = {
+      item: {
+        GET: () => null,
+      },
+    };
+    expect(() =>
+      routeRequest(makeUrl("/api/items"), "GET", resolvers)
+    ).to.throw(HTTPNotFound);
+    expect(() =>
+      routeRequest(makeUrl("/api/item"), "POST", resolvers)
+    ).to.throw(HTTPMethodNotAllowed);
   });
 });

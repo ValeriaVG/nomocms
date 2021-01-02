@@ -2,6 +2,7 @@ import { describe, it } from "mocha";
 import { expect } from "chai";
 import request from "supertest";
 import middleware from "./.";
+import { HTTPNotFound } from "./errors";
 
 const items = new Map<string, { id: string; title: string }>([
   ["itm_1", { id: "itm_1", title: "Item#1" }],
@@ -25,6 +26,16 @@ const resolvers = {
     }),
   },
   items: { GET: () => ({ items: [...items.entries()] }) },
+  err404: {
+    GET: () => {
+      throw new HTTPNotFound();
+    },
+  },
+  err: {
+    GET: () => {
+      throw new Error("Something happened");
+    },
+  },
 };
 
 const api = middleware(resolvers, ctx);
@@ -77,6 +88,36 @@ describe("API Middleware Integration test", () => {
       .end((err, res) => {
         if (err) return done(err);
         expect(res.body).to.have.property("success", true);
+        done();
+      });
+  });
+  it("Error response with a code", (done) => {
+    request(api)
+      .get("/api/err404")
+      .expect(404)
+      .expect("Content-Type", /json/)
+      .end((err, res) => {
+        if (err) return done(err);
+        expect(res.body).to.have.property("errors");
+        expect(res.body.errors[0]).to.deep.equal({
+          name: "Error",
+          message: "Not Found",
+        });
+        done();
+      });
+  });
+  it("Generic Error response", (done) => {
+    request(api)
+      .get("/api/err")
+      .expect(500)
+      .expect("Content-Type", /json/)
+      .end((err, res) => {
+        if (err) return done(err);
+        expect(res.body).to.have.property("errors");
+        expect(res.body.errors[0]).to.deep.equal({
+          name: "Error",
+          message: "Internal Server Error",
+        });
         done();
       });
   });
