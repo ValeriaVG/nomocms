@@ -1,13 +1,13 @@
-![AMP CMS Logo](logo.svg)
+# ![AMP CMS Logo](logo.svg)
 
-# AMP CMS
 Content management system for blazingly fast AMP websites, written in TypeScript and powered by Redis.
 
 AMP CMS is currently in active development and the alpha version should be expected before Jan 10, 2021.
 
 ## Roadmap
+
 - [ ] API
-  - [ ] Core functionality
+  - [x] Core functionality
   - [ ] Authorization
   - [ ] Permissions
   - [ ] Custom user fields

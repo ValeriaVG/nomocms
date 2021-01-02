@@ -1,0 +1,5 @@
+node_modules
+*.log
+.env
+coverage
+.nyc_output

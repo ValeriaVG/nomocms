@@ -1,0 +1,19 @@
+name: AMP CMS CI
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js v14.5.0
+        uses: actions/setup-node@v1
+        with:
+          node-version: v14.5.0
+      - run: yarn
+      - name: Test & Coverage
+        uses: paambaati/codeclimate-action@v2.5.6
+        env:
+          CC_TEST_REPORTER_ID: a19c216c26fecf173e0ef64396aac98a482c0d5a1a38bb96b1a78bc3c4e4891b
+        with:
+          coverageCommand: yarn coverage
+          coverageLocations: "./coverage/lcov.info:lcov"
