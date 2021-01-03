@@ -6,7 +6,7 @@ export type LogFunction = (...args: any) => void;
 
 export type APILogger = Record<"error" | "info" | "log" | "warn", LogFunction>;
 
-export type APIContext = { log: APILogger };
+export type APIContext = { log: APILogger; cookies?: Record<string, string> };
 
 export type APIResolver<P = any, C = any, R = any> = (
   params: P,

@@ -13,6 +13,8 @@
     "coverage": "nyc --reporter=lcov --reporter=text mocha -r ts-node/register src/**/*.spec.ts src/modules/**/*.spec.ts"
   },
   "dependencies": {
+    "amp-toolbox-cors": "^1.2.0-alpha.2",
+    "cookie": "^0.4.1",
     "formidable": "^1.2.2",
     "ioredis": "^4.19.4",
     "ts-node": "^9.1.1",
@@ -21,6 +23,7 @@
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
     "@types/chai": "^4.2.14",
+    "@types/cookie": "^0.4.0",
     "@types/formidable": "^1.0.32",
     "@types/ioredis": "^4.17.10",
     "@types/mocha": "^8.2.0",
