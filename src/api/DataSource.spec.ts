@@ -116,8 +116,10 @@ describe("DataSource Integration Test", () => {
     const source = new Items({ redis });
     const list = await source.list();
     expect(list.items).to.have.length(2);
-    expect(list.items[0]?.id).to.be.eq("itm_1");
-    expect(list.items[1]?.id).to.be.eq("itm_2");
+    const ids = list.items.map((item) => item.id);
+    // Scan doesn't guarantee order in which items are returned
+    expect(ids).to.contain("itm_1");
+    expect(ids).to.contain("itm_2");
     expect(list.nextOffset).to.be.a("string");
   });
   it("can delete items", async () => {
