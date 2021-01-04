@@ -5,7 +5,8 @@
     "allowJs": true,
     "noImplicitAny": false,
     "moduleResolution": "node",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "baseUrl": "src/"
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]

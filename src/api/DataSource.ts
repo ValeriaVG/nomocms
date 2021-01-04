@@ -1,21 +1,48 @@
 import { Redis } from "ioredis";
 import { SomeDataType } from "./datatypes";
 
+/**
+ * DataSource can be anything from an item
+ * stored in Redis to third party service
+ */
 export abstract class DataSource {
   constructor(protected context: any) {}
 }
 
+/**
+ * Primary CRUD interface for generic entities
+ * stored as Redis hash
+ */
 export abstract class RedisDataSource<
   T,
   I = Partial<T>,
   P = Partial<I>
 > extends DataSource {
+  /**
+   * Collection will be used as key base:
+   * e.g. `items::next`
+   */
   readonly collection: string;
+  /**
+   * Prefix will be used as ID base:
+   * e.g. `itm_1`.
+   * Item hash will be stored at:
+   * `items::itm_1`
+   */
   readonly prefix: string;
+  /**
+   * Schema is used to encode and decode values between strings,
+   * as Redis stores everything as text, and JavaScript types
+   */
   readonly schema: {
     [key: string]: SomeDataType;
   };
 
+  /**
+   * Decode string object properties
+   * according to schema
+   * @param value
+   */
   decode = (value: Record<string, string>): T => {
     if (!value) return null;
     const result: any = { id: value.id };
@@ -25,7 +52,13 @@ export abstract class RedisDataSource<
     return result as T;
   };
 
-  encode = (value: Record<string, any>): Record<string, string> => {
+  /**
+   * Encodes property values into strings,
+   * according to schema
+   * @param value
+   */
+  protected encode = (value: Record<string, any>): Record<string, string> => {
+    if (!this.schema) throw Error("Schema is required");
     if (!value) throw Error("Value should have properties to be encoded");
     const result: any = {};
     for (let key in value) {
@@ -35,7 +68,11 @@ export abstract class RedisDataSource<
     return result;
   };
 
-  collect(values: string[]) {
+  /**
+   * Collects [key1,value1, key2, value2,...] array into key-value pairs
+   * @param values
+   */
+  protected collect(values: string[]): Record<string, string> | null {
     if (!values || !values.length) return null;
     const obj = {};
     for (let i = 0; i < values.length; i += 2) {
@@ -46,6 +83,21 @@ export abstract class RedisDataSource<
     return obj;
   }
 
+  /**
+   * Turns key value pairs into flat array
+   * [key1, value1, key2, value2, ...]
+   * @param input
+   */
+  protected flatten(input: Record<string, string>) {
+    return Object.entries(input).reduce((a, c) => {
+      return a.concat(c);
+    }, []);
+  }
+
+  /**
+   * Requires context with Redis
+   * @param context
+   */
   constructor(protected context: { redis: Redis }) {
     super(context);
     context.redis.defineCommand("updhash", {
@@ -86,46 +138,80 @@ export abstract class RedisDataSource<
     });
   }
 
-  cid(id: string) {
+  /**
+   * Prefixes hash key with collection name
+   * @param id
+   */
+  protected cid(id: string) {
+    if (!this.collection) throw new Error("Collection is required");
     return this.collection + "::" + id;
   }
+
+  /**
+   * Check if item with provided id exists
+   * @param id
+   */
   exists(id: string) {
-    return this.context.redis.exists(this.cid(id));
+    return this.context.redis.exists(this.cid(id)).then(Boolean);
   }
 
+  /**
+   * Retreive item by id
+   * @param id
+   */
   get(id: string) {
     return this.context.redis.hgetall(this.cid(id)).then((value) => {
       return this.decode(value);
     });
   }
+
+  /**
+   * Create new item
+   * @param input
+   */
   create(input: I) {
-    const values = Object.entries(this.encode(input)).reduce((a, c) => {
-      return a.concat(c);
-    }, []);
     return this.context.redis["newhash"](
       this.collection,
       this.prefix,
-      ...values
+      ...this.flatten(this.encode(input))
     ).then((result) => {
       return this.decode(this.collect(result));
     });
   }
 
+  /**
+   * Update fields in existing item
+   * @param id
+   * @param patch
+   */
   update(id: string, patch: P) {
-    const values = Object.entries(this.encode(patch)).reduce((a, c) => {
-      return a.concat(c);
-    }, []);
     const cid = this.cid(id);
-    return this.context.redis["updhash"](cid, ...values).then((result) => {
+    return this.context.redis["updhash"](
+      cid,
+      ...this.flatten(this.encode(patch))
+    ).then((result) => {
       return this.decode(this.collect(result));
     });
   }
+
+  /**
+   * Delete item by id
+   * @param id
+   */
   delete(id: string) {
     return this.context.redis.del(this.cid(id)).then((deleted) => {
       return { deleted: Boolean(deleted) };
     });
   }
-  list(params: { limit?: number; offset?: string } = {}) {
+
+  /**
+   * Return list of items, providing `offset` and `limit`.
+   * Offset is a cursor, returned during a previous call in `nextOffset`
+   * @param params
+   */
+  list(
+    params: { limit?: number; offset?: string } = {}
+  ): Promise<{ items: T[]; nextOffset: string }> {
     const limit = params.limit ?? 10;
     const offset = params.offset ?? "0";
     return this.context.redis["scanhash"](

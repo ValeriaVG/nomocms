@@ -11,7 +11,7 @@ AMP CMS is currently in active development and the alpha version should be expec
 
 - [ ] API
   - [x] Core functionality
-  - [ ] Authorization
+  - [x] Authorization
   - [ ] Permissions
   - [ ] Custom user fields
 - [ ] Control Panel

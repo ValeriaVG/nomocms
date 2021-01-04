@@ -7,6 +7,14 @@ export class HTTPError extends Error {
   }
 }
 
+export class HTTPUserInputError extends HTTPError {
+  public readonly field: string;
+  constructor(field: string, message?: string) {
+    super(400, message ?? "Wrong value");
+    this.field = field;
+  }
+}
+
 export class HTTPNotFound extends HTTPError {
   constructor(message?: string) {
     super(404, message ?? "Not Found");

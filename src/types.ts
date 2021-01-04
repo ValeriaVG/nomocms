@@ -1,3 +1,5 @@
+import * as context from "./api/context";
+
 export type HTTPMethod = "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
 
 export type MaybePromise<T> = Promise<T> | T;
@@ -6,7 +8,10 @@ export type LogFunction = (...args: any) => void;
 
 export type APILogger = Record<"error" | "info" | "log" | "warn", LogFunction>;
 
-export type APIContext = { log: APILogger; cookies?: Record<string, string> };
+export type APIContext = typeof context & {
+  log?: APILogger;
+  cookies?: Record<string, string>;
+};
 
 export type APIResolver<P = any, C = any, R = any> = (
   params: P,

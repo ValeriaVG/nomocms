@@ -8,7 +8,7 @@ const items = new Map<string, { id: string; title: string }>([
   ["itm_1", { id: "itm_1", title: "Item#1" }],
 ]);
 
-const ctx = { items, log: console };
+const ctx: any = { items };
 
 const resolvers = {
   item: {
@@ -38,7 +38,7 @@ const resolvers = {
   },
 };
 
-const api = middleware(resolvers, ctx);
+const api = middleware({ resolvers }, ctx);
 
 describe("API Middleware Integration test", () => {
   it("GET /api/item", (done) => {
