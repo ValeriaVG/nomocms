@@ -9,16 +9,14 @@ export type UserLoginInput = {
 };
 
 export type UserInput = { name?: string; email: string; password?: string };
-export default class Users extends RedisDataSource<
-  {
-    id: string;
-    name: string;
-    email: string;
-    createdAt?: number;
-    updatedAt?: number;
-  },
-  UserInput
-> {
+export type User = {
+  id: string;
+  name: string;
+  email: string;
+  createdAt?: number;
+  updatedAt?: number;
+};
+export default class Users extends RedisDataSource<User, UserInput> {
   collection = "users";
   prefix = "usr";
   schema = {

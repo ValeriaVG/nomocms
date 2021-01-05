@@ -10,7 +10,7 @@
     "start": "ts-node -r tsconfig-paths/register src/index",
     "dev": "ts-node-dev -r tsconfig-paths/register src/index",
     "test": "mocha -r ts-node/register -r tsconfig-paths/register src/**/*.spec.ts src/modules/**/*.spec.ts",
-    "coverage": "nyc --reporter=lcov --reporter=text mocha -r ts-node/register -r tsconfig-paths/register src/**/*.spec.ts src/modules/**/*.spec.ts"
+    "coverage": "nyc --reporter=lcov --reporter=text-summary mocha -r ts-node/register -r tsconfig-paths/register src/**/*.spec.ts src/modules/**/*.spec.ts"
   },
   "dependencies": {
     "amp-toolbox-cors": "^1.2.0-alpha.2",

@@ -15,6 +15,12 @@ export class HTTPUserInputError extends HTTPError {
   }
 }
 
+export class HTTPNotAuthorized extends HTTPError {
+  constructor(message?: string) {
+    super(403, message ?? "Access Denied");
+  }
+}
+
 export class HTTPNotFound extends HTTPError {
   constructor(message?: string) {
     super(404, message ?? "Not Found");
