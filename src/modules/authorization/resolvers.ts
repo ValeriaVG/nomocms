@@ -4,7 +4,7 @@ import Users from "./Users";
 export default {
   login: {
     POST: async (
-      { input: { email, password } },
+      { input: { email, password }, rid },
       { cookies, users }: APIContext & { users: Users }
     ) => {
       const user = await users.login({ email, password });
