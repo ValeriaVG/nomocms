@@ -1,5 +1,5 @@
 import { RedisDataSource } from "api/DataSource";
-import { TBoolean, TString } from "api/datatypes";
+import { TInt, TString } from "api/datatypes";
 import { HTTPUserInputError } from "api/errors";
 import bcrypt, { genSalt } from "bcryptjs";
 
@@ -8,26 +8,65 @@ export type UserLoginInput = {
   password: string;
 };
 
+export type UserInput = { name?: string; email: string; password?: string };
 export default class Users extends RedisDataSource<
   {
     id: string;
     name: string;
     email: string;
-    pwhash: string;
-    isAdmin?: boolean;
+    createdAt?: number;
+    updatedAt?: number;
   },
-  UserLoginInput
+  UserInput
 > {
   collection = "users";
   prefix = "usr";
   schema = {
     name: TString,
     email: TString,
-    isAdmin: TBoolean,
+    createdAt: TInt,
+    updatedAt: TInt,
+    activeAt: TInt,
   };
 
   constructor(context) {
     super(context);
+
+    context.redis.defineCommand("userbyemail", {
+      numberOfKeys: 3,
+      lua: `
+      local emailidx = KEYS[1]..'::email'
+      local emails = redis.call('ZRANGEBYLEX', emailidx, '['..KEYS[3], '['..KEYS[3]..':\xff');
+      local i = next(emails);
+      if i == nil
+        then
+          return nil;  
+        else
+          local email = emails[i];
+          local id = string.gsub(email,KEYS[3]..'::','');
+          local cid = KEYS[1]..'::'..id;
+          return redis.call('hgetall',cid);
+      end  
+      `,
+    });
+    context.redis.defineCommand("userbytoken", {
+      numberOfKeys: 3,
+      lua: `
+      local tokenidx = KEYS[1]..'::token'
+      local tokens = redis.call('ZRANGEBYLEX', tokenidx, '['..KEYS[3], '['..KEYS[3]..':\xff');
+      local i = next(tokens);
+      if i == nil
+        then
+          return nil; 
+        else
+          local token = tokens[i];
+          local id = string.gsub(token,KEYS[3]..'::','');
+          local cid = KEYS[1]..'::'..id;
+          return redis.call('hgetall',cid);
+      end  
+      `,
+    });
+
     context.redis.defineCommand("newuser", {
       numberOfKeys: 3,
       lua: `
@@ -46,45 +85,46 @@ export default class Users extends RedisDataSource<
       end  
       `,
     });
-    context.redis.defineCommand("userbyemail", {
-      numberOfKeys: 3,
-      lua: `
-      local emailidx = KEYS[1]..'::email'
-      local emails = redis.call('ZRANGEBYLEX', emailidx, '['..KEYS[3], '['..KEYS[3]..':\xff');
-      local i = next(emails);
-      if i == nil
-        then
-          return {err="not_found"}  
-        else
-          local email = emails[i];
-          local id = string.gsub(email,KEYS[3]..'::','');
-          local cid = KEYS[1]..'::'..id;
-          return redis.call('hgetall',cid);
-      end  
-      `,
-    });
-    context.redis.defineCommand("userbytoken", {
-      numberOfKeys: 3,
-      lua: `
-      local tokenidx = KEYS[1]..'::token'
-      local tokens = redis.call('ZRANGEBYLEX', tokenidx, '['..KEYS[3], '['..KEYS[3]..':\xff');
-      local i = next(tokens);
-      if i == nil
-        then
-          return {err="not_found"}  
-        else
-          local token = tokens[i];
-          local id = string.gsub(token,KEYS[3]..'::','');
-          local cid = KEYS[1]..'::'..id;
-          return redis.call('hgetall',cid);
-      end  
-      `,
+  }
+
+  byEmail(email: string, decode: boolean = true) {
+    const normalizedEmail = email.trim().toLowerCase();
+    return this.context.redis["userbyemail"](
+      this.collection,
+      this.prefix,
+      normalizedEmail
+    ).then((result) => {
+      const user = this.collect(result);
+      if (!decode) return user;
+      return this.decode(user);
     });
   }
 
-  async create({ email, password, ...rest }: UserLoginInput) {
+  byToken(token: string) {
+    return this.context.redis["userbytoken"](
+      this.collection,
+      this.prefix,
+      token
+    ).then((result) => {
+      return this.decode(this.collect(result));
+    });
+  }
+
+  saveToken(id: string, token: string) {
+    return this.context.redis.zadd(
+      `${this.collection}::token`,
+      0,
+      token + "::" + id
+    );
+  }
+
+  async create({ email, password, ...rest }: UserInput) {
+    if (!password)
+      throw new HTTPUserInputError("password", "Please provide a password");
     const pwhash = await bcrypt.hash(password, await genSalt(5));
+    // prevent forced id
     delete rest["id"];
+    rest["createdAt"] = Date.now();
     const input = { ...rest, email: email.trim().toLowerCase() };
     return this.context.redis["newuser"](
       this.collection,
@@ -98,58 +138,25 @@ export default class Users extends RedisDataSource<
         return this.decode(this.collect(result));
       })
       .catch((error) => {
-        if (error.name === "already_exists")
-          throw new HTTPUserInputError("email", error.message);
-        throw error;
-      });
-  }
-
-  login({ email, password }: UserLoginInput) {
-    const input = { email: email.trim().toLowerCase(), password };
-    return this.context.redis["userbyemail"](
-      this.collection,
-      this.prefix,
-      email,
-      ...this.flatten(this.encode(input))
-    )
-      .then(async (result) => {
-        const user = this.collect(result);
-        if (!user) return null;
-        const isCorrect = await bcrypt.compare(password, user.pwhash);
-        if (!isCorrect)
-          throw new HTTPUserInputError("password", "Wrong email or password");
-        return this.decode(user);
-      })
-      .catch((error) => {
-        if (error.message === "not_found")
+        if (error.message === "already_exists")
           throw new HTTPUserInputError(
             "email",
-            "User with this email does not exist"
+            "User with this email already exists"
           );
         throw error;
       });
   }
 
-  byToken(token: string) {
-    return this.context.redis["userbytoken"](
-      this.collection,
-      this.prefix,
-      token
-    )
-      .then((result) => {
-        return this.decode(this.collect(result));
-      })
-      .catch((error) => {
-        if (error.message === "not_found") return null;
-        throw error;
-      });
-  }
-
-  saveToken(id: string, token: string) {
-    return this.context.redis.zadd(
-      `${this.collection}::token`,
-      0,
-      token + "::" + id
-    );
+  async login({ email, password }: UserLoginInput) {
+    const user = await this.byEmail(email, false);
+    if (!user)
+      throw new HTTPUserInputError(
+        "email",
+        "User with this email does not exist"
+      );
+    const isCorrect = await bcrypt.compare(password, user.pwhash);
+    if (!isCorrect)
+      throw new HTTPUserInputError("password", "Wrong email or password");
+    return this.decode(user);
   }
 }

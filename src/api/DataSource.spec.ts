@@ -4,7 +4,7 @@ import Redis from "ioredis";
 import { RedisDataSource } from "./DataSource";
 import { TBoolean, TString } from "./datatypes";
 
-const redis = new Redis();
+const redis = new Redis({ db: 9 });
 
 class Items extends RedisDataSource<{
   id: string;
@@ -23,10 +23,10 @@ class Items extends RedisDataSource<{
 
 describe("DataSource Integration Test", () => {
   beforeEach(() => {
-    redis.flushall();
+    redis.flushdb();
   });
   afterEach(() => {
-    redis.flushall();
+    redis.flushdb();
   });
   after(() => {
     redis.disconnect();
