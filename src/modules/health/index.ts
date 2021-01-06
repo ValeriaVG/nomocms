@@ -1,7 +1,7 @@
 import { Redis } from "ioredis";
 
 export const routes = {
-  health: {
+  "/_health": {
     GET: async (_, { redis }: { redis: Redis }) => {
       try {
         return {

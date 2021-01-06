@@ -8,7 +8,7 @@ import responseFactory from "./responseFactory";
 
 export default function core(
   modules: {
-    routes: Routes;
+    routes?: Routes;
     dataSources?: Record<string, typeof DataSource>;
   },
   context: APIContext
