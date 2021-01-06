@@ -1,4 +1,4 @@
-import { RedisDataSource } from "core/DataSource";
+import { collect, flatten, RedisDataSource } from "core/DataSource";
 import { TInt, TString } from "core/datatypes";
 import { HTTPUserInputError } from "core/errors";
 import bcrypt, { genSalt } from "bcryptjs";
@@ -91,7 +91,7 @@ export default class Users extends RedisDataSource<User, UserInput> {
       this.prefix,
       normalizedEmail
     ).then((result) => {
-      const user = this.collect(result);
+      const user = collect(result);
       if (!decode) return user;
       return this.decode(user);
     });
@@ -103,7 +103,7 @@ export default class Users extends RedisDataSource<User, UserInput> {
       this.prefix,
       token
     ).then((result) => {
-      return this.decode(this.collect(result));
+      return this.decode(collect(result));
     });
   }
 
@@ -127,12 +127,12 @@ export default class Users extends RedisDataSource<User, UserInput> {
       this.collection,
       this.prefix,
       input.email,
-      ...this.flatten(this.encode(input)),
+      ...flatten(this.encode(input)),
       "pwhash",
       pwhash
     )
       .then((result) => {
-        return this.decode(this.collect(result));
+        return this.decode(collect(result));
       })
       .catch((error) => {
         if (error.message === "already_exists")

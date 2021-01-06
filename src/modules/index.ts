@@ -1,4 +1,4 @@
-import { mergeAll, mergeDeepRight, reduce, unapply } from "ramda";
+import { mergeDeepRight, reduce, unapply } from "ramda";
 import * as health from "./health";
 import * as authorization from "./authorization";
 import * as styles from "./styles";

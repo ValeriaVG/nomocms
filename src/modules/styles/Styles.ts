@@ -8,7 +8,6 @@ export type StyleData = {
 
 export default class Styles extends DataSource {
   collection = "styles";
-  prefix = "sty";
 
   constructor(protected context: { redis: Redis }) {
     super(context);
@@ -24,6 +23,21 @@ export default class Styles extends DataSource {
         end
        end
        return merged;     
+      `,
+    });
+
+    this.context.redis.defineCommand("scankeys", {
+      numberOfKeys: 2,
+      lua: `
+      local result = redis.call('scan',ARGV[1],'MATCH',KEYS[1]..'::'..KEYS[2]..'*','COUNT',ARGV[2]);
+      local keys = result[2];
+      local items = {};
+      for k,v in ipairs(keys) do
+        local text =redis.call('get',v);
+        items[k] = {v, text};
+      end
+      result[2]= items;
+      return result    
       `,
     });
   }
@@ -110,4 +124,36 @@ export default class Styles extends DataSource {
   merged(names: string[]) {
     return this.context.redis["mergestyles"](this.collection, ...names);
   }
+
+  list(
+    params: {
+      limit?: number;
+      offset?: string;
+      type?: "source" | "compiled";
+    } = {}
+  ): Promise<{ items: { name: string; code: string }[]; nextOffset: string }> {
+    const limit = params.limit ?? 10;
+    const offset = params.offset ?? "0";
+    const type = params.type ?? "source";
+    return this.context.redis["scankeys"](
+      this.collection,
+      type,
+      offset,
+      limit
+    ).then((result) => {
+      const [nextOffset, arr] = result;
+      const items = [];
+      for (let item of arr) {
+        const name = item[0].split("::").pop();
+        const code = item[1];
+        items.push({ name, code });
+      }
+      return {
+        items,
+        nextOffset,
+      };
+    });
+  }
+
+  // TODO: delete
 }

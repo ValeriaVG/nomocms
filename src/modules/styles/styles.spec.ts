@@ -50,5 +50,15 @@ describe("Styles Integration Test", () => {
       "body{background:red} .header{background:green} "
     );
   });
-  it("lists all the styles");
+  it("can list source  styles", async () => {
+    const result = await styles.list();
+    expect(result).to.have.property("items");
+    expect(result).to.have.property("nextOffset");
+    expect(result.items).to.have.length(1);
+    expect(result.items[0]).to.have.property("name", "colors");
+    expect(result.items[0]).to.have.property(
+      "code",
+      "$red: red;\n$blue: blue;"
+    );
+  });
 });

@@ -69,32 +69,6 @@ export abstract class RedisDataSource<
   };
 
   /**
-   * Collects [key1,value1, key2, value2,...] array into key-value pairs
-   * @param values
-   */
-  protected collect(values: string[]): Record<string, string> | null {
-    if (!values || !values.length) return null;
-    const obj = {};
-    for (let i = 0; i < values.length; i += 2) {
-      const key = values[i];
-      const value = values[i + 1];
-      obj[key] = value;
-    }
-    return obj;
-  }
-
-  /**
-   * Turns key value pairs into flat array
-   * [key1, value1, key2, value2, ...]
-   * @param input
-   */
-  protected flatten(input: Record<string, string>) {
-    return Object.entries(input).reduce((a, c) => {
-      return a.concat(c);
-    }, []);
-  }
-
-  /**
    * Requires context with Redis
    * @param context
    */
@@ -173,9 +147,9 @@ export abstract class RedisDataSource<
     return this.context.redis["newhash"](
       this.collection,
       this.prefix,
-      ...this.flatten(this.encode(input))
+      ...flatten(this.encode(input))
     ).then((result) => {
-      return this.decode(this.collect(result));
+      return this.decode(collect(result));
     });
   }
 
@@ -188,9 +162,9 @@ export abstract class RedisDataSource<
     const cid = this.cid(id);
     return this.context.redis["updhash"](
       cid,
-      ...this.flatten(this.encode(patch))
+      ...flatten(this.encode(patch))
     ).then((result) => {
-      return this.decode(this.collect(result));
+      return this.decode(collect(result));
     });
   }
 
@@ -222,9 +196,35 @@ export abstract class RedisDataSource<
     ).then((result) => {
       const [nextOffset, items] = result;
       return {
-        items: items.map((item) => this.decode(this.collect(item))),
+        items: items.map((item) => this.decode(collect(item))),
         nextOffset,
       };
     });
   }
+}
+
+/**
+ * Collects [key1,value1, key2, value2,...] array into key-value pairs
+ * @param values
+ */
+export function collect(values: string[]): Record<string, string> | null {
+  if (!values || !values.length) return null;
+  const obj = {};
+  for (let i = 0; i < values.length; i += 2) {
+    const key = values[i];
+    const value = values[i + 1];
+    obj[key] = value;
+  }
+  return obj;
+}
+
+/**
+ * Turns key value pairs into flat array
+ * [key1, value1, key2, value2, ...]
+ * @param input
+ */
+export function flatten(input: Record<string, string>) {
+  return Object.entries(input).reduce((a, c) => {
+    return a.concat(c);
+  }, []);
 }
