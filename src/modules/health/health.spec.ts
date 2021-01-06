@@ -4,6 +4,8 @@ import { routes } from "./index";
 
 describe("health", () => {
   it("responds with ok", async () => {
-    expect(await routes.health.GET()).to.deep.equal({ status: "OK" });
+    expect(
+      await routes.health.GET({}, { redis: { ping: () => "OK" } as any })
+    ).to.deep.equal({ status: "OK" });
   });
 });
