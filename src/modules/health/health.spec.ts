@@ -1,9 +1,9 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import { resolvers } from "./index";
+import { routes } from "./index";
 
 describe("health", () => {
   it("responds with ok", async () => {
-    expect(await resolvers.health.GET()).to.deep.equal({ status: "OK" });
+    expect(await routes.health.GET()).to.deep.equal({ status: "OK" });
   });
 });

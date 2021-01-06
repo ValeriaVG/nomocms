@@ -1,10 +1,10 @@
-import { html } from "./lib";
+import { html } from "amp/lib";
 
 export const body = html`
   <div amp-access="authorized">You are logged in!</div>
   <div amp-access="NOT authorized" amp-access-hide>
     <h1>Login</h1>
-    <form method="post" action-xhr="/api/login" target="_top">
+    <form method="post" action-xhr="/login" target="_top">
       <fieldset>
         <label>
           <span>Email:</span>
@@ -49,8 +49,8 @@ export const head = html`<script
   ></script>
   <script id="amp-access" type="application/json">
     {
-      "authorization": "/api/access?rid=READER_ID&url=SOURCE_URL",
-      "pingback": "/api/ping?rid=READER_ID&url=SOURCE_URL",
+      "authorization": "/access?rid=READER_ID&url=SOURCE_URL",
+      "pingback": "/ping?rid=READER_ID&url=SOURCE_URL",
       "login": "/login?rid=READER_ID&url=SOURCE_URL",
       "authorizationFallbackResponse": { "error": true }
     }

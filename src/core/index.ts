@@ -1,28 +1,28 @@
 import { IncomingMessage, ServerResponse } from "http";
 import cookie from "cookie";
-import { APIContext, APIResolvers, HTTPMethod } from "../types";
+import { APIContext, Routes, HTTPMethod } from "./types";
 import requestParams from "./requestParams";
 import routeRequest from "./routeRequest";
 import { DataSource } from "./DataSource";
+import responseFactory from "./responseFactory";
 
-export default function api(
+export default function core(
   modules: {
-    resolvers: APIResolvers;
+    routes: Routes;
     dataSources?: Record<string, typeof DataSource>;
   },
   context: APIContext
 ): any {
   return async (req: IncomingMessage, res: ServerResponse) => {
-    const log = context.log;
-    const sendResponse = answeringFactory(res);
+    const sendResponse = responseFactory(res);
     try {
-      res.setHeader("Content-Type", "application/json");
       const method = req.method?.toUpperCase();
+      // TODO: normalize url path to deal with trailing slash
       const url = new URL(req.url, "http://localhost");
-      const resolver = routeRequest(
+      const { resolver, params: routeParams } = routeRequest(
         url,
         method as HTTPMethod,
-        modules.resolvers
+        modules.routes
       );
       const params = await requestParams(req);
       context.cookies = req.headers.cookie && cookie.parse(req.headers.cookie);
@@ -34,26 +34,20 @@ export default function api(
           );
         }
       }
-      const response = await resolver(params, { ...context, ...dataSources });
-      const code = "code" in response ? response.code : 200;
-      return sendResponse(code, response);
+      const response = await resolver(
+        { ...routeParams, ...params },
+        { ...context, ...dataSources }
+      );
+
+      return sendResponse(response);
     } catch (error) {
       const code = "code" in error ? error.code : 500;
       const message = code >= 500 ? "Internal Server Error" : error.message;
-      if (code >= 500) log?.error(error);
-      return sendResponse(code, {
+      if (code >= 500) context.log?.error(error);
+      return sendResponse({
         errors: [{ name: error["field"] ?? error.name, message }],
+        code,
       });
     }
-  };
-}
-
-function answeringFactory(res: ServerResponse) {
-  return (code: number, response: object) => {
-    res.statusCode = code;
-    const responseText = JSON.stringify({ ...response, code });
-    res.setHeader("Content-Length", responseText.length);
-    res.write(responseText);
-    res.end();
   };
 }

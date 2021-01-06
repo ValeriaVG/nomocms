@@ -1,4 +1,4 @@
-import { DataSource } from "api/DataSource";
+import { DataSource } from "core/DataSource";
 import { Redis } from "ioredis";
 
 export default class Tokens extends DataSource {

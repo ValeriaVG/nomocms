@@ -10,8 +10,8 @@ const items = new Map<string, { id: string; title: string }>([
 
 const ctx: any = { items };
 
-const resolvers = {
-  item: {
+const routes = {
+  "/api/item": {
     GET: ({ id }, { items }) => {
       return { item: items.get(id) };
     },
@@ -25,20 +25,20 @@ const resolvers = {
       success: true,
     }),
   },
-  items: { GET: () => ({ items: [...items.entries()] }) },
-  err404: {
+  "/api/items": { GET: () => ({ items: [...items.entries()] }) },
+  "/api/err404": {
     GET: () => {
       throw new HTTPNotFound();
     },
   },
-  err: {
+  "/api/err": {
     GET: () => {
       throw new Error("Something happened");
     },
   },
 };
 
-const api = middleware({ resolvers }, ctx);
+const api = middleware({ routes }, ctx);
 
 describe("API Middleware Integration test", () => {
   it("GET /api/item", (done) => {

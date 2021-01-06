@@ -1,7 +1,7 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 import { ip2num, num2ip, requiresUser } from "./lib";
-import { HTTPNotAuthorized } from "api/errors";
+import { HTTPNotAuthorized } from "core/errors";
 
 describe("ip", () => {
   const ip = "169.6.7.20";

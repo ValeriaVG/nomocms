@@ -1,5 +1,5 @@
-import { HTTPNotAuthorized } from "api/errors";
-import { APIResolver } from "types";
+import { HTTPNotAuthorized } from "core/errors";
+import { ResolverFn, RouteResponse } from "core/types";
 import Users, { User } from "./Users";
 import Permissions from "./Permissions";
 
@@ -23,9 +23,9 @@ export const num2ip = (num: number) => {
   return p.join(".");
 };
 
-export function requiresUser<P = any, C = any, R = any>(
-  next: APIResolver<P, C, R>
-): APIResolver<P, C & { user: User; users: Users }, R> {
+export function requiresUser<P = any, C = any, R extends RouteResponse = any>(
+  next: ResolverFn<P, C, R>
+): ResolverFn<P, C & { user: User; users: Users }, R> {
   return async (params, context) => {
     if (context.user) return next(params, context);
     const token = params["rid"] ?? context.cookies?.["amp-access"];
@@ -37,10 +37,14 @@ export function requiresUser<P = any, C = any, R = any>(
   };
 }
 
-export function requiresPermission<P = any, C = any, R = any>(
+export function requiresPermission<
+  P = any,
+  C = any,
+  R extends RouteResponse = any
+>(
   { scope, permissions }: { scope?: string; permissions: number },
-  next: APIResolver<P, C, R>
-): APIResolver<P, C & { user: User; permissions: Permissions }, R> {
+  next: ResolverFn<P, C, R>
+): ResolverFn<P, C & { user: User; permissions: Permissions }, R> {
   return requiresUser(async (params, context) => {
     const hasAccess = await context.permissions.check({
       scope,

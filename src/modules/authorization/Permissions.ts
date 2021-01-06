@@ -1,5 +1,5 @@
-import { DataSource } from "api/DataSource";
-import { HTTPUserInputError } from "api/errors";
+import { DataSource } from "core/DataSource";
+import { HTTPUserInputError } from "core/errors";
 import { Redis } from "ioredis";
 
 /**

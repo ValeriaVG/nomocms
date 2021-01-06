@@ -1,4 +1,4 @@
-import { HTTPMethod } from "../types";
+import { HTTPMethod } from "./types";
 
 export class HTTPError extends Error {
   constructor(public code: number, public message: string) {
