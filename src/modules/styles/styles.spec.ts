@@ -61,4 +61,16 @@ describe("Styles Integration Test", () => {
       "$red: red;\n$blue: blue;"
     );
   });
+  it("can delete styles", async () => {
+    expect(await styles.save("delete-me", "body{margin:0;}")).to.deep.eq({
+      saved: true,
+    });
+    expect(await styles.get("delete-me")).to.eq("body{margin:0;}");
+    expect(await styles.compiled.get("delete-me")).to.eq("body{margin:0}");
+    expect(await styles.delete("delete-me")).to.deep.eq({
+      deleted: true,
+    });
+    expect(await styles.get("delete-me")).to.be.null;
+    expect(await styles.compiled.get("delete-me")).to.be.null;
+  });
 });

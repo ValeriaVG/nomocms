@@ -64,8 +64,13 @@ export default class Styles extends DataSource {
    * @param name
    * @param scss
    */
-  save(name: string, scss: string) {
-    return Promise.all([this.save(name, scss), this.compiled.save(name, scss)]);
+  save(name: string, scss: string): Promise<{ saved: boolean }> {
+    return Promise.all([
+      this.set(name, scss),
+      this.compiled.save(name, scss),
+    ]).then((results) => {
+      return { saved: results[0] === "OK" && results[1] === "OK" };
+    });
   }
 
   /**
@@ -155,5 +160,18 @@ export default class Styles extends DataSource {
     });
   }
 
-  // TODO: delete
+  /**
+   * Delete both source and compiled styles
+   * @param name
+   */
+  delete(name: string) {
+    return this.context.redis
+      .multi()
+      .del(this.collection + "::compiled::" + name)
+      .del(this.collection + "::source::" + name)
+      .exec()
+      .then((results) => {
+        return { deleted: Boolean(results[0][1] && results[1][1]) };
+      });
+  }
 }
