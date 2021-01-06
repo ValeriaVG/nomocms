@@ -41,7 +41,7 @@ export default class Users extends RedisDataSource<User, UserInput> {
           return nil;  
         else
           local email = emails[i];
-          local id = string.gsub(email,KEYS[3]..'::','');
+          local id = string.gsub(email,'(.+)::(.+)','%2');
           local cid = KEYS[1]..'::'..id;
           return redis.call('hgetall',cid);
       end  
@@ -52,16 +52,15 @@ export default class Users extends RedisDataSource<User, UserInput> {
       lua: `
       local tokenidx = KEYS[1]..'::token'
       local tokens = redis.call('ZRANGEBYLEX', tokenidx, '['..KEYS[3], '['..KEYS[3]..':\xff');
-      local i = next(tokens);
+      local i = next(tokens)
       if i == nil
         then
-          return nil; 
-        else
-          local token = tokens[i];
-          local id = string.gsub(token,KEYS[3]..'::','');
-          local cid = KEYS[1]..'::'..id;
-          return redis.call('hgetall',cid);
-      end  
+          return nil;
+      end
+      local token = tokens[i];
+      local id = string.gsub(token,'(.+)::(.+)','%2');
+      local cid = KEYS[1]..'::'..id;
+      return redis.call('hgetall',cid);
       `,
     });
 

@@ -11,8 +11,8 @@ export default {
       { cookies, users }: APIContext & { users: Users }
     ) => {
       const user = await users.login({ email, password });
-      if (cookies["amp-access"])
-        users.saveToken(user.id, cookies["amp-access"]);
+      const token = cookies["amp-access"];
+      if (token) users.saveToken(user.id, token);
       return { user };
     },
   },
