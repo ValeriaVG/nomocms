@@ -7,8 +7,9 @@
   "author": "ValeriaVG <valeria.viana.gusmao@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "build": "ts-node -r tsconfig-paths/register src/build",
     "start": "ts-node -r tsconfig-paths/register src/index",
-    "dev": "ts-node-dev -r tsconfig-paths/register src/index",
+    "dev": "ts-node-dev -r tsconfig-paths/register src/dev",
     "test": "mocha -r ts-node/register -r tsconfig-paths/register src/**/*.spec.ts src/modules/**/*.spec.ts",
     "coverage": "nyc --reporter=lcov --reporter=text-summary mocha -r ts-node/register -r tsconfig-paths/register src/**/*.spec.ts src/modules/**/*.spec.ts"
   },
@@ -17,12 +18,12 @@
     "bcryptjs": "^2.4.3",
     "cookie": "^0.4.1",
     "formidable": "^1.2.2",
+    "gray-matter": "^4.0.2",
     "ioredis": "^4.19.4",
+    "mime-types": "^2.1.28",
+    "preact": "^10.5.9",
     "ramda": "^0.27.1",
-    "sass": "^1.32.0",
-    "ts-node": "^9.1.1",
-    "tsconfig-paths": "^3.9.0",
-    "typescript": "^4.1.3"
+    "sass": "^1.32.0"
   },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
@@ -37,9 +38,14 @@
     "@types/sass": "^1.16.0",
     "@types/supertest": "^2.0.10",
     "chai": "^4.2.0",
+    "fuse-box": "^4.0.0-next.447",
     "mocha": "^8.2.1",
+    "node-sass": "^5.0.0",
     "nyc": "^15.1.0",
     "supertest": "^6.0.1",
-    "ts-node-dev": "^1.1.1"
+    "ts-node": "^9.1.1",
+    "ts-node-dev": "^1.1.1",
+    "tsconfig-paths": "^3.9.0",
+    "typescript": "^4.1.3"
   }
 }

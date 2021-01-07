@@ -47,14 +47,15 @@ describe("routeRequest", () => {
       routeRequest(makeUrl("/api/items?limit=3"), "GET", routes)
     ).to.have.property("resolver", getItems);
   });
-  it("throws proper errors if endpoint does not exist", () => {
+  it("handles cases when endpoint or method does not exist", () => {
     const routes = {
       "/api/item": {
         GET: () => ({}),
       },
     };
-    expect(() => routeRequest(makeUrl("/api/items"), "GET", routes)).to.throw(
-      HTTPNotFound
+    expect(routeRequest(makeUrl("/api/items"), "GET", routes)).to.have.property(
+      "resolver",
+      null
     );
     expect(() => routeRequest(makeUrl("/api/item"), "POST", routes)).to.throw(
       HTTPMethodNotAllowed

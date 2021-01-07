@@ -22,7 +22,7 @@ export default function routeRequest(
       break;
     }
   }
-  if (!resolver) throw new HTTPNotFound();
+  if (!resolver) return { params, resolver: null };
   if (typeof resolver === "function") {
     // IDEA: allow only GET/HEAD here
     return { params, resolver };

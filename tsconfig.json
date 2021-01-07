@@ -1,13 +1,18 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
+    "target": "ES5",
     "module": "commonjs",
     "allowJs": true,
     "noImplicitAny": false,
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "baseUrl": "src/"
+    "baseUrl": "src",
+    "outDir": ".server",
+    "jsx": "preserve",
+    "jsxFactory": "h",
+    "jsxFragmentFactory": "h.Fragment",
+    "noEmitOnError": true
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src"],
   "exclude": ["node_modules"]
 }

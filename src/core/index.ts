@@ -5,6 +5,7 @@ import requestParams from "./requestParams";
 import routeRequest from "./routeRequest";
 import { DataSource } from "./DataSource";
 import responseFactory from "./responseFactory";
+import { HTTPNotFound } from "./errors";
 
 export default function core(
   modules: {
@@ -13,7 +14,11 @@ export default function core(
   },
   context: APIContext
 ): any {
-  return async (req: IncomingMessage, res: ServerResponse) => {
+  return async (
+    req: IncomingMessage,
+    res: ServerResponse,
+    next?: () => void
+  ) => {
     const sendResponse = responseFactory(res);
     try {
       const method = req.method?.toUpperCase();
@@ -24,6 +29,10 @@ export default function core(
         method as HTTPMethod,
         modules.routes
       );
+      if (!resolver) {
+        if (next) return next();
+        throw new HTTPNotFound();
+      }
       const params = await requestParams(req);
       context.cookies = req.headers.cookie && cookie.parse(req.headers.cookie);
       const dataSources = {};
