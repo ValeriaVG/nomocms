@@ -9,8 +9,9 @@ import responseFactory from "./responseFactory";
 import { HTTPNotFound } from "./errors";
 import NormalizedURL from "./NormalizedURL";
 import renderDashboard from "./renderDashboard";
-import Users from "modules/authorization/Users";
 import Permissions, { Permission } from "modules/authorization/Permissions";
+import Tokens from "modules/authorization/Tokens";
+import Users from "modules/authorization/Users";
 
 export default function core(
   modules: {
@@ -27,8 +28,11 @@ export default function core(
     const sendResponse = responseFactory(res);
     try {
       const method = req.method?.toUpperCase();
+      if (["HEAD", "OPTIONS"].includes(method)) return res.end();
       const url = new NormalizedURL(req.url);
-      context.cookies = req.headers.cookie && cookie.parse(req.headers.cookie);
+      context.cookies = req.headers.cookie
+        ? cookie.parse(req.headers.cookie)
+        : {};
       const dataSources: any = {};
       if (modules.dataSources) {
         for (let source in modules.dataSources) {
@@ -39,9 +43,10 @@ export default function core(
       }
 
       context.canAccessDashboard = false;
-
+      const params = await requestParams(req);
       if ("users" in dataSources && "permissions" in dataSources) {
-        context.token = context.cookies["amp-access"];
+        context.token = context.cookies["amp-access"] ?? params.rid;
+
         context.user = context.token
           ? await (dataSources.users as Users).byToken(context.token)
           : undefined;
@@ -68,7 +73,6 @@ export default function core(
         if (next) return next();
         throw new HTTPNotFound();
       }
-      const params = await requestParams(req);
 
       const response = await resolver(
         { ...routeParams, ...params },

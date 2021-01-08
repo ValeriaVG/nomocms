@@ -27,12 +27,7 @@ export function requiresUser<P = any, C = any, R extends RouteResponse = any>(
   next: ResolverFn<P, C, R>
 ): ResolverFn<P, C & { user: User; users: Users }, R> {
   return async (params, context) => {
-    if (context.user) return next(params, context);
-    const token = params["rid"] ?? context.cookies?.["amp-access"];
-    if (!token) throw new HTTPNotAuthorized();
-    const user = await context.users.byToken(token);
-    if (!user) throw new HTTPNotAuthorized();
-    context.user = user;
+    if (!context.user) throw new HTTPNotAuthorized();
     return next(params, context);
   };
 }

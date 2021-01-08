@@ -45,13 +45,7 @@ export const body = html`
           </linearGradient>
         </defs>
       </svg>
-      <amp-layout amp-access="canAccessDashboard" layout="nodisplay">
-        <form method="get" action="${dashboard.path}" target="_top">
-          <fieldset>
-            <input type="submit" value="Enter Dashboard" />
-          </fieldset>
-        </form>
-      </amp-layout>
+
       <amp-layout amp-access="NOT canAccessDashboard" amp-access-hide>
         <form method="post" action-xhr="/login" target="_top">
           <fieldset>
@@ -81,10 +75,20 @@ export const body = html`
             <input type="submit" value="Login" />
           </fieldset>
           <div class="result">
-            <div submit-success>
+            <div submit-success class="success">
               <template type="amp-mustache">
-                Sorry, you can't access dashboard 😰</template
-              >
+                {{#canAccessDashboard}}
+                <div>
+                  <a
+                    href="${dashboard.path}"
+                    class="button"
+                    style="border-radius:4px;"
+                    >Access dashboard</a
+                  >
+                </div>
+                {{/canAccessDashboard}} {{^canAccessDashboard}} You shall not
+                pass! 🧐 {{/canAccessDashboard}}
+              </template>
             </div>
             <div submit-error class="error">
               <template type="amp-mustache">
@@ -180,6 +184,8 @@ export const head = html`
       padding: 1rem 2rem;
       text-transform: uppercase;
       font-weight: bold;
+      display: inline-block;
+      text-decoration: none;
     }
     input[type="submit"] {
       width: 100%;
@@ -192,8 +198,9 @@ export const head = html`
     .error {
       color: #f44336;
     }
-    .success {
-      color: #4caf50;
+
+    form.amp-form-submit-success fieldset {
+      display: none;
     }
   </style>
 `;

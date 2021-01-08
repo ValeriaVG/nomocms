@@ -28,7 +28,6 @@ export default function routeRequest(
   }
   if (!resolver) return { params, resolver: null };
   if (typeof resolver === "function") {
-    // IDEA: allow only GET/HEAD here
     return { params, resolver };
   }
   if (!(method in resolver))

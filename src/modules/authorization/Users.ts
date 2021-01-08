@@ -48,19 +48,16 @@ export default class Users extends RedisDataSource<User, UserInput> {
       `,
     });
     context.redis.defineCommand("userbytoken", {
-      numberOfKeys: 3,
+      numberOfKeys: 2,
       lua: `
-      local tokenidx = KEYS[1]..'::token'
-      local tokens = redis.call('ZRANGEBYLEX', tokenidx, '['..KEYS[3], '['..KEYS[3]..':\xff');
-      local i = next(tokens)
-      if i == nil
+      local tokenidx = 'tokens::'..KEYS[2]
+      local id = redis.call('GET', tokenidx);
+      if type(id) == 'string'
         then
-          return nil;
+          local cid = KEYS[1]..'::'..id;
+          return redis.call('hgetall',cid);
       end
-      local token = tokens[i];
-      local id = string.gsub(token,'(.+)::(.+)','%2');
-      local cid = KEYS[1]..'::'..id;
-      return redis.call('hgetall',cid);
+      return id  
       `,
     });
 
@@ -98,20 +95,10 @@ export default class Users extends RedisDataSource<User, UserInput> {
   }
 
   byToken(token: string): Promise<User> {
-    return this.context.redis["userbytoken"](
-      this.collection,
-      this.prefix,
-      token
-    ).then((result) => {
-      return this.decode(collect(result));
-    });
-  }
-
-  saveToken(id: string, token: string) {
-    return this.context.redis.zadd(
-      `${this.collection}::token`,
-      0,
-      token + "::" + id
+    return this.context.redis["userbytoken"](this.collection, token).then(
+      (result) => {
+        return this.decode(collect(result));
+      }
     );
   }
 

@@ -84,7 +84,7 @@ export default class Tokens extends DataSource {
       .del(this.collection + "::" + token)
       .zremrangebylex(
         this.collection + "::" + id,
-        `[${token}::`,
+        `[${token}:`,
         `[${token}::\uffff`
       )
       .exec()

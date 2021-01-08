@@ -19,29 +19,22 @@ describe("ip", () => {
 });
 
 describe("requiresUser", () => {
-  it("executes function if user has token", async () => {
+  it("executes function if user exists", async () => {
     const ctx = {
-      users: {
-        byToken: (token) => (token === "amp-token" ? { id: "usr_1" } : null),
-      },
+      user: { id: "usr_1" },
     };
     const fn = requiresUser(() => {
       return { ok: 1 };
     });
-    expect(await fn({ rid: "amp-token" }, ctx)).to.have.property("ok", 1);
-    expect(ctx).to.have.property("user");
+    expect(await fn(null, ctx)).to.have.property("ok", 1);
   });
-  it("throws error if user has no token", async () => {
-    const ctx = {
-      users: {
-        byToken: (token) => (token === "amp-token" ? { id: "usr_1" } : null),
-      },
-    };
+  it("throws error if no users are authorized", async () => {
+    const ctx = {};
     try {
       const fn = requiresUser(() => {
         throw "should not execute";
       });
-      await fn({ rid: "amp-tokenz" }, ctx);
+      await fn(null, ctx);
     } catch (error) {
       expect(error).to.be.instanceOf(HTTPNotAuthorized);
       expect(ctx).not.to.have.property("user");
