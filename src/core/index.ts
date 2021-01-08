@@ -9,6 +9,8 @@ import responseFactory from "./responseFactory";
 import { HTTPNotFound } from "./errors";
 import NormalizedURL from "./NormalizedURL";
 import renderDashboard from "./renderDashboard";
+import Users from "modules/authorization/Users";
+import Permissions, { Permission } from "modules/authorization/Permissions";
 
 export default function core(
   modules: {
@@ -26,7 +28,36 @@ export default function core(
     try {
       const method = req.method?.toUpperCase();
       const url = new NormalizedURL(req.url);
-      if (url.normalizedPath.startsWith(dashboard.path))
+      context.cookies = req.headers.cookie && cookie.parse(req.headers.cookie);
+      const dataSources: any = {};
+      if (modules.dataSources) {
+        for (let source in modules.dataSources) {
+          dataSources[source] = new (modules.dataSources[source] as any)(
+            context
+          );
+        }
+      }
+
+      context.canAccessDashboard = false;
+
+      if ("users" in dataSources && "permissions" in dataSources) {
+        context.token = context.cookies["amp-access"];
+        context.user = context.token
+          ? await (dataSources.users as Users).byToken(context.token)
+          : undefined;
+
+        context.canAccessDashboard =
+          context.user?.id &&
+          (await (dataSources.permissions as Permissions).check({
+            permissions: Permission.read,
+            user: context.user.id,
+          }));
+      }
+
+      if (
+        context.canAccessDashboard &&
+        url.normalizedPath.startsWith(dashboard.path)
+      )
         return renderDashboard(req, res, next);
       const { resolver, params: routeParams } = routeRequest(
         url,
@@ -38,15 +69,7 @@ export default function core(
         throw new HTTPNotFound();
       }
       const params = await requestParams(req);
-      context.cookies = req.headers.cookie && cookie.parse(req.headers.cookie);
-      const dataSources = {};
-      if (modules.dataSources) {
-        for (let source in modules.dataSources) {
-          dataSources[source] = new (modules.dataSources[source] as any)(
-            context
-          );
-        }
-      }
+
       const response = await resolver(
         { ...routeParams, ...params },
         { ...context, ...dataSources }

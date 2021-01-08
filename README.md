@@ -15,7 +15,7 @@ AMP CMS is currently in active development and the alpha version should be expec
   - [x] Permissions
   - [ ] Custom user fields
 - [ ] Control Panel
-  - [ ] Base layout
+  - [x] Base layout
   - [ ] Scripts Editor
   - [ ] Styles Editor
   - [ ] Content/Markup Editor

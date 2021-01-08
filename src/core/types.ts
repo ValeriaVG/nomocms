@@ -1,3 +1,4 @@
+import { User } from "modules/authorization/Users";
 import { Readable } from "stream";
 import * as context from "./context";
 
@@ -12,6 +13,9 @@ export type APILogger = Record<"error" | "info" | "log" | "warn", LogFunction>;
 export type APIContext = typeof context & {
   log?: APILogger;
   cookies?: Record<string, string>;
+  token?: string;
+  user?: User;
+  canAccessDashboard?: boolean;
 };
 
 export type SimpleTypes = string | number | boolean | null;
@@ -32,9 +36,11 @@ export type AMPResponse = GenericResponse & {
   body?: string;
   head?: string;
 };
-
-export type JSONResponse = GenericResponse &
-  Record<string, SimpleTypes | Record<string, SimpleTypes>>;
+export type JSONObject = Record<
+  string,
+  SimpleTypes | Record<string, SimpleTypes>
+>;
+export type JSONResponse = GenericResponse & JSONObject;
 export type DataResponse = GenericResponse & {
   type: string;
   data: ResponseData;

@@ -97,7 +97,7 @@ export default class Users extends RedisDataSource<User, UserInput> {
     });
   }
 
-  byToken(token: string) {
+  byToken(token: string): Promise<User> {
     return this.context.redis["userbytoken"](
       this.collection,
       this.prefix,
