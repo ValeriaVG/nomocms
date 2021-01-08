@@ -1,5 +1,4 @@
 import { RedisDataSource } from "core/DataSource";
-import { TInt, TString } from "core/datatypes";
 import { ContentPage } from "./types";
 import matter from "gray-matter";
 import marked from "marked";

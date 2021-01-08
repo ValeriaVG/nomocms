@@ -18,7 +18,7 @@ AMP CMS is currently in active development and the alpha version should be expec
   - [x] Base layout
   - [ ] Scripts Editor
   - [ ] Styles Editor
-  - [ ] Content/Markup Editor
+  - [x] Content/Markup Editor
   - [ ] File manager
 - [ ] Page Analytics
 - [ ] Deploy at least one project with AMP CMS
