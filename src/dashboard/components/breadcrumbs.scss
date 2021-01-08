@@ -1,0 +1,23 @@
+@import "../theme";
+.breadcrumbs {
+  & > ul {
+    list-style-type: none;
+    display: flex;
+    margin: 0;
+    margin-bottom: 0.5rem;
+    font-size: 0.8em;
+    padding: 0;
+    color: lighten($dark, 50%);
+    & > li {
+      color: $dark;
+      a {
+        opacity: 0.5;
+        color: $dark;
+        text-decoration: none;
+        &:hover {
+          opacity: 1;
+        }
+      }
+    }
+  }
+}

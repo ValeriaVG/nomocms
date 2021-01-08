@@ -4,7 +4,7 @@ import { dashboard } from "config";
 import NotFound from "./pages/NotFound";
 import Home from "./pages/home";
 import Layout from "./Layout";
-import Pages from "./pages/Pages";
+import { Page, Pages } from "./pages/content";
 import Templates from "./pages/Templates";
 import Users from "./pages/Users";
 import Styles from "./pages/Styles";
@@ -17,6 +17,8 @@ export default function App() {
       <Layout>
         <Switch>
           <Route path="/" exact component={Home} />
+          <Route path="/pages/:new" exact component={Page} />
+          <Route path="/pages/:id" exact component={Page} />
           <Route path="/pages" component={Pages} />
           <Route path="/users" component={Users} />
           <Route path="/templates" component={Templates} />

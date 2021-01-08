@@ -12,12 +12,3 @@ $neutral: #9e9e9e;
 $danger: #f44336;
 $positive: #4caf50;
 $info: #03a9f4;
-
-// Typo
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap");
-$font-family: "Noto Sans", sans-serif;
-body {
-  font-size: 16px;
-  line-height: 1.2;
-  font-family: $font-family;
-}

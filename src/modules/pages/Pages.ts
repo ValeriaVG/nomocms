@@ -1,20 +1,24 @@
 import { RedisDataSource } from "core/DataSource";
-import { TString } from "core/datatypes";
-
-export default class Pages extends RedisDataSource<{
-  id: string;
-  url: string;
-  body: string;
-  head: string;
-  style: string;
-}> {
+import { TInt, TString } from "core/datatypes";
+import { ContentPage } from "./types";
+import matter from "gray-matter";
+import marked from "marked";
+export default class Pages extends RedisDataSource<ContentPage> {
   collection = "pages";
   prefix = "pg";
 
-  schema = {
-    url: TString,
-    body: TString,
-    head: TString,
-    style: TString,
+  decode = (values) => {
+    return values;
   };
+
+  encode = (values) => {
+    return values;
+  };
+
+  create(input) {
+    const { data, content } = matter(input.content.trim());
+    const html = marked(content);
+    const values = { ...data, ...input, content, html };
+    return super.create(values);
+  }
 }

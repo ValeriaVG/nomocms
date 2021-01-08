@@ -184,9 +184,10 @@ export abstract class RedisDataSource<
    * @param params
    */
   list(
+    // TODO: store in a list. scan is not working as intended
     params: { limit?: number; offset?: string } = {}
   ): Promise<{ items: T[]; nextOffset: string }> {
-    const limit = params.limit ?? 10;
+    const limit = params.limit ?? 20;
     const offset = params.offset ?? "0";
     return this.context.redis["scanhash"](
       this.collection,

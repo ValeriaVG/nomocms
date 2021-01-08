@@ -1,5 +1,57 @@
 @import "theme";
 
+// Typo
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+$font-family: "Noto Sans", sans-serif;
+body {
+  font-size: 16px;
+  line-height: 1.2;
+  font-family: $font-family;
+}
+h1 {
+  font-size: 1.5em;
+}
+h2 {
+  font-size: 1.3em;
+}
+h3,
+h4,
+h5,
+h6 {
+  font-size: 1em;
+  font-weight: bold;
+}
+
+form {
+  label {
+    display: flex;
+    text-transform: uppercase;
+    align-items: center;
+    color: lighten($dark, 50%);
+    font-size: 0.8em;
+    padding: 0.5rem 0.8rem;
+
+    & > * {
+      text-transform: none;
+      flex: 1;
+      margin-left: 1rem;
+    }
+  }
+
+  select,
+  input {
+    border: 1px solid darken($light, 8%);
+    background: $light;
+    padding: 0.5rem 1rem;
+    font-family: inherit;
+  }
+  select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+}
+
 @mixin laying-flat($position) {
   $x: 0;
   $y: 1px;
@@ -55,15 +107,28 @@ body {
     flex-direction: column;
     @include laying-flat(left);
   }
-
+  fieldset {
+    padding: 0;
+  }
   & > main {
     grid-area: main;
     background-color: darken($light, 5%);
     color: $dark;
     padding: 1rem;
-    & > section {
+    & > section,
+    & > form > fieldset {
       background-color: $light;
+      border: none;
       @include laying-flat(top);
+      & + * {
+        margin-top: 1rem;
+      }
+    }
+    & > header,
+    & > form > header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
   }
 
@@ -84,11 +149,32 @@ body {
   font-family: inherit;
   font-size: inherit;
   color: inherit;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  & > svg {
+    margin-right: 0.5rem;
+  }
 }
 
 button,
 .button {
   @include button;
+  &-primary,
+  &-secondary,
+  &-neutral {
+    @include button;
+    background-color: $primary;
+    color: $light;
+    @include laying-flat(top);
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: bold;
+  }
+  &-secondary {
+    background-color: $light;
+    color: $dark;
+  }
 }
 
 a {
@@ -123,4 +209,11 @@ a {
 
 .bottom-nav {
   margin-top: auto;
+}
+
+.buttons {
+  display: flex;
+  & > * {
+    margin-left: 0.5rem;
+  }
 }

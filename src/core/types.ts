@@ -36,11 +36,8 @@ export type AMPResponse = GenericResponse & {
   body?: string;
   head?: string;
 };
-export type JSONObject = Record<
-  string,
-  SimpleTypes | Record<string, SimpleTypes>
->;
-export type JSONResponse = GenericResponse & JSONObject;
+export type JSONObject = Record<string, SimpleTypes | object | Array<any>>;
+export type JSONResponse<T = JSONObject> = GenericResponse & T;
 export type DataResponse = GenericResponse & {
   type: string;
   data: ResponseData;
