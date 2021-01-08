@@ -1,9 +1,14 @@
 import * as Preact from "preact";
 import {
   faBars,
+  faBlog,
+  faBook,
+  faCog,
   faColumns,
+  faFile,
   faHome,
   faPalette,
+  faSignOutAlt,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import { NavLink } from "react-router-dom";
@@ -30,6 +35,11 @@ export default function Layout({
               </NavLink>
             </li>
             <li>
+              <NavLink to="/pages">
+                <FontAwesomeIcon icon={faBook} />
+              </NavLink>
+            </li>
+            <li>
               <NavLink to="/users">
                 <FontAwesomeIcon icon={faUsers} />
               </NavLink>
@@ -42,6 +52,21 @@ export default function Layout({
             <li>
               <NavLink to="/templates">
                 <FontAwesomeIcon icon={faColumns} />
+              </NavLink>
+            </li>
+          </ul>
+        </nav>
+        <nav class="bottom-nav">
+          <ul class="menu">
+            <li>
+              <NavLink to="/settings">
+                <FontAwesomeIcon icon={faCog} />
+              </NavLink>
+            </li>
+
+            <li>
+              <NavLink to="/logout">
+                <FontAwesomeIcon icon={faSignOutAlt} />
               </NavLink>
             </li>
           </ul>

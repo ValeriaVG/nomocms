@@ -51,6 +51,8 @@ body {
     background-color: $darkest;
     color: $light;
     z-index: 1;
+    display: flex;
+    flex-direction: column;
     @include laying-flat(left);
   }
 
@@ -117,4 +119,8 @@ a {
       border-bottom-right-radius: 2px;
     }
   }
+}
+
+.bottom-nav {
+  margin-top: auto;
 }

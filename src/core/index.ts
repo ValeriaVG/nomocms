@@ -61,7 +61,7 @@ export default function core(
 
       if (
         context.canAccessDashboard &&
-        url.normalizedPath.startsWith(dashboard.path)
+        url.normalizedPath.startsWith(dashboard.pathname)
       )
         return renderDashboard(req, res, next);
       const { resolver, params: routeParams } = routeRequest(
