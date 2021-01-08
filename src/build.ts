@@ -1,13 +1,8 @@
 import { dashboard } from "config";
 import { fusebox } from "fuse-box";
+import config from "./fuse.config";
 
-const fuse = fusebox({
-  entry: "./dashboard/index.ts",
-  target: "browser",
-  webIndex: {
-    publicPath: dashboard.path,
-  },
-});
+const fuse = fusebox(config);
 
 fuse.runProd({
   bundles: {

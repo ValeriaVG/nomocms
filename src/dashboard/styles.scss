@@ -1,4 +1,120 @@
+@import "theme";
+
+@mixin laying-flat($position) {
+  $x: 0;
+  $y: 1px;
+
+  [position="left"] & {
+    $x: 1px;
+    $y: 0;
+  }
+
+  box-shadow: $x $y 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
 body,
 html {
   margin: 0;
+}
+
+body {
+  // Fullscreen
+  height: 100vh;
+  width: 100vw;
+  // Grid layout
+  display: grid;
+  grid-template-areas:
+    "header header"
+    "sidebar main"
+    "sidebar footer";
+  grid-template-rows: 3rem 1fr 2rem;
+  grid-template-columns: 3rem 1fr;
+
+  & > * {
+    box-sizing: border-box;
+    position: relative;
+  }
+
+  & > header {
+    grid-area: header;
+    background-color: $darker;
+    color: $light;
+    z-index: 2;
+    @include laying-flat(top);
+    display: flex;
+    align-items: center;
+  }
+
+  & > aside {
+    grid-area: sidebar;
+    padding-top: 1rem;
+    background-color: $darkest;
+    color: $light;
+    z-index: 1;
+    @include laying-flat(left);
+  }
+
+  & > main {
+    grid-area: main;
+    background-color: darken($light, 5%);
+    color: $dark;
+    padding: 1rem;
+    & > section {
+      background-color: $light;
+      @include laying-flat(top);
+    }
+  }
+
+  & > footer {
+    padding: 0.5rem 1rem;
+    grid-area: footer;
+    background-color: $dark;
+    color: fade-out($light, 0.5);
+    font-size: 0.8rem;
+    text-align: right;
+  }
+}
+
+@mixin button {
+  border: none;
+  padding: 0.5em 1em;
+  background: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+button,
+.button {
+  @include button;
+}
+
+a {
+  color: inherit;
+}
+
+@mixin reset-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu {
+  @include reset-list;
+  flex: 1;
+  & > li > a {
+    position: relative;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    &.active {
+      background: lighten($darkest, 8%);
+      @include laying-flat(top);
+      margin-right: -3px;
+      border-top-right-radius: 2px;
+      border-bottom-right-radius: 2px;
+    }
+  }
 }

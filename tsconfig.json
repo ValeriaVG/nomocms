@@ -9,9 +9,11 @@
     "baseUrl": "src",
     "outDir": ".server",
     "jsx": "preserve",
-    "jsxFactory": "h",
-    "jsxFragmentFactory": "h.Fragment",
-    "noEmitOnError": true
+    "jsxFactory": "Preact.h",
+    "jsxFragmentFactory": "Preact.Fragment",
+    "noEmitOnError": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true
   },
   "include": ["src"],
   "exclude": ["node_modules"]

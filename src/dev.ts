@@ -1,13 +1,10 @@
 import { dashboard } from "config";
 import { fusebox } from "fuse-box";
 import server from "./server";
+import config from "./fuse.config";
 
 const fuse = fusebox({
-  entry: "./dashboard/index.ts",
-  target: "browser",
-  webIndex: {
-    publicPath: dashboard.path,
-  },
+  ...config,
   devServer: false,
 });
 
