@@ -1,14 +1,6 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import {
-  DataType,
-  NUL,
-  TBoolean,
-  TFloat,
-  TInt,
-  TJSON,
-  TString,
-} from "./datatypes";
+import { NUL, TBoolean, TFloat, TInt, TJSON, TString } from "./datatypes";
 
 describe("data types", () => {
   it("can compose a scheme", () => {

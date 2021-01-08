@@ -1,4 +1,3 @@
-import { html } from "amp/lib";
 import { dashboard } from "config";
 import fs, { existsSync } from "fs";
 import { IncomingMessage, ServerResponse } from "http";
@@ -6,7 +5,8 @@ import mime from "mime-types";
 
 export default async function renderDashboard(
   req: IncomingMessage,
-  res: ServerResponse
+  res: ServerResponse,
+  next?: () => any
 ) {
   let filePath = req.url.replace(dashboard.path, dashboard.dist + "/");
 
@@ -22,4 +22,5 @@ export default async function renderDashboard(
   res.setHeader("Content-Type", type);
   res.setHeader("Content-Length", file.size);
   fs.createReadStream(filePath).pipe(res);
+  if (next) next();
 }

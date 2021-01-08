@@ -1,11 +1,14 @@
 import { IncomingMessage, ServerResponse } from "http";
 import cookie from "cookie";
 import { APIContext, Routes, HTTPMethod } from "./types";
+import { dashboard } from "config";
 import requestParams from "./requestParams";
 import routeRequest from "./routeRequest";
 import { DataSource } from "./DataSource";
 import responseFactory from "./responseFactory";
 import { HTTPNotFound } from "./errors";
+import NormalizedURL from "./NormalizedURL";
+import renderDashboard from "./renderDashboard";
 
 export default function core(
   modules: {
@@ -22,8 +25,9 @@ export default function core(
     const sendResponse = responseFactory(res);
     try {
       const method = req.method?.toUpperCase();
-      // TODO: normalize url path to deal with trailing slash
-      const url = new URL(req.url, "http://localhost");
+      const url = new NormalizedURL(req.url);
+      if (url.normalizedPath.startsWith(dashboard.path))
+        return renderDashboard(req, res, next);
       const { resolver, params: routeParams } = routeRequest(
         url,
         method as HTTPMethod,

@@ -1,10 +1,10 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 import routeRequest from "./routeRequest";
-import { HTTPMethodNotAllowed, HTTPNotFound } from "./errors";
-import { Routes } from "core/types";
+import { HTTPMethodNotAllowed } from "./errors";
+import NormalizedURL from "./NormalizedURL";
 
-const makeUrl = (url: string) => new URL(url, "http://localhost");
+const makeUrl = (url: string) => new NormalizedURL(url);
 
 describe("routeRequest", () => {
   it("routes existing requests", () => {

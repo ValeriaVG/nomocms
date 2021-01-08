@@ -1,10 +1,11 @@
 import { ResolverFn, Routes, HTTPMethod } from "./types";
 import { HTTPMethodNotAllowed, HTTPNotFound } from "./errors";
+import NormalizedURL from "./NormalizedURL";
 
 const cache = new Map<string, RegExp>();
 
 export default function routeRequest(
-  url: URL,
+  url: NormalizedURL,
   method: HTTPMethod,
   routes: Routes
 ): { resolver: ResolverFn; params: Record<string, string> } {
@@ -15,12 +16,15 @@ export default function routeRequest(
       cache.set(path, buildRegExp(path));
     }
     const re = cache.get(path);
-    const matches = url.pathname.match(re);
-    if (matches) {
-      params = matches.groups ?? {};
-      resolver = routes[path];
-      break;
+    for (let pathname of url.paths) {
+      const matches = pathname.match(re);
+      if (matches) {
+        params = matches.groups ?? {};
+        resolver = routes[path];
+        break;
+      }
     }
+    if (resolver) break;
   }
   if (!resolver) return { params, resolver: null };
   if (typeof resolver === "function") {
