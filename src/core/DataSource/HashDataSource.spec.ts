@@ -93,34 +93,36 @@ describe("HashDataSource Integration Test", () => {
   });
 
   it("can list items", async () => {
-    await redis.hset(
-      "items::itm_1",
-      "id",
-      "itm_1",
-      "username",
-      "superman",
-      "email",
-      "clark@daily.planet",
-      "active",
-      "true"
-    );
-    await redis.hset(
-      "items::itm_2",
-      "id",
-      "itm_2",
-      "username",
-      "lexluther",
-      "email",
-      "lex@luther.corp"
-    );
+    await redis
+      .multi()
+      .hset(
+        "items::itm_1",
+        "id",
+        "itm_1",
+        "username",
+        "superman",
+        "email",
+        "clark@daily.planet",
+        "active",
+        "true"
+      )
+      .hset(
+        "items::itm_2",
+        "id",
+        "itm_2",
+        "username",
+        "lexluther",
+        "email",
+        "lex@luther.corp"
+      )
+      .zadd("items", "0", "items::itm_1", "0", "items::itm_2")
+      .exec();
     const source = new Items({ redis });
     const list = await source.list();
     expect(list.items).to.have.length(2);
-    const ids = list.items.map((item) => item.id);
-    // Scan doesn't guarantee order in which items are returned
-    expect(ids).to.contain("itm_1");
-    expect(ids).to.contain("itm_2");
-    expect(list.nextOffset).to.be.a("string");
+    expect(list.items[0]).to.have.property("id", "itm_2");
+    expect(list.items[1]).to.have.property("id", "itm_1");
+    expect(list.nextOffset).to.be.null;
   });
   it("can delete items", async () => {
     await redis.hset(

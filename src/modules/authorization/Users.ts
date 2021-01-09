@@ -83,6 +83,7 @@ export default class Users extends HashDataSource<User, UserInput> {
       "local cid = KEYS[1]..'::'..id;",
       "redis.call('hset',cid,'id',id, 'email', KEYS[3], unpack(ARGV));",
       "redis.call('zadd',emailidx,0,KEYS[3]..'::'..id);",
+      "redis.call('zadd',KEYS[1],0,cid);",
       "return redis.call('hgetall',cid);",
     ].join("\n");
     context.redis.defineCommand("saveuser", {

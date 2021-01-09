@@ -3,12 +3,13 @@ import Users from "./Users";
 
 import * as loginPage from "./pages/login";
 import { dashboard, superuser } from "config";
-import { HTTPUserInputError } from "core/errors";
+import { HTTPNotFound, HTTPUserInputError } from "core/errors";
 import Permissions, { Permission } from "./Permissions";
 import Tokens from "./Tokens";
 import CRUDLResolver from "core/CRUDLResolver";
+import { requiresPermission } from "./lib";
 
-export default {
+const routes = {
   [dashboard.pathname]: { GET: () => ({ ...loginPage, type: "amp" }) },
   "/login": {
     POST: async (
@@ -63,3 +64,20 @@ export default {
   },
   ...CRUDLResolver<Users>("users"),
 };
+
+routes["/users/:id"].GET = requiresPermission(
+  { scope: "users", permissions: Permission.view },
+  async (
+    { id },
+    { users, permissions }: { users: Users; permissions: Permissions } & any
+  ) => {
+    const user = await users.get(id);
+    if (!user) throw new HTTPNotFound();
+    const userPermissions = await (permissions as Permissions).get({
+      user: user.id,
+    });
+    return { ...user, permissions: userPermissions };
+  }
+);
+
+export default routes;

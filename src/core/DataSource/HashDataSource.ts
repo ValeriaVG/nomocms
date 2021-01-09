@@ -77,20 +77,22 @@ export default abstract class HashDataSource<
       local id = KEYS[2]..'_'..next;
       local cid = KEYS[1]..'::'..id;
       redis.call('hset',cid,'id',id, unpack(ARGV));
+      redis.call('zadd',KEYS[1], 0, id);
       return redis.call('hgetall',cid);
       `,
     });
-    context.redis.defineCommand("scanhash", {
-      numberOfKeys: 2,
+    context.redis.defineCommand("listhash", {
+      numberOfKeys: 1,
       lua: `
-      local result = redis.call('scan',ARGV[1],'TYPE','hash','MATCH',KEYS[1]..'::'..KEYS[2]..'_*','COUNT',ARGV[2]);
-      local keys = result[2];
+      local idx = KEYS[1];
+      local count = redis.call('ZCARD', idx);
+      local result = redis.call('ZREVRANGEBYSCORE',idx, '+inf', '-inf' , 'LIMIT',ARGV[1],ARGV[2]);
       local items = {};
-      for k,v in ipairs(keys) do
-        items[k]=redis.call('hgetall',v);
+      for k,cid in ipairs(result) do
+        local hash =redis.call('hgetall',cid);
+        items[k] = {cid, hash};
       end
-      result[2]= items;
-      return result
+      return {count,items};
       `,
     });
   }
@@ -167,22 +169,20 @@ export default abstract class HashDataSource<
    * @param params
    */
   list(
-    // TODO: store in a list. scan is not working as intended
     params: { limit?: number; offset?: number } = {}
-  ): Promise<{ items: T[]; nextOffset: number }> {
+  ): Promise<{ items: T[]; nextOffset: number | null; count: number }> {
     const limit = params.limit ?? 20;
-    const offset = params.offset ?? "0";
-    return this.context.redis["scanhash"](
-      this.collection,
-      this.prefix,
-      offset,
-      limit
-    ).then((result) => {
-      const [nextOffset, items] = result;
-      return {
-        items: items.map((item) => this.decode(collect(item))),
-        nextOffset,
-      };
-    });
+    const offset = params.offset ?? 0;
+    return this.context.redis["listhash"](this.collection, offset, limit).then(
+      (result) => {
+        const [count, items] = result;
+        const next = Number(limit) + Number(offset);
+        return {
+          items: items.map(([id, item]) => this.decode(collect(item))),
+          nextOffset: next >= count ? null : next,
+          count,
+        };
+      }
+    );
   }
 }

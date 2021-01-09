@@ -31,18 +31,18 @@ export default abstract class KeyDataSource<
     this.scopes.add("source");
     if (!this.collection) throw new Error("Collection must be defined");
 
-    this.context.redis.defineCommand("scan" + this.collection, {
+    this.context.redis.defineCommand("lexlist" + this.collection, {
       numberOfKeys: 1,
       lua: `
-      local result = redis.call('scan',ARGV[1],'MATCH','${this.collection}::'..KEYS[1]..'*','COUNT',ARGV[2]);
-      local keys = result[2];
+      local idx = '${this.collection}::'..ARGV[3];
+      local count = redis.call('ZCARD', idx);
+      local result = redis.call('ZRANGEBYLEX',idx,'['..idx..'::'..KEYS[1],'['..idx..'::'..KEYS[1]..'\xff','LIMIT',ARGV[1],ARGV[2]);
       local items = {};
-      for k,v in ipairs(keys) do
+      for k,v in ipairs(result) do
         local text =redis.call('get',v);
         items[k] = {v, text};
       end
-      result[2]= items;
-      return result    
+      return {count,items};
       `,
     });
   }
@@ -81,10 +81,15 @@ export default abstract class KeyDataSource<
     if (!id) throw new HTTPUserInputError("id", "ID is required");
     const scope = this.validateScope(providedScope);
 
-    await this.context.redis.set(
-      `${this.collection}::${scope ?? "source"}::${id}`,
-      this.encode(input)
-    );
+    await this.context.redis
+      .multi()
+      .set(
+        `${this.collection}::${scope ?? "source"}::${id}`,
+        this.encode(input)
+      )
+      .zadd(this.collection + "::" + (scope ?? "source"), "0", id)
+      .exec()
+      .catch(console.error);
     return { ...input, id, scope } as T;
   }
 
@@ -97,26 +102,32 @@ export default abstract class KeyDataSource<
       limit?: number;
       offset?: number;
       scope?: string;
+      search?: string;
     } = {}
   ) {
     const limit = params.limit ?? 10;
     const offset = params.offset ?? "0";
-    const type = this.validateScope(params.scope);
-    return this.context.redis[`scan${this.collection}`](
-      type,
+    const scope = this.validateScope(params.scope);
+    const search = params.search ?? "";
+    return this.context.redis[`lexlist${this.collection}`](
+      search,
       offset,
-      limit
+      limit,
+      scope
     ).then((result) => {
-      const [nextOffset, arr] = result;
+      const [count, arr] = result;
       const items = [];
       for (let item of arr) {
         const id = item[0].split("::").pop();
         const data = item[1];
-        items.push({ id, data, type });
+        items.push({ id, scope, ...this.parse(data) });
       }
+      const next = Number(offset) + Number(limit);
+      const nextOffset = next >= count ? null : next;
       return {
         items,
         nextOffset,
+        count,
       };
     });
   }

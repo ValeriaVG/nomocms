@@ -14,6 +14,9 @@ describe("Styles Integration Test", () => {
       .set("styles::source::colors", "$red: red;\n$blue: blue;")
       .set("styles::compiled::header", ".header{background:green}")
       .set("styles::compiled::body", "body{background:red}")
+      .zadd("styles::source", "0", "styles::source::colors")
+      .zadd("styles::compiled", "0", "styles::compiled::header")
+      .zadd("styles::compiled", "0", "styles::compiled::body")
       .exec();
   });
   after(async () => {
@@ -58,6 +61,7 @@ describe("Styles Integration Test", () => {
     expect(result).to.have.property("items");
     expect(result).to.have.property("nextOffset");
     expect(result.items).to.have.length(1);
+    expect(result).to.have.property("count", 1);
     expect(result.items[0]).to.have.property("id", "colors");
     expect(result.items[0]).to.have.property(
       "data",

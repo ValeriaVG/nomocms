@@ -10,8 +10,8 @@
     "build": "ts-node -r tsconfig-paths/register src/build",
     "start": "ts-node -r tsconfig-paths/register src/index",
     "dev": "ts-node-dev -r tsconfig-paths/register src/dev",
-    "test": "mocha -r ts-node/register -r tsconfig-paths/register src/**/*.spec.ts src/modules/**/*.spec.ts src/dashboard/**/*.spec.ts",
-    "coverage": "nyc --reporter=lcov --reporter=text-summary mocha -r ts-node/register -r tsconfig-paths/register src/**/*.spec.ts src/modules/**/*.spec.ts src/dashboard/**/*.spec.ts"
+    "test": "mocha -r ts-node/register -r tsconfig-paths/register src/**/*.spec.ts src/modules/**/*.spec.ts src/dashboard/**/*.spec.ts src/core/**/*.spec.ts",
+    "coverage": "nyc --reporter=lcov --reporter=text-summary mocha -r ts-node/register -r tsconfig-paths/register src/**/*.spec.ts src/modules/**/*.spec.ts src/dashboard/**/*.spec.ts src/core/**/*.spec.ts"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
