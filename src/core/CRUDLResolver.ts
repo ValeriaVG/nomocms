@@ -28,7 +28,7 @@ export default function CRUDLResolver<
       GET: requiresPermission(
         { scope: "pages", permissions: Permission.read },
         async ({ id }, ctx: CRUDLContext) => {
-          return ctx[ctxKey].delete(id);
+          return ctx[ctxKey].get(id);
         }
       ),
       UPDATE: requiresPermission(

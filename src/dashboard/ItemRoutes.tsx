@@ -30,8 +30,8 @@ export default function ItemRoutes<T extends { id: string }>({
   const Pages = () => <ItemsList {...params} columns={columns} />;
   return (
     <Switch>
-      <Route path={`${path}/:new`} exact render={Page} />
-      <Route path={`${path}/:new`} exact render={Page} />
+      <Route path={`${path}/new`} exact render={Page} />
+      <Route path={`${path}/:id`} exact render={Page} />
       <Route path={path} exact render={Pages} />
     </Switch>
   );

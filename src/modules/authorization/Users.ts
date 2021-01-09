@@ -7,13 +7,19 @@ import {
 } from "core/DataSource";
 import { HTTPUserInputError } from "core/errors";
 import bcrypt, { genSalt } from "bcryptjs";
+import Permissions from "./Permissions";
 
 export type UserLoginInput = {
   email: string;
   password: string;
 };
 
-export type UserInput = { name?: string; email: string; password?: string };
+export type UserInput = {
+  name?: string;
+  email: string;
+  password?: string;
+  permissions?: number;
+};
 export type User = {
   id: string;
   name: string;
@@ -66,6 +72,18 @@ export default class Users extends HashDataSource<User, UserInput> {
       `,
     });
 
+    const saveuser = [
+      "local next = redis.call('incr',KEYS[1]..'::next');",
+      "local id = KEYS[2]..'_'..next;",
+      "local cid = KEYS[1]..'::'..id;",
+      "redis.call('hset',cid,'id',id, 'email', KEYS[3], unpack(ARGV));",
+      "redis.call('zadd',emailidx,0,KEYS[3]..'::'..id);",
+      "return redis.call('hgetall',cid);",
+    ].join("\n");
+    context.redis.defineCommand("saveuser", {
+      numberOfKeys: 3,
+      lua: saveuser,
+    });
     context.redis.defineCommand("newuser", {
       numberOfKeys: 3,
       lua: `
@@ -73,12 +91,7 @@ export default class Users extends HashDataSource<User, UserInput> {
       local emails = redis.call('ZLEXCOUNT', emailidx, '['..KEYS[3], '['..KEYS[3]..':\xff');
       if emails == 0 
         then
-          local next = redis.call('incr',KEYS[1]..'::next');
-          local id = KEYS[2]..'_'..next;
-          local cid = KEYS[1]..'::'..id;
-          redis.call('hset',cid,'id',id, 'email', KEYS[3], unpack(ARGV));
-          redis.call('zadd',emailidx,0,KEYS[3]..'::'..id);
-          return redis.call('hgetall',cid);
+          ${saveuser}
         else
           return {err="already_exists"}  
       end  
@@ -107,24 +120,43 @@ export default class Users extends HashDataSource<User, UserInput> {
     );
   }
 
-  async create({ email, password, ...rest }: UserInput) {
-    if (!password)
+  async update(id: string, input: UserInput) {
+    return this.save({ id, ...input });
+  }
+
+  async create(input: UserInput) {
+    if (!input.password)
       throw new HTTPUserInputError("password", "Please provide a password");
-    const pwhash = await bcrypt.hash(password, await genSalt(5));
-    // prevent forced id
-    delete rest["id"];
-    rest["createdAt"] = Date.now();
+    input["createdAt"] = Date.now();
+    return this.save({ ...input, id: false });
+  }
+
+  async save({
+    email,
+    password,
+    permissions,
+    ...rest
+  }: UserInput & { id: string | false }) {
+    const pwhash = password && (await bcrypt.hash(password, await genSalt(5)));
+
     const input = { ...rest, email: email.trim().toLowerCase() };
-    return this.context.redis["newuser"](
+    return this.context.redis[input.id ? "saveuser" : "newuser"](
       this.collection,
       this.prefix,
       input.email,
       ...flatten(this.encode(input)),
-      "pwhash",
-      pwhash
+      ...(pwhash ? ["pwhash", pwhash] : [])
     )
-      .then((result) => {
-        return this.decode(collect(result));
+      .then(async (result) => {
+        const user = await this.decode(collect(result));
+        if (!user) return null;
+        if (typeof permissions !== undefined && "permissions" in this.context) {
+          await (this.context["permissions"] as Permissions).set({
+            user: user.id,
+            permissions,
+          });
+        }
+        return { ...user, permissions };
       })
       .catch((error) => {
         if (error.message === "already_exists")

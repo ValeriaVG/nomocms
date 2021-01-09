@@ -31,7 +31,7 @@ form {
     font-size: 0.8em;
     padding: 0.5rem 0.8rem;
 
-    & > * {
+    & > :not(span) {
       text-transform: none;
       flex: 1;
       margin-left: 1rem;
@@ -115,6 +115,8 @@ body {
     background-color: darken($light, 5%);
     color: $dark;
     padding: 1rem;
+    display: flex;
+    flex-direction: column;
     & > section,
     & > form fieldset {
       background-color: $light;
@@ -129,6 +131,10 @@ body {
       display: flex;
       align-items: center;
       justify-content: space-between;
+    }
+    & > footer {
+      margin-top: auto;
+      display: flex;
     }
   }
 
@@ -178,6 +184,10 @@ button,
   }
   &-secondary {
     background-color: $secondary;
+    color: $light;
+  }
+  &-danger {
+    background-color: $danger;
     color: $light;
   }
   &-gradient {

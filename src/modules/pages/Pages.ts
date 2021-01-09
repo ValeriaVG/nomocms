@@ -14,7 +14,8 @@ export default class Pages extends HashDataSource<ContentPage> {
     return values;
   };
 
-  create(input) {
+  create(input: Partial<ContentPage>) {
+    // TODO: validate url
     const { data, content } = matter(input.content.trim());
     const html = marked(content);
     const values = { ...data, ...input, content, html };

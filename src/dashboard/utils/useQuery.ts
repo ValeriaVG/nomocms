@@ -10,7 +10,7 @@ export default function useQuery<T>(
     loading: boolean;
   }>({
     result: null,
-    loading: true,
+    loading: path ? true : false,
   });
   const query = params
     ? "?" +
@@ -19,6 +19,7 @@ export default function useQuery<T>(
         .join("&")
     : "";
   useEffect(() => {
+    if (!path) return;
     setState({ loading: true });
     api
       .get(path + query)
