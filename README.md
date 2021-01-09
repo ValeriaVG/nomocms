@@ -26,7 +26,7 @@ This user is never stored or rendered anywhere else, but has all possible permis
   - [ ] Render user pages
 - [ ] Control Panel
   - [x] Base layout
-  - [ ] Templates Editor
+  - [x] Templates Editor
   - [x] Styles Editor
   - [x] Content/Markup Editor
   - [ ] File manager / Image upload

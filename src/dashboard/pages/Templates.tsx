@@ -1,13 +1,16 @@
+import { faEye } from "@fortawesome/free-solid-svg-icons";
 import Editor from "dashboard/components/Editor";
 import Tabs from "dashboard/components/Tabs";
 import ItemRoutes from "dashboard/ItemRoutes";
 import api from "dashboard/utils/api";
+import FontAwesomeIcon from "dashboard/utils/FontAwesomeIcon";
 import useNotification from "dashboard/utils/notifications";
 import { TemplateData } from "modules/templates/types";
 import * as Preact from "preact";
 import { useEffect, useRef, useState } from "preact/hooks";
 
 // IDEA: add components
+
 export default function Templates() {
   return (
     <ItemRoutes<TemplateData>
@@ -55,23 +58,39 @@ export default function Templates() {
 }
 
 const TemplateForm = ({ values, setValue, onValueChange, update }) => {
-  const [previewUrl, setPreviewUrl] = useState<string>("");
+  const [previewEnabled, setPreviewEnabled] = useState<boolean>(false);
+  const preview = useRef<{ timer?: NodeJS.Timeout; window?: Window }>({});
+
   const [tab, setTab] = useState<"body" | "head" | "style">("body");
   const { showErrors } = useNotification();
-  const timer = useRef<NodeJS.Timeout>();
+  const timer = preview.current?.timer;
+
+  const togglePreview = () =>
+    setPreviewEnabled((enabled) => {
+      if (preview.current?.window) {
+        preview.current?.window.focus();
+      }
+      return true;
+    });
   useEffect(() => {
-    if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(
+    const cleanup = () => timer && clearTimeout(timer);
+    if (!previewEnabled) return cleanup();
+    if (timer) cleanup();
+    preview.current.timer = setTimeout(
       () =>
         api.post("/template/preview", values).then((r) => {
           if (typeof r === "object") return showErrors(r.errors);
           const url = URL.createObjectURL(new Blob([r], { type: "text/html" }));
-          setPreviewUrl(url);
+          if (!preview.current.window) {
+            preview.current.window = window.open(url, "blank");
+          } else {
+            preview.current.window.document.location.href = url;
+          }
         }),
       1000
     );
-    return () => clearTimeout(timer.current);
-  }, [values]);
+    return cleanup;
+  }, [values, previewEnabled]);
   return (
     <>
       <fieldset className="columns small">
@@ -85,6 +104,11 @@ const TemplateForm = ({ values, setValue, onValueChange, update }) => {
             onChange={onValueChange("id")}
           />
         </label>
+
+        <div class="button button-dark" onClick={togglePreview}>
+          <FontAwesomeIcon icon={faEye} />
+          Preview
+        </div>
       </fieldset>
 
       <Tabs
@@ -96,7 +120,7 @@ const TemplateForm = ({ values, setValue, onValueChange, update }) => {
         }}
         onChangeTab={setTab}
       />
-      <fieldset class="columns" style={{ flex: 1 }}>
+      <fieldset style={{ flex: 1 }}>
         {tab === "body" && (
           <Editor
             theme="vs-dark"
@@ -122,15 +146,6 @@ const TemplateForm = ({ values, setValue, onValueChange, update }) => {
             language="scss"
             onChange={setValue("style")}
             style={{ height: "calc(100vh - 350px)" }}
-          />
-        )}
-        {previewUrl && (
-          <iframe
-            id="preview"
-            src={previewUrl + "#development=1"}
-            frameBorder="0"
-            width="100%"
-            height="100%"
           />
         )}
       </fieldset>

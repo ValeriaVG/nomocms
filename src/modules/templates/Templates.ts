@@ -5,6 +5,7 @@ import { HTTPUserInputError } from "core/errors";
 import Styles from "modules/styles/Styles";
 import { APIContext } from "core/types";
 
+// TODO: when template is required, automatically add it styles
 export default class Templates extends KeyDataSource<TemplateData> {
   static collectionName = "templates";
   static scopeSet = new Set(["source", "compiled"]);

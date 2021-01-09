@@ -9,6 +9,8 @@ export type StyleData = TypedData & {
   data: string;
   scope: "compiled" | "source";
 };
+
+// TODO: allow requiring template styles
 export default class Styles extends KeyDataSource<StyleData> {
   static collectionName = "styles";
   static scopeSet = new Set(["source", "compiled"]);

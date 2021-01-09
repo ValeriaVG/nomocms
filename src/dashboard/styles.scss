@@ -167,6 +167,7 @@ body {
   display: inline-flex;
   align-items: center;
   text-decoration: none;
+  justify-content: center;
   & > svg {
     margin-right: 0.5rem;
   }
@@ -178,7 +179,8 @@ button,
   &-primary,
   &-secondary,
   &-alt,
-  &-gradient {
+  &-gradient,
+  &-dark {
     @include button;
     background-color: $primary;
     color: $light;
@@ -197,6 +199,10 @@ button,
   }
   &-danger {
     background-color: $danger;
+    color: $light;
+  }
+  &-dark {
+    background-color: $darker;
     color: $light;
   }
   &-gradient {

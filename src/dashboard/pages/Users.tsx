@@ -16,7 +16,14 @@ export default function Users() {
   return (
     <ItemRoutes<UserInput & { id: string }>
       name="User"
-      columns={{ id: { label: "ID" } }}
+      columns={{
+        id: { label: "ID" },
+        email: {
+          label: "Email",
+          render: ({ email }) => <a href={`mailto:${email}`}>{email}</a>,
+        },
+        name: { label: "Name" },
+      }}
       renderForm={({ values, setValue, onValueChange }) => {
         const onPermissionChange = (permission: number) => (e) => {
           if (permission === Permission.all) {

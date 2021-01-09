@@ -1,6 +1,7 @@
 import { requiresPermission } from "modules/authorization/lib";
 import { Permission } from "modules/authorization/Permissions";
 import { CRUDLDataSource } from "./DataSource";
+import { HTTPNotFound } from "./errors";
 import { APIContext } from "./types";
 
 export default function CRUDLResolver<
@@ -26,25 +27,27 @@ export default function CRUDLResolver<
     },
     [`${endpoint}/:id`]: {
       GET: requiresPermission(
-        { scope: "pages", permissions: Permission.read },
+        { scope: path, permissions: Permission.read },
         async ({ id }, ctx: CRUDLContext) => {
-          return ctx[ctxKey].get(id);
+          const item = await ctx[ctxKey].get(id);
+          if (!item) throw new HTTPNotFound();
+          return item;
         }
       ),
       POST: requiresPermission(
-        { scope: "pages", permissions: Permission.update },
+        { scope: path, permissions: Permission.update },
         async ({ id, input }, ctx: CRUDLContext) => {
           return ctx[ctxKey].update(id, input);
         }
       ),
       PATCH: requiresPermission(
-        { scope: "pages", permissions: Permission.update },
+        { scope: path, permissions: Permission.update },
         async ({ id, input }, ctx: CRUDLContext) => {
           return ctx[ctxKey].update(id, input);
         }
       ),
       DELETE: requiresPermission(
-        { scope: "pages", permissions: Permission.delete },
+        { scope: path, permissions: Permission.delete },
         async ({ id }, ctx: CRUDLContext) => {
           return ctx[ctxKey].delete(id);
         }
