@@ -103,6 +103,20 @@ export default class Users extends HashDataSource<User, UserInput> {
       end  
       `,
     });
+
+    context.redis.defineCommand("remuser", {
+      numberOfKeys: 2,
+      lua: `
+      redis.call('zrem',KEYS[1],KEYS[1]..'::'..KEYS[2]);
+      local email = redis.call('hget',KEYS[1]..'::'..KEYS[2],'email');
+      if email == nil
+      then
+        return 0
+      end  
+      redis.call('zrem',KEYS[1]..'::email',email..KEYS[2])
+      return redis.call('del',KEYS[2]);
+      `,
+    });
   }
 
   byEmail(email: string, decode: boolean = true) {
@@ -138,6 +152,12 @@ export default class Users extends HashDataSource<User, UserInput> {
     input["createdAt"] = Date.now();
     return this.save({ ...input, id: false });
   }
+
+  delete = (id: string) => {
+    return this.context.redis["remuser"](this.collection, id).then((r) => ({
+      deleted: Boolean(r),
+    }));
+  };
 
   async save({
     email,
