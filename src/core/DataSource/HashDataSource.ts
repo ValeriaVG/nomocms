@@ -1,3 +1,4 @@
+import { ExcludeReserved } from "core/types";
 import { Redis } from "ioredis";
 import { SomeDataType } from "./datatypes";
 import { CRUDLDataSource } from "./types";
@@ -8,7 +9,7 @@ import { collect, decode, encode, flatten } from "./utils";
  * stored as Redis hash
  */
 export default abstract class HashDataSource<
-  T,
+  T extends ExcludeReserved<T>,
   I = Partial<T>,
   P = Partial<I>
 > extends CRUDLDataSource<T, I, P> {

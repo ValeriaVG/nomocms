@@ -6,6 +6,8 @@ export type HTTPMethod = "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
 
 export type MaybePromise<T> = Promise<T> | T;
 
+export type Result<T> = MaybePromise<T | ErrorResponse>;
+
 export type LogFunction = (...args: any) => void;
 
 export type APILogger = Record<"error" | "info" | "log" | "warn", LogFunction>;
@@ -63,3 +65,5 @@ export type ResolverFn<P = any, C = any, R extends RouteResponse = any> = (
 export type Routes = {
   [path: string]: ResolverFn | Partial<Record<HTTPMethod, ResolverFn>>;
 };
+
+export type ExcludeReserved<T> = Exclude<T, GenericResponse>;

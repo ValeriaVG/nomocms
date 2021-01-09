@@ -2,19 +2,20 @@ import { CRUDLDataSource } from "./types";
 import { Redis } from "ioredis";
 import { HTTPUserInputError } from "../errors";
 import { TypedData } from "./types";
+import { ExcludeReserved } from "core/types";
 
 export default abstract class KeyDataSource<
   T extends TypedData
-> extends CRUDLDataSource<T, T> {
+> extends CRUDLDataSource<ExcludeReserved<TypedData>, T> {
   static collectionName: string;
-  static typeSet: Set<string> = new Set();
+  static scopeSet: Set<string> = new Set();
 
   get collection() {
     return (this.constructor as typeof KeyDataSource).collectionName;
   }
 
-  get types() {
-    return (this.constructor as typeof KeyDataSource).typeSet;
+  get scopes() {
+    return (this.constructor as typeof KeyDataSource).scopeSet;
   }
 
   encode(input): string {
@@ -27,7 +28,7 @@ export default abstract class KeyDataSource<
 
   constructor(protected context: { redis: Redis }) {
     super(context);
-    this.types.add("source");
+    this.scopes.add("source");
     if (!this.collection) throw new Error("Collection must be defined");
     this.context.redis.defineCommand("scan" + this.collection, {
       numberOfKeys: 1,
@@ -49,13 +50,13 @@ export default abstract class KeyDataSource<
    * Get item
    * @param name style name
    */
-  async get(id: string, type?: string) {
-    const validType = this.validateType(type);
+  async get(id: string, scope?: string) {
+    const validScope = this.validateScope(scope);
     const data = await this.context.redis.get(
-      `${this.collection}::${validType}::${id}`
+      `${this.collection}::${validScope}::${id}`
     );
     if (!data) return null;
-    return { ...this.parse(data), id, type };
+    return { ...this.parse(data), id, scope };
   }
 
   /**
@@ -63,14 +64,14 @@ export default abstract class KeyDataSource<
    * @param name
    * @param scss
    */
-  async update(id: string, { type: providedType, ...input }: Omit<T, "id">) {
+  async update(id: string, { scope: providedScope, ...input }: Omit<T, "id">) {
     if (!id) throw new HTTPUserInputError("id", "ID is required");
-    const type = this.validateType(providedType);
+    const scope = this.validateScope(providedScope);
     await this.context.redis.set(
-      `${this.collection}::${type ?? "source"}::${id}`,
+      `${this.collection}::${scope ?? "source"}::${id}`,
       this.encode(input)
     );
-    return { ...input, id, type } as T;
+    return { ...input, id, scope } as T;
   }
 
   /**
@@ -81,12 +82,12 @@ export default abstract class KeyDataSource<
     params: {
       limit?: number;
       offset?: number;
-      type?: string;
+      scope?: string;
     } = {}
   ) {
     const limit = params.limit ?? 10;
     const offset = params.offset ?? "0";
-    const type = this.validateType(params.type);
+    const type = this.validateScope(params.scope);
     return this.context.redis[`scan${this.collection}`](
       type,
       offset,
@@ -112,7 +113,7 @@ export default abstract class KeyDataSource<
    */
   delete(name: string) {
     const pipeline = this.context.redis.multi();
-    this.types.forEach((type) =>
+    this.scopes.forEach((type) =>
       pipeline.del(this.collection + `::${type}::` + name)
     );
     return pipeline.exec().then((results) => {
@@ -124,11 +125,11 @@ export default abstract class KeyDataSource<
         },
         { errored: false, deleted: 0 }
       );
-      const success = !errored && deleted === this.types.size;
+      const success = !errored && deleted === this.scopes.size;
       if (errored) {
         console.error(`error:${this.collection}`, results);
       }
-      if (deleted !== this.types.size) {
+      if (deleted !== this.scopes.size) {
         console.warn(`mismatch:${this.collection}`, results);
       }
       return { deleted: success };
@@ -140,17 +141,17 @@ export default abstract class KeyDataSource<
    * and infer type if none is provided
    * @param type
    */
-  protected validateType(type: string) {
-    if (!type) return "source";
-    if (!this.types.has(type))
+  protected validateScope(scope: string) {
+    if (!scope) return "source";
+    if (!this.scopes.has(scope))
       throw new HTTPUserInputError(
-        "type",
-        `Incorrect type for ${this.collection}: "${type}". Expected: ${[
-          ...this.types.values(),
+        "scope",
+        `Incorrect scope for ${this.collection}: "${scope}". Expected: ${[
+          ...this.scopes.values(),
         ]
           .map((t) => `"${t}"`)
           .join(", ")}`
       );
-    return type;
+    return scope;
   }
 }

@@ -1,5 +1,6 @@
 import { KeyDataSource } from "core/DataSource";
 import { TypedData } from "core/DataSource/types";
+import { ErrorResponse } from "core/types";
 
 import { Redis } from "ioredis";
 import sass from "sass";
@@ -7,7 +8,7 @@ import sass from "sass";
 export type StyleData = TypedData & { data: string };
 export default class Styles extends KeyDataSource<StyleData> {
   static collectionName = "styles";
-  static typeSet = new Set(["source", "compiled"]);
+  static scopeSet = new Set(["source", "compiled"]);
 
   encode({ data }) {
     return data;
@@ -40,13 +41,28 @@ export default class Styles extends KeyDataSource<StyleData> {
    * @param name
    * @param scss
    */
-  save(id: string, scss: string): Promise<{ saved: boolean }> {
+  save(id: string, scss: string): Promise<{ saved: boolean } | ErrorResponse> {
     return Promise.all([
-      this.update(id, { data: scss, type: "source" }),
+      this.update(id, { data: scss, scope: "source" }),
       this.compiled.save(id, scss),
-    ]).then((results) => {
-      return { saved: Boolean(results[0] && results[1]) };
-    });
+    ])
+      .then((results) => {
+        return { saved: Boolean(results[0] && results[1]) };
+      })
+      .catch((error) => ({
+        errors: [{ name: error.name, message: error.message }],
+        code: 400,
+      }));
+  }
+
+  async create({ id, data }: StyleData) {
+    const errors = [];
+    if (!id) errors.push({ name: "id", message: "ID is required" });
+    if (!data) errors.push({ name: "data", message: "Code is required" });
+    if (errors.length) return { errors, code: 400 };
+    const result = await this.save(id, data);
+    if ("errors" in result) return result;
+    return { id, data, scope: "compiled" };
   }
 
   /**
@@ -89,7 +105,7 @@ export default class Styles extends KeyDataSource<StyleData> {
      */
     save: (name: string, scss: string) => {
       return this.compile(scss).then((result) =>
-        this.update(name, { data: result.css.toString(), type: "compiled" })
+        this.update(name, { data: result.css.toString(), scope: "compiled" })
       );
     },
   };

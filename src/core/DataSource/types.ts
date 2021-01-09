@@ -1,4 +1,4 @@
-import { MaybePromise } from "../types";
+import { ExcludeReserved, Result } from "../types";
 
 /**
  * DataSource can be anything from an item
@@ -26,25 +26,28 @@ export type ItemsList<T> = {
   nextOffset?: number;
 };
 export abstract class CRUDLDataSource<
-  T,
-  I = Partial<T>,
+  T extends ExcludeReserved<T>,
+  I = Omit<T, "id">,
   P = I
 > extends DataSource {
-  create(input: I): MaybePromise<T> {
+  create(input: I): Result<T> {
     throw new NotImplementedError(this.constructor.name, "create");
   }
-  update(id: string, input: P): MaybePromise<T> {
+  update(id: string, input: P): Result<T> {
     throw new NotImplementedError(this.constructor.name, "update");
   }
-  delete(id: string): MaybePromise<{ deleted: boolean }> {
+  delete(id: string): Result<{ deleted: boolean }> {
     throw new NotImplementedError(this.constructor.name, "delete");
   }
-  get(id: string): MaybePromise<T> {
+  get(id: string): Result<T> {
     throw new NotImplementedError(this.constructor.name, "get");
   }
-  list(params: ListParams): MaybePromise<ItemsList<T>> {
+  list(params: ListParams): Result<ItemsList<T>> {
     throw new NotImplementedError(this.constructor.name, "get");
   }
 }
 
-export type TypedData = { id: string; type: string };
+export type TypedData = {
+  id: string;
+  scope: string;
+};

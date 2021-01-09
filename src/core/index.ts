@@ -10,7 +10,6 @@ import { HTTPNotFound } from "./errors";
 import NormalizedURL from "./NormalizedURL";
 import renderDashboard from "./renderDashboard";
 import Permissions, { Permission } from "modules/authorization/Permissions";
-import Tokens from "modules/authorization/Tokens";
 import Users from "modules/authorization/Users";
 
 export default function core(
@@ -78,6 +77,9 @@ export default function core(
         { ...routeParams, ...params },
         { ...context, ...dataSources }
       );
+
+      if (typeof response !== "object")
+        throw new Error(`Wrong response returned from ${url}`);
 
       return sendResponse(response);
     } catch (error) {
