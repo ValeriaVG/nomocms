@@ -10,16 +10,15 @@ export default function Pages() {
       name="Page"
       defaultValue={{
         content: `
-      ---
-      title: New page
-      path: /new-page
-      description: My new page
-      ---
+---
+title: New page
+path: /new-page
+description: My new page
+---
       
-      # New Page
+# New Page
       
-      Content here
-      `,
+Content here`,
         template: "tpl_1",
       }}
       columns={{

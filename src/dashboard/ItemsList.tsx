@@ -20,6 +20,7 @@ export default function ItemsList<T extends { id: string }>({
 }) {
   const { result, loading } = useQuery<{ items: T[] }>(path);
   const items = result && "items" in result ? result.items : [];
+
   return (
     <>
       <Errors errors={(result as ErrorResponse)?.errors} />

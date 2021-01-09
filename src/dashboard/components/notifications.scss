@@ -31,3 +31,10 @@
 .notification-error {
   @include notification($danger, $light);
 }
+
+.notification-success {
+  @include notification($positive, $light);
+}
+.notification-info {
+  @include notification($info, $light);
+}

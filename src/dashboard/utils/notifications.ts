@@ -1,5 +1,5 @@
 import { createContext, JSX } from "preact";
-import { useContext, useEffect, StateUpdater } from "preact/hooks";
+import { useContext, StateUpdater } from "preact/hooks";
 
 export type Notification = {
   id: string;
@@ -20,20 +20,18 @@ export default function useNotification() {
       notifications.filter((a) => a.id !== id)
     );
   const add = (notification: Notification) => {
-    try {
-      setTimeout(() => remove(notification.id), (notification.ttl ?? 5) * 1000);
-    } catch (error) {}
     setNotifications((notifications) => [notification, ...notifications]);
   };
 
-  return { add, remove };
-}
-
-export function Notify(props: Notification) {
-  const { add, remove } = useNotification();
-  useEffect(() => {
-    add(props);
-    return () => remove(props.id);
-  }, [JSON.stringify(props)]);
-  return null;
+  const showErrors = (errors: { name: string; message: string }[]) =>
+    setNotifications((notifications) => [
+      ...errors.map(({ name, message }) => ({
+        id: name + "_" + notifications.length,
+        content: message,
+        variant: "error" as const,
+        ttl: 10,
+      })),
+      ...notifications,
+    ]);
+  return { add, remove, showErrors };
 }

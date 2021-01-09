@@ -68,7 +68,7 @@ export default function Layout({
         </nav>
       </aside>
       <main>
-        <div style="position:absolute;bottom:1rem;right:1rem;">
+        <div class="notifications">
           {notifications.map((notification) => (
             <NotificationElement key={notification.id} {...notification} />
           ))}

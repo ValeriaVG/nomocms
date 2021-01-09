@@ -4,7 +4,7 @@ import { h, Ref } from "preact";
 export default function FontAwesomeIcon({
   forwardedRef,
   ...props
-}: FontAwesomeIconProps) {
+}: FontAwesomeIconProps & any) {
   const {
     icon: iconArgs,
     mask: maskArgs,
