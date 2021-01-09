@@ -3,4 +3,5 @@ export type TemplateData = {
   body: string;
   style?: string;
   head?: string;
+  type: "compiled" | "source";
 };

@@ -1,5 +1,8 @@
+import CRUDLResolver from "core/CRUDLResolver";
 import Pages from "./Pages";
-export { default as routes } from "./routes";
+
 export const dataSources = {
   pages: Pages,
 };
+
+export const routes = CRUDLResolver<Pages>("pages");

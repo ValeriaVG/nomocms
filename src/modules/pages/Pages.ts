@@ -1,8 +1,8 @@
-import { RedisDataSource } from "core/DataSource";
+import { HashDataSource } from "core/DataSource";
 import { ContentPage } from "./types";
 import matter from "gray-matter";
 import marked from "marked";
-export default class Pages extends RedisDataSource<ContentPage> {
+export default class Pages extends HashDataSource<ContentPage> {
   collection = "pages";
   prefix = "pg";
 

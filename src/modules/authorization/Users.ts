@@ -1,5 +1,10 @@
-import { collect, flatten, RedisDataSource } from "core/DataSource";
-import { TInt, TString } from "core/datatypes";
+import {
+  collect,
+  flatten,
+  HashDataSource,
+  TInt,
+  TString,
+} from "core/DataSource";
 import { HTTPUserInputError } from "core/errors";
 import bcrypt, { genSalt } from "bcryptjs";
 
@@ -16,7 +21,7 @@ export type User = {
   createdAt?: number;
   updatedAt?: number;
 };
-export default class Users extends RedisDataSource<User, UserInput> {
+export default class Users extends HashDataSource<User, UserInput> {
   collection = "users";
   prefix = "usr";
   schema = {

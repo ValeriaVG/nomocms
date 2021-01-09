@@ -39,7 +39,10 @@ describe("Styles Integration Test", () => {
       "name",
       "@use 'colors'; body{background:colors.$red}"
     );
-    expect(await styles.compiled.get("name")).to.eq("body{background:red}");
+    expect(await styles.compiled.get("name")).to.have.property(
+      "data",
+      "body{background:red}"
+    );
   });
 
   it("stores compiled styles merged together", async () => {
@@ -55,9 +58,9 @@ describe("Styles Integration Test", () => {
     expect(result).to.have.property("items");
     expect(result).to.have.property("nextOffset");
     expect(result.items).to.have.length(1);
-    expect(result.items[0]).to.have.property("name", "colors");
+    expect(result.items[0]).to.have.property("id", "colors");
     expect(result.items[0]).to.have.property(
-      "code",
+      "data",
       "$red: red;\n$blue: blue;"
     );
   });
@@ -65,8 +68,14 @@ describe("Styles Integration Test", () => {
     expect(await styles.save("delete-me", "body{margin:0;}")).to.deep.eq({
       saved: true,
     });
-    expect(await styles.get("delete-me")).to.eq("body{margin:0;}");
-    expect(await styles.compiled.get("delete-me")).to.eq("body{margin:0}");
+    expect(await styles.get("delete-me")).to.have.property(
+      "data",
+      "body{margin:0;}"
+    );
+    expect(await styles.compiled.get("delete-me")).to.have.property(
+      "data",
+      "body{margin:0}"
+    );
     expect(await styles.delete("delete-me")).to.deep.eq({
       deleted: true,
     });

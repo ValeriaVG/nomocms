@@ -1,23 +1,17 @@
 import { Redis } from "ioredis";
 import { SomeDataType } from "./datatypes";
-
-/**
- * DataSource can be anything from an item
- * stored in Redis to third party service
- */
-export abstract class DataSource {
-  constructor(protected context: any) {}
-}
+import { CRUDLDataSource } from "./types";
+import { collect, decode, encode, flatten } from "./utils";
 
 /**
  * Primary CRUD interface for generic entities
  * stored as Redis hash
  */
-export abstract class RedisDataSource<
+export default abstract class HashDataSource<
   T,
   I = Partial<T>,
   P = Partial<I>
-> extends DataSource {
+> extends CRUDLDataSource<T, I, P> {
   /**
    * Collection will be used as key base:
    * e.g. `items::next`
@@ -44,12 +38,7 @@ export abstract class RedisDataSource<
    * @param value
    */
   decode = (value: Record<string, string>): T => {
-    if (!value) return null;
-    const result: any = { id: value.id };
-    for (let key in this.schema) {
-      result[key] = this.schema[key].from(value[key]).value;
-    }
-    return result as T;
+    return decode(this.schema, value);
   };
 
   /**
@@ -58,14 +47,7 @@ export abstract class RedisDataSource<
    * @param value
    */
   protected encode = (value: Record<string, any>): Record<string, string> => {
-    if (!this.schema) throw Error("Schema is required");
-    if (!value) throw Error("Value should have properties to be encoded");
-    const result: any = {};
-    for (let key in value) {
-      if (!(key in this.schema)) continue;
-      result[key] = new (this.schema[key] as any)(value[key]).toString();
-    }
-    return result;
+    return encode(this.schema, value);
   };
 
   /**
@@ -185,8 +167,8 @@ export abstract class RedisDataSource<
    */
   list(
     // TODO: store in a list. scan is not working as intended
-    params: { limit?: number; offset?: string } = {}
-  ): Promise<{ items: T[]; nextOffset: string }> {
+    params: { limit?: number; offset?: number } = {}
+  ): Promise<{ items: T[]; nextOffset: number }> {
     const limit = params.limit ?? 20;
     const offset = params.offset ?? "0";
     return this.context.redis["scanhash"](
@@ -202,30 +184,4 @@ export abstract class RedisDataSource<
       };
     });
   }
-}
-
-/**
- * Collects [key1,value1, key2, value2,...] array into key-value pairs
- * @param values
- */
-export function collect(values: string[]): Record<string, string> | null {
-  if (!values || !values.length) return null;
-  const obj = {};
-  for (let i = 0; i < values.length; i += 2) {
-    const key = values[i];
-    const value = values[i + 1];
-    obj[key] = value;
-  }
-  return obj;
-}
-
-/**
- * Turns key value pairs into flat array
- * [key1, value1, key2, value2, ...]
- * @param input
- */
-export function flatten(input: Record<string, string>) {
-  return Object.entries(input).reduce((a, c) => {
-    return a.concat(c);
-  }, []);
 }

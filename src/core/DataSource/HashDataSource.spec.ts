@@ -1,12 +1,12 @@
 import { describe, it, beforeEach, afterEach, after } from "mocha";
 import { expect } from "chai";
 import Redis from "ioredis";
-import { RedisDataSource } from "./DataSource";
+import HashDataSource from "./HashDataSource";
 import { TBoolean, TString } from "./datatypes";
 
 const redis = new Redis({ db: 9 });
 
-class Items extends RedisDataSource<{
+class Items extends HashDataSource<{
   id: string;
   username: string;
   email: string;
@@ -21,7 +21,7 @@ class Items extends RedisDataSource<{
   };
 }
 
-describe("DataSource Integration Test", () => {
+describe("HashDataSource Integration Test", () => {
   beforeEach(() => {
     redis.flushdb();
   });

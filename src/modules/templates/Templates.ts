@@ -1,10 +1,10 @@
-import { RedisDataSource } from "core/DataSource";
+import { KeyDataSource } from "core/DataSource";
 import { TemplateData } from "./types";
 import { Liquid } from "liquidjs";
 
-export default class Templates extends RedisDataSource<TemplateData> {
-  collection = "templates";
-  prefix = "tpl";
+export default class Templates extends KeyDataSource<TemplateData> {
+  static collectionName = "templates";
+  static typeSet = new Set(["source", "compiled"]);
 
   engine = new Liquid({
     outputDelimiterLeft: "<%",

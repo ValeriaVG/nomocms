@@ -1,13 +1,21 @@
-import { DataSource } from "core/DataSource";
+import { KeyDataSource } from "core/DataSource";
+import { TypedData } from "core/DataSource/types";
+
 import { Redis } from "ioredis";
 import sass from "sass";
-export type StyleData = {
-  id: string;
-  data: string;
-};
 
-export default class Styles extends DataSource {
-  collection = "styles";
+export type StyleData = TypedData & { data: string };
+export default class Styles extends KeyDataSource<StyleData> {
+  static collectionName = "styles";
+  static typeSet = new Set(["source", "compiled"]);
+
+  encode({ data }) {
+    return data;
+  }
+
+  parse(data) {
+    return { data };
+  }
 
   constructor(protected context: { redis: Redis }) {
     super(context);
@@ -16,7 +24,7 @@ export default class Styles extends DataSource {
       lua: `
       local merged = '';
       for i,name in ipairs(ARGV) do
-        local style = redis.call('GET',KEYS[1]..'::compiled::'..name);
+        local style = redis.call('GET','${this.collection}::compiled::'..name);
         if type(style) == 'string'
           then
            merged = merged..style..' ';
@@ -25,38 +33,6 @@ export default class Styles extends DataSource {
        return merged;     
       `,
     });
-
-    this.context.redis.defineCommand("scankeys", {
-      numberOfKeys: 2,
-      lua: `
-      local result = redis.call('scan',ARGV[1],'MATCH',KEYS[1]..'::'..KEYS[2]..'*','COUNT',ARGV[2]);
-      local keys = result[2];
-      local items = {};
-      for k,v in ipairs(keys) do
-        local text =redis.call('get',v);
-        items[k] = {v, text};
-      end
-      result[2]= items;
-      return result    
-      `,
-    });
-  }
-
-  /**
-   * Get style source code
-   * @param name style name
-   */
-  get(name: string) {
-    return this.context.redis.get(this.collection + "::source::" + name);
-  }
-
-  /**
-   * Save source code without compiling
-   * @param name
-   * @param scss
-   */
-  set(name: string, scss: string) {
-    return this.context.redis.set(this.collection + "::source::" + name, scss);
   }
 
   /**
@@ -64,12 +40,12 @@ export default class Styles extends DataSource {
    * @param name
    * @param scss
    */
-  save(name: string, scss: string): Promise<{ saved: boolean }> {
+  save(id: string, scss: string): Promise<{ saved: boolean }> {
     return Promise.all([
-      this.set(name, scss),
-      this.compiled.save(name, scss),
+      this.update(id, { data: scss, type: "source" }),
+      this.compiled.save(id, scss),
     ]).then((results) => {
-      return { saved: results[0] === "OK" && results[1] === "OK" };
+      return { saved: Boolean(results[0] && results[1]) };
     });
   }
 
@@ -86,7 +62,7 @@ export default class Styles extends DataSource {
           outputStyle: "compressed",
           importer: (url, _, done) => {
             this.get(url)
-              .then((contents) => done({ contents }))
+              .then(({ data: contents }) => done({ contents }))
               .catch(done);
           },
         },
@@ -104,7 +80,7 @@ export default class Styles extends DataSource {
      * @param name
      */
     get: (name: string) => {
-      return this.context.redis.get(this.collection + "::compiled::" + name);
+      return this.get(name, "compiled");
     },
     /**
      * Compile and save resulting css in `name`
@@ -113,10 +89,7 @@ export default class Styles extends DataSource {
      */
     save: (name: string, scss: string) => {
       return this.compile(scss).then((result) =>
-        this.context.redis.set(
-          this.collection + "::compiled::" + name,
-          result.css.toString()
-        )
+        this.update(name, { data: result.css.toString(), type: "compiled" })
       );
     },
   };
@@ -128,50 +101,5 @@ export default class Styles extends DataSource {
    */
   merged(names: string[]) {
     return this.context.redis["mergestyles"](this.collection, ...names);
-  }
-
-  list(
-    params: {
-      limit?: number;
-      offset?: string;
-      type?: "source" | "compiled";
-    } = {}
-  ): Promise<{ items: { name: string; code: string }[]; nextOffset: string }> {
-    const limit = params.limit ?? 10;
-    const offset = params.offset ?? "0";
-    const type = params.type ?? "source";
-    return this.context.redis["scankeys"](
-      this.collection,
-      type,
-      offset,
-      limit
-    ).then((result) => {
-      const [nextOffset, arr] = result;
-      const items = [];
-      for (let item of arr) {
-        const name = item[0].split("::").pop();
-        const code = item[1];
-        items.push({ name, code });
-      }
-      return {
-        items,
-        nextOffset,
-      };
-    });
-  }
-
-  /**
-   * Delete both source and compiled styles
-   * @param name
-   */
-  delete(name: string) {
-    return this.context.redis
-      .multi()
-      .del(this.collection + "::compiled::" + name)
-      .del(this.collection + "::source::" + name)
-      .exec()
-      .then((results) => {
-        return { deleted: Boolean(results[0][1] && results[1][1]) };
-      });
   }
 }
