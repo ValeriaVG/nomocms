@@ -1,21 +1,30 @@
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import Table from "dashboard/components/Table";
+import Table, { TableColumns } from "dashboard/components/Table";
 import FontAwesomeIcon from "dashboard/utils/FontAwesomeIcon";
 import useQuery from "dashboard/utils/useQuery";
-import { ContentPage } from "modules/pages/types";
 import * as Preact from "preact";
 import { Link } from "react-router-dom";
 
-export default function Pages() {
-  const { result, loading } = useQuery<{ items: ContentPage[] }>("/pages");
+export default function ItemsList<T extends { id: string }>({
+  singular,
+  plural,
+  path,
+  columns,
+}: {
+  singular: string;
+  columns: TableColumns<T>;
+  path: string;
+  plural: string;
+}) {
+  const { result, loading } = useQuery<{ items: T[] }>(path);
   const items = result && "items" in result ? result.items : [];
   return (
     <>
       <header>
-        <h1>Pages</h1>
-        <Link to="/pages/new" className="button-primary">
+        <h1>{plural}</h1>
+        <Link to={`${path}/new`} className="button-primary">
           <FontAwesomeIcon icon={faPlus} />
-          New Page
+          New {singular}
         </Link>
       </header>
       <section>
@@ -24,16 +33,10 @@ export default function Pages() {
           items={items}
           isLoading={loading}
           columns={{
-            title: { label: "Title" },
-            path: {
-              label: "Path",
-            },
-            publishedAt: {
-              label: "Published",
-            },
+            ...columns,
             edit: {
               render: ({ id }) => (
-                <Link to={`/pages/${id}`} className="button-secondary">
+                <Link to={`${path}/${id}`} className="button-secondary">
                   Edit
                 </Link>
               ),

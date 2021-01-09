@@ -13,13 +13,14 @@ AMP CMS is currently in active development and the alpha version should be expec
   - [x] Core functionality
   - [x] Authorization
   - [x] Permissions
-  - [ ] Custom user fields
+  - [x] Custom user fields
+  - [ ] Render user pages
 - [ ] Control Panel
   - [x] Base layout
-  - [ ] Scripts Editor
-  - [ ] Styles Editor
+  - [ ] Templates Editor
+  - [x] Styles Editor
   - [x] Content/Markup Editor
-  - [ ] File manager
-- [ ] Page Analytics
+  - [ ] File manager / Image upload
+- [x] Page Analytics
 - [ ] Deploy at least one project with AMP CMS
 - [ ] Digital Ocean One-Click-Deploy
