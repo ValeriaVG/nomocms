@@ -30,6 +30,7 @@ export default abstract class KeyDataSource<
     super(context);
     this.scopes.add("source");
     if (!this.collection) throw new Error("Collection must be defined");
+
     this.context.redis.defineCommand("scan" + this.collection, {
       numberOfKeys: 1,
       lua: `
@@ -60,13 +61,14 @@ export default abstract class KeyDataSource<
   }
 
   /**
-   * Create/update
+   * update
    * @param name
    * @param scss
    */
   async update(id: string, { scope: providedScope, ...input }: Omit<T, "id">) {
     if (!id) throw new HTTPUserInputError("id", "ID is required");
     const scope = this.validateScope(providedScope);
+
     await this.context.redis.set(
       `${this.collection}::${scope ?? "source"}::${id}`,
       this.encode(input)

@@ -5,7 +5,10 @@ import { ErrorResponse } from "core/types";
 import { Redis } from "ioredis";
 import sass from "sass";
 
-export type StyleData = TypedData & { data: string };
+export type StyleData = TypedData & {
+  data: string;
+  scope: "compiled" | "source";
+};
 export default class Styles extends KeyDataSource<StyleData> {
   static collectionName = "styles";
   static scopeSet = new Set(["source", "compiled"]);
@@ -59,7 +62,11 @@ export default class Styles extends KeyDataSource<StyleData> {
     const errors = [];
     if (!id) errors.push({ name: "id", message: "ID is required" });
     if (!data) errors.push({ name: "data", message: "Code is required" });
+    const exists = await this.get(id);
+    if (exists)
+      errors.push({ name: "id", message: "Style with this ID already exists" });
     if (errors.length) return { errors, code: 400 };
+
     const result = await this.save(id, data);
     if ("errors" in result) return result;
     return { id, data, scope: "compiled" };

@@ -6,6 +6,7 @@ import { dashboard } from "config";
 import { HTTPUserInputError } from "core/errors";
 import Permissions, { Permission } from "./Permissions";
 import Tokens from "./Tokens";
+import CRUDLResolver from "core/CRUDLResolver";
 
 export default {
   [dashboard.pathname]: { GET: () => ({ ...loginPage, type: "amp" }) },
@@ -49,4 +50,5 @@ export default {
       return { message: "OK" };
     },
   },
+  ...CRUDLResolver<Users>("users"),
 };
