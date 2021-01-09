@@ -8,6 +8,7 @@ export default function Pages() {
   return (
     <ItemRoutes<ContentPage>
       name="Page"
+      legend="Manage your pages &amp; preview changes"
       defaultValue={{
         content: `
 ---

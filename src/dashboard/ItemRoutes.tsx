@@ -10,6 +10,7 @@ export default function ItemRoutes<T extends { id: string }>({
   columns,
   renderForm,
   defaultValue,
+  legend,
   ...props
 }: {
   name: string;
@@ -18,6 +19,7 @@ export default function ItemRoutes<T extends { id: string }>({
   path?: string;
   defaultValue?: Partial<T>;
   renderForm: (form: FormValues<Partial<T>>) => Preact.JSX.Element;
+  legend?: string | Preact.JSX.Element;
 }) {
   const plural = props.plural ?? name + "s";
   const path = props.path ?? "/" + plural.toLowerCase();
@@ -27,7 +29,9 @@ export default function ItemRoutes<T extends { id: string }>({
       {renderForm}
     </ItemForm>
   );
-  const Pages = () => <ItemsList {...params} columns={columns} />;
+  const Pages = () => (
+    <ItemsList {...params} columns={columns} legend={legend} />
+  );
   return (
     <Switch>
       <Route path={`${path}/new`} exact render={Page} />

@@ -8,6 +8,7 @@ export default function Templates() {
   return (
     <ItemRoutes<TemplateData>
       name="Template"
+      legend="Manage your website design with live preview"
       columns={{
         id: { label: "ID" },
         style: {

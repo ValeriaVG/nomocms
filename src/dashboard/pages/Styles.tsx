@@ -7,11 +7,27 @@ export default function Styles() {
   return (
     <ItemRoutes<StyleData>
       name="Style"
+      legend={
+        <>
+          Create reusable styles and simply <strong>@import</strong> them by ID
+          in template styles
+        </>
+      }
       columns={{
         id: { label: "ID" },
-        templates: {
-          label: "Templates",
+        import: {
+          label: "Import",
+          render: ({ id }) => (
+            <input
+              type="text"
+              class="copy-me"
+              readOnly
+              value={`@import "${id}";`}
+              style="width:auto"
+            />
+          ),
         },
+        data: { label: "Styles" },
       }}
       defaultValue={{
         id: "template-style",

@@ -12,11 +12,13 @@ export default function ItemsList<T extends { id: string }>({
   plural,
   path,
   columns,
+  legend,
 }: {
   singular: string;
   columns: TableColumns<T>;
   path: string;
   plural: string;
+  legend?: string | Preact.JSX.Element;
 }) {
   const { result, loading } = useQuery<{ items: T[] }>(path);
   const items = result && "items" in result ? result.items : [];
@@ -25,7 +27,10 @@ export default function ItemsList<T extends { id: string }>({
     <>
       <Errors errors={(result as ErrorResponse)?.errors} />
       <header>
-        <h1>{plural}</h1>
+        <div>
+          <h1>{plural}</h1>
+          {legend && <div class="legend">{legend}</div>}
+        </div>
         <Link to={`${path}/new`} className="button-primary">
           <FontAwesomeIcon icon={faPlus} />
           New {singular}

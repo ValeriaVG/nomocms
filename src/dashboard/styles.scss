@@ -132,10 +132,19 @@ body {
       align-items: center;
       justify-content: space-between;
     }
+
     & > footer {
       margin-top: auto;
       display: flex;
     }
+  }
+
+  .legend {
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+  h1 + .legend {
+    margin-top: -0.75rem;
   }
 
   & > footer {
@@ -265,4 +274,14 @@ a {
   & > * {
     margin: 0.5rem;
   }
+}
+
+input.copy-me {
+  border: none;
+  background: $dark;
+  color: $light;
+  padding: 0.5rem 1rem;
+  font-family: monospace;
+  width: 100%;
+  flex: 1;
 }

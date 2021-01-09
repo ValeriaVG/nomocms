@@ -7,6 +7,15 @@ Content management system for blazingly fast AMP websites, written in TypeScript
 
 AMP CMS is currently in active development and the alpha version should be expected before Jan 10, 2021.
 
+## First-time & Emergency access
+
+You can set up a superuser account though the following environment variables:
+
+- `SUPERUSER_EMAIL`
+- `SUPERUSER_PASSWORD`
+
+This user is never stored or rendered anywhere else, but has all possible permissions.
+
 ## Roadmap
 
 - [ ] API
