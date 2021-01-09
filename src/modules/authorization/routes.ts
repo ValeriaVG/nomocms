@@ -29,13 +29,15 @@ export default {
       return { user, canAccessDashboard };
     },
   },
-  "/logout": async (
-    _,
-    { token, user, tokens }: APIContext & { tokens: Tokens }
-  ) => {
-    if (!token || !user?.id) return { result: false };
-    const result = await tokens.delete({ token, id: user.id });
-    return { result: Boolean(result) };
+  "/logout": {
+    PUT: async (
+      _,
+      { token, user, tokens }: APIContext & { tokens: Tokens }
+    ) => {
+      if (!token || !user?.id) return { result: false };
+      const result = await tokens.delete({ token, id: user.id });
+      return { result: Boolean(result) };
+    },
   },
   "/access": {
     GET: async (_, { user, canAccessDashboard }: APIContext) => {

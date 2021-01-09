@@ -44,7 +44,7 @@ export default function ItemForm<T extends Record<string, any>>({
           <h1>{label}</h1>
         </div>
         <div class="buttons">
-          <Link to={path} className="button-secondary" type="cancel">
+          <Link to={path} className="button-alt" type="cancel">
             Cancel
           </Link>
           <button class="button-primary" type="submit">

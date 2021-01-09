@@ -1,9 +1,11 @@
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { ErrorResponse } from "core/types";
 import Table, { TableColumns } from "dashboard/components/Table";
 import FontAwesomeIcon from "dashboard/utils/FontAwesomeIcon";
 import useQuery from "dashboard/utils/useQuery";
 import * as Preact from "preact";
 import { Link } from "react-router-dom";
+import Errors from "./utils/Errors";
 
 export default function ItemsList<T extends { id: string }>({
   singular,
@@ -20,6 +22,7 @@ export default function ItemsList<T extends { id: string }>({
   const items = result && "items" in result ? result.items : [];
   return (
     <>
+      <Errors errors={(result as ErrorResponse)?.errors} />
       <header>
         <h1>{plural}</h1>
         <Link to={`${path}/new`} className="button-primary">
@@ -36,7 +39,7 @@ export default function ItemsList<T extends { id: string }>({
             ...columns,
             edit: {
               render: ({ id }) => (
-                <Link to={`${path}/${id}`} className="button-secondary">
+                <Link to={`${path}/${id}`} className="button-alt">
                   Edit
                 </Link>
               ),

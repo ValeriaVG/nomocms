@@ -1,0 +1,33 @@
+@import "../theme";
+
+@mixin notification($background, $color) {
+  display: inline-flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px;
+  background: $background;
+  color: $color;
+  min-width: 240px;
+  @include laying-flat(top);
+  .notification--progress {
+    position: absolute;
+    bottom: 0;
+    background: fade-out($color, 0.75);
+    width: 100%;
+    height: 3px;
+    display: flex;
+    &--value {
+      background: darken($background, 5%);
+      height: 100%;
+      transition: width 100ms ease;
+    }
+  }
+  .notification--content {
+    padding: 1rem;
+  }
+}
+
+.notification-error {
+  @include notification($danger, $light);
+}

@@ -1,4 +1,3 @@
-//@ts-nocheck
 import * as Preact from "preact";
 import {
   LineChart,
@@ -12,28 +11,28 @@ import {
 
 const data: { date: number; visitors: number }[] = [
   {
-    date: new Date("2020-11-01").getTime(),
+    date: new Date("2020-12-01").getTime(),
     visitors: 0,
   },
   {
-    date: new Date("2020-11-05").getTime(),
-    visitors: 12,
+    date: new Date("2020-12-05").getTime(),
+    visitors: 30,
   },
   {
-    date: new Date("2020-11-11").getTime(),
-    visitors: 5,
+    date: new Date("2020-12-11").getTime(),
+    visitors: 54,
   },
   {
     date: new Date("2020-11-23").getTime(),
-    visitors: 24,
+    visitors: 80,
   },
   {
-    date: new Date("2020-11-25").getTime(),
-    visitors: 10,
+    date: new Date("2020-12-25").getTime(),
+    visitors: 90,
   },
   {
-    date: new Date("2020-11-30").getTime(),
-    visitors: 36,
+    date: new Date("2021-01-01").getTime(),
+    visitors: 150,
   },
 ];
 
@@ -51,12 +50,14 @@ const months = [
   "Nov",
   "Dec",
 ];
-export default function Home() {
+
+export default function Home(): any {
   return (
     <>
       <h1>Website name</h1>
       <section style="padding:2rem 2rem 2rem 0;">
         <ResponsiveContainer width={"100%"} minHeight={260}>
+          {/* @ts-ignore */}
           <LineChart data={data}>
             <XAxis
               dataKey="date"
@@ -74,7 +75,9 @@ export default function Home() {
               type="number"
               tickLine={false}
               axisLine={false}
-              tickFormatter={(visitors: number) => (visitors ? visitors : "")}
+              tickFormatter={(visitors: number) =>
+                (visitors ? visitors : "") as any
+              }
             />
             <Tooltip />
             <CartesianGrid vertical={false} />

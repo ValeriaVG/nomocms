@@ -51,6 +51,7 @@ export class Api {
       });
 
   get = (path: string) => this.call(path);
+  put = (path: string) => this.call(path, "PUT");
   post = (path: string, input: JSONObject) => this.call(path, "POST", input);
   patch = (path: string, input: JSONObject) => this.call(path, "PATCH", input);
   delete = (path: string) => this.call(path);

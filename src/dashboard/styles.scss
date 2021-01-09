@@ -52,18 +52,6 @@ form {
   }
 }
 
-@mixin laying-flat($position) {
-  $x: 0;
-  $y: 1px;
-
-  [position="left"] & {
-    $x: 1px;
-    $y: 0;
-  }
-
-  box-shadow: $x $y 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-}
-
 body,
 html {
   margin: 0;
@@ -116,7 +104,7 @@ body {
     color: $dark;
     padding: 1rem;
     & > section,
-    & > form > fieldset {
+    & > form fieldset {
       background-color: $light;
       border: none;
       @include laying-flat(top);
@@ -162,7 +150,8 @@ button,
   @include button;
   &-primary,
   &-secondary,
-  &-neutral {
+  &-alt,
+  &-gradient {
     @include button;
     background-color: $primary;
     color: $light;
@@ -171,9 +160,18 @@ button,
     text-transform: uppercase;
     font-weight: bold;
   }
-  &-secondary {
+  &-alt {
     background-color: $light;
     color: $dark;
+  }
+  &-secondary {
+    background-color: $secondary;
+    color: $light;
+  }
+  &-gradient {
+    background: $secondary
+      linear-gradient(99.67deg, $secondary -6.01%, $primary 104.46%);
+    color: $light;
   }
 }
 
@@ -215,5 +213,18 @@ a {
   display: flex;
   & > * {
     margin-left: 0.5rem;
+  }
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-gap: 1rem;
+  @media (min-width: 800px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  &.small {
+    margin-right: auto;
+    width: max-content;
   }
 }

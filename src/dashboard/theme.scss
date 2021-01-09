@@ -12,3 +12,15 @@ $neutral: #9e9e9e;
 $danger: #f44336;
 $positive: #4caf50;
 $info: #03a9f4;
+
+@mixin laying-flat($position) {
+  $x: 0;
+  $y: 1px;
+
+  [position="left"] & {
+    $x: 1px;
+    $y: 0;
+  }
+
+  box-shadow: $x $y 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
