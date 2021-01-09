@@ -2,7 +2,7 @@ import { APIContext } from "core/types";
 import Users from "./Users";
 
 import * as loginPage from "./pages/login";
-import { dashboard } from "config";
+import { dashboard, superuser } from "config";
 import { HTTPUserInputError } from "core/errors";
 import Permissions, { Permission } from "./Permissions";
 import Tokens from "./Tokens";
@@ -21,7 +21,18 @@ export default {
       }: APIContext & { users: Users; tokens: Tokens; permissions: Permissions }
     ) => {
       if (!token) throw new HTTPUserInputError("token", "Must be provided");
+      //Check if its a superuser defined by env variables
+      if (
+        superuser.email &&
+        superuser.password &&
+        email === superuser.email &&
+        password === superuser.password
+      ) {
+        if (token) tokens.save({ id: "superuser", token });
+        return { user: superuser, canAccessDashboard: true };
+      }
       const user = await users.login({ email, password });
+      if (!user) return { user };
       if (token) tokens.save({ id: user.id, token });
       const canAccessDashboard = await permissions.check({
         user: user.id,

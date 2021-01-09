@@ -20,3 +20,8 @@ export const recaptcha = {} as any; /*{
   siteKey: process.env.RECAPTCHA_SITE_KEY,
   secretKey: process.env.RECAPTCHA_SECRET_KEY,
 };*/
+
+export const superuser = {
+  email: process.env.SUPERUSER_EMAIL,
+  password: process.env.SUPERUSER_PASSWORD,
+};

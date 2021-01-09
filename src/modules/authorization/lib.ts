@@ -41,6 +41,7 @@ export function requiresPermission<
   next: ResolverFn<P, C, R>
 ): ResolverFn<P, C & { user: User; permissions: Permissions }, R> {
   return requiresUser(async (params, context) => {
+    if (context.user.id === "superuser") return next(params, context);
     const hasAccess = await context.permissions.check({
       scope,
       permissions,

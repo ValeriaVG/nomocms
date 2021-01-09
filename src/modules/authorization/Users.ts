@@ -8,6 +8,7 @@ import {
 import { HTTPUserInputError } from "core/errors";
 import bcrypt, { genSalt } from "bcryptjs";
 import Permissions from "./Permissions";
+import { superuser } from "config";
 
 export type UserLoginInput = {
   email: string;
@@ -63,6 +64,10 @@ export default class Users extends HashDataSource<User, UserInput> {
       lua: `
       local tokenidx = 'tokens::'..KEYS[2]
       local id = redis.call('GET', tokenidx);
+      if id == 'superuser'
+        then
+          return id
+      end    
       if type(id) == 'string'
         then
           local cid = KEYS[1]..'::'..id;
@@ -115,6 +120,8 @@ export default class Users extends HashDataSource<User, UserInput> {
   byToken(token: string): Promise<User> {
     return this.context.redis["userbytoken"](this.collection, token).then(
       (result) => {
+        if (result === "superuser")
+          return { email: superuser.email, id: "superuser" };
         return this.decode(collect(result));
       }
     );
