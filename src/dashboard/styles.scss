@@ -80,7 +80,7 @@ body {
     background-color: $darker;
     color: $light;
     z-index: 2;
-    @include laying-flat(top);
+    @include laying-flat();
     display: flex;
     align-items: center;
   }
@@ -93,7 +93,7 @@ body {
     z-index: 1;
     display: flex;
     flex-direction: column;
-    @include laying-flat(left);
+    @include laying-flat(1px, 0);
 
     &.expanded {
       width: max-content;
@@ -121,7 +121,7 @@ body {
     & > form fieldset {
       background-color: $light;
       border: none;
-      @include laying-flat(top);
+      @include laying-flat();
       & + * {
         margin-top: 1rem;
       }
@@ -182,7 +182,7 @@ button,
     @include button;
     background-color: $primary;
     color: $light;
-    @include laying-flat(top);
+    @include laying-flat();
     cursor: pointer;
     text-transform: uppercase;
     font-weight: bold;
@@ -234,7 +234,7 @@ a {
     }
     &.active {
       background: lighten($darkest, 8%);
-      @include laying-flat(top);
+      @include laying-flat();
       margin-right: -3px;
       border-top-right-radius: 2px;
       border-bottom-right-radius: 2px;

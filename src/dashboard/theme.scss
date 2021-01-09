@@ -13,14 +13,6 @@ $danger: #f44336;
 $positive: #4caf50;
 $info: #03a9f4;
 
-@mixin laying-flat($position) {
-  $x: 0;
-  $y: 1px;
-
-  [position="left"] & {
-    $x: 1px;
-    $y: 0;
-  }
-
-  box-shadow: $x $y 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+@mixin laying-flat($x: 0, $y: 1px, $size: 3px) {
+  box-shadow: $x $y $size rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 }

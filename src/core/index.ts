@@ -17,8 +17,14 @@ export default function core(
     routes?: Routes;
     dataSources?: Record<string, typeof DataSource>;
   },
-  context: APIContext
+  ctx: APIContext
 ): any {
+  const context: any = Object.assign({}, ctx);
+  if (modules.dataSources) {
+    for (let source in modules.dataSources) {
+      context[source] = new (modules.dataSources[source] as any)(context);
+    }
+  }
   return async (
     req: IncomingMessage,
     res: ServerResponse,
@@ -29,32 +35,25 @@ export default function core(
       const method = req.method?.toUpperCase();
       if (["HEAD", "OPTIONS"].includes(method)) return res.end();
       const url = new NormalizedURL(req.url);
+
       context.cookies = req.headers.cookie
         ? cookie.parse(req.headers.cookie)
         : {};
-      const dataSources: any = {};
-      if (modules.dataSources) {
-        for (let source in modules.dataSources) {
-          dataSources[source] = new (modules.dataSources[source] as any)(
-            context
-          );
-        }
-      }
 
       context.canAccessDashboard = false;
       const params = await requestParams(req);
-      if ("users" in dataSources && "permissions" in dataSources) {
+      if ("users" in context && "permissions" in context) {
         context.token = context.cookies["amp-access"] ?? params.rid;
 
         context.user = context.token
-          ? await (dataSources.users as Users).byToken(context.token)
+          ? await (context.users as Users).byToken(context.token)
           : undefined;
 
         context.canAccessDashboard =
           context.user?.id === "superuser"
             ? true
             : context.user?.id &&
-              (await (dataSources.permissions as Permissions).check({
+              (await (context.permissions as Permissions).check({
                 permissions: Permission.read,
                 user: context.user.id,
               }));
@@ -75,10 +74,7 @@ export default function core(
         throw new HTTPNotFound();
       }
 
-      const response = await resolver(
-        { ...routeParams, ...params },
-        { ...context, ...dataSources }
-      );
+      const response = await resolver({ ...routeParams, ...params }, context);
 
       if (typeof response !== "object")
         throw new Error(`Wrong response returned from ${url}`);

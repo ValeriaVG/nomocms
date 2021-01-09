@@ -1,5 +1,13 @@
 import { html } from "./lib";
-export default ({ body, head }: { body?: string; head?: string }) => html`
+export default ({
+  body,
+  head,
+  style,
+}: {
+  body?: string;
+  head?: string;
+  style?: string;
+}) => html`
   <!DOCTYPE html>
   <html ⚡ lang="en">
     <head>
@@ -65,6 +73,7 @@ export default ({ body, head }: { body?: string; head?: string }) => html`
           }
         </style></noscript
       >
+      ${style && ["<style amp-custom>", style, "</style>"].join("")}
       ${head ?? ""}
     </head>
     <body>

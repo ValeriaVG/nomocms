@@ -22,6 +22,8 @@ export class Api {
       credentials: "include",
     })
       .then(async (res) => {
+        const type = res.headers.get("content-type");
+        if (type.startsWith("text")) return res.text();
         let response;
         try {
           response = await res.json();

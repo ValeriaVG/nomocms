@@ -40,14 +40,6 @@ export default class Templates extends KeyDataSource<TemplateData> {
     },
   });
 
-  decode = (values) => {
-    return values;
-  };
-
-  encode = (values) => {
-    return values;
-  };
-
   static delimiter = "\u0000\u0000\u0000";
 
   async render(id: string, variables: Record<string, any> = {}) {
@@ -65,29 +57,57 @@ export default class Templates extends KeyDataSource<TemplateData> {
     return this.engine.parseAndRender(text, variables);
   }
 
+  async create({ id, ...data }: TemplateData) {
+    const errors = [];
+    if (!id) errors.push({ name: "id", message: "ID is required" });
+
+    const exists = await this.get(id);
+    if (exists)
+      errors.push({
+        name: "id",
+        message: "Template with this ID already exists",
+      });
+    if (errors.length) return { errors, code: 400 };
+
+    const result = await this.update(id, data);
+    if ("errors" in result) return result;
+    return result;
+  }
+
   async update(
     id: string,
-    { head, body, style }: Partial<Record<"body" | "head" | "style", string>>
+    input: Partial<Record<"body" | "head" | "style", string>>
   ) {
+    const item = await this.preview(input);
+    return super.update(id, item);
+  }
+
+  encode = (v) => v;
+  decode = (v) => v;
+
+  preview = async ({
+    head,
+    body,
+    style,
+  }: Partial<Record<"body" | "head" | "style", string>>) => {
     try {
       // Parse head and body
       const tmp = (head ?? "") + Templates.delimiter + (body ?? "");
       await this.renderText(tmp);
       // Parse style
-
       const parsedStyle =
         style && (await (this.context["styles"] as Styles).compile(style));
       const item = {
-        id,
+        id: "preview",
         scope: "compiled" as const,
         head,
         body,
-        style: parsedStyle?.css.toString(),
+        style: parsedStyle?.css?.toString() ?? "",
       };
 
-      return super.update(id, item);
+      return item;
     } catch (error) {
       throw new HTTPUserInputError(error.name, error.message);
     }
-  }
+  };
 }

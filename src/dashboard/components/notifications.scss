@@ -9,7 +9,7 @@
   background: $background;
   color: $color;
   min-width: 240px;
-  @include laying-flat(top);
+  @include laying-flat();
   .notification--progress {
     position: absolute;
     bottom: 0;
