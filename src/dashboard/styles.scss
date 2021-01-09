@@ -94,6 +94,18 @@ body {
     display: flex;
     flex-direction: column;
     @include laying-flat(left);
+
+    &.expanded {
+      width: max-content;
+
+      .menu {
+        & > li > a {
+          span {
+            opacity: 1;
+          }
+        }
+      }
+    }
   }
   fieldset {
     padding: 0;
@@ -189,12 +201,18 @@ a {
   @include reset-list;
   flex: 1;
   & > li > a {
+    overflow: hidden;
     position: relative;
-    padding: 0.5rem;
+    padding: 0.5rem 1rem;
     margin-bottom: 0.5rem;
     text-align: center;
     text-decoration: none;
-    display: block;
+    display: flex;
+    span {
+      margin-left: 0.5rem;
+      opacity: 0;
+      white-space: nowrap;
+    }
     &.active {
       background: lighten($darkest, 8%);
       @include laying-flat(top);

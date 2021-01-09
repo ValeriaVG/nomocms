@@ -10,7 +10,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { NavLink } from "react-router-dom";
 import FontAwesomeIcon from "./utils/FontAwesomeIcon";
-import { useContext } from "preact/hooks";
+import { useContext, useState } from "preact/hooks";
 import { NotificationContext } from "./utils/notifications";
 import NotificationElement from "./components/NotificationElement";
 
@@ -20,39 +20,46 @@ export default function Layout({
   children: Preact.ComponentChildren;
 }) {
   const { notifications } = useContext(NotificationContext);
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const toggleMenu = () => setIsExpanded((t) => !t);
   return (
     <>
       <header>
-        <button>
+        <button onClick={toggleMenu}>
           <FontAwesomeIcon icon={faBars} />
         </button>
       </header>
-      <aside>
+      <aside class={isExpanded && "expanded"}>
         <nav>
           <ul class="menu">
             <li>
               <NavLink to="/" exact>
                 <FontAwesomeIcon icon={faHome} />
+                <span>Dashboard</span>
               </NavLink>
             </li>
             <li>
               <NavLink to="/pages">
                 <FontAwesomeIcon icon={faBook} />
+                <span>Pages</span>
               </NavLink>
             </li>
             <li>
               <NavLink to="/users">
                 <FontAwesomeIcon icon={faUsers} />
+                <span>Users</span>
               </NavLink>
             </li>
             <li>
               <NavLink to="/styles">
                 <FontAwesomeIcon icon={faPalette} />
+                <span>Styles</span>
               </NavLink>
             </li>
             <li>
               <NavLink to="/templates">
                 <FontAwesomeIcon icon={faColumns} />
+                <span>Templates</span>
               </NavLink>
             </li>
           </ul>
@@ -62,6 +69,7 @@ export default function Layout({
             <li>
               <NavLink to="/logout">
                 <FontAwesomeIcon icon={faSignOutAlt} />
+                <span>Log out</span>
               </NavLink>
             </li>
           </ul>
