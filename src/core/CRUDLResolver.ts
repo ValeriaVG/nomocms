@@ -31,7 +31,13 @@ export default function CRUDLResolver<
           return ctx[ctxKey].get(id);
         }
       ),
-      UPDATE: requiresPermission(
+      POST: requiresPermission(
+        { scope: "pages", permissions: Permission.update },
+        async ({ id, input }, ctx: CRUDLContext) => {
+          return ctx[ctxKey].update(id, input);
+        }
+      ),
+      PATCH: requiresPermission(
         { scope: "pages", permissions: Permission.update },
         async ({ id, input }, ctx: CRUDLContext) => {
           return ctx[ctxKey].update(id, input);

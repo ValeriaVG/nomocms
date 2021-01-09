@@ -18,7 +18,9 @@ export default function ItemRoutes<T extends { id: string }>({
   plural?: string;
   path?: string;
   defaultValue?: Partial<T>;
-  renderForm: (form: FormValues<Partial<T>>) => Preact.JSX.Element;
+  renderForm: (
+    form: FormValues<Partial<T>> & { update: boolean }
+  ) => Preact.JSX.Element;
   legend?: string | Preact.JSX.Element;
 }) {
   const plural = props.plural ?? name + "s";

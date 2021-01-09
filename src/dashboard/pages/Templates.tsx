@@ -54,16 +54,23 @@ export default function Templates() {
   );
 }
 
-const TemplateForm = ({ values, setValue, onValueChange }) => {
+const TemplateForm = ({ values, setValue, onValueChange, update }) => {
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const [tab, setTab] = useState<"body" | "head" | "style">("body");
   const { showErrors } = useNotification();
+  const timer = useRef<NodeJS.Timeout>();
   useEffect(() => {
-    api.post("/template/preview", values).then((r) => {
-      if (typeof r === "object") return showErrors(r.errors);
-      const url = URL.createObjectURL(new Blob([r], { type: "text/html" }));
-      setPreviewUrl(url);
-    });
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(
+      () =>
+        api.post("/template/preview", values).then((r) => {
+          if (typeof r === "object") return showErrors(r.errors);
+          const url = URL.createObjectURL(new Blob([r], { type: "text/html" }));
+          setPreviewUrl(url);
+        }),
+      1000
+    );
+    return () => clearTimeout(timer.current);
   }, [values]);
   return (
     <>
@@ -73,6 +80,7 @@ const TemplateForm = ({ values, setValue, onValueChange }) => {
           <input
             type="text"
             name="id"
+            readOnly={update}
             value={values.id}
             onChange={onValueChange("id")}
           />

@@ -33,7 +33,7 @@ export default function Styles() {
         id: "template-style",
         data: `.template-class{\n\n}`,
       }}
-      renderForm={({ values, setValue, onValueChange }) => (
+      renderForm={({ values, setValue, onValueChange, update }) => (
         <>
           <fieldset style="max-width:320px;margin-right:auto;">
             <label>
@@ -41,6 +41,7 @@ export default function Styles() {
               <input
                 type="text"
                 name="id"
+                readOnly={update}
                 value={values.id}
                 onChange={onValueChange("id")}
               />

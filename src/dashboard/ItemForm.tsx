@@ -20,7 +20,9 @@ export type ItemFormProps<T> = {
   plural: string;
   path: string;
   defaultValue?: Partial<T>;
-  children: (form: FormValues<Partial<T>>) => Preact.JSX.Element;
+  children: (
+    form: FormValues<Partial<T>> & { update: boolean }
+  ) => Preact.JSX.Element;
 };
 
 export function ItemCreate<T extends Record<string, any>>({
@@ -78,7 +80,7 @@ export function ItemCreate<T extends Record<string, any>>({
           </button>
         </div>
       </header>
-      {children(form)}
+      {children({ ...form, update: false })}
     </form>
   );
 }
@@ -169,7 +171,7 @@ export function ItemUpdate<T extends Record<string, any>>({
             </button>
           </div>
         </header>
-        {children(form)}
+        {children({ ...form, update: true })}
       </form>
       <footer>
         <button
@@ -190,7 +192,7 @@ export default function ItemForm<T>(props: ItemFormProps<T>) {
     params: { id },
   } = useRouteMatch<{ id?: string }>();
   const { loading, result } = useQuery(id && props.path + "/" + id);
-  console.log(result);
+
   if (id && result?.id)
     return <ItemUpdate {...props} id={id} defaultValue={result} />;
 
