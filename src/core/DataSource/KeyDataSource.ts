@@ -48,6 +48,18 @@ export default abstract class KeyDataSource<
   }
 
   /**
+   * Check if item exists in this scope
+   * @param id
+   * @param scope
+   */
+  async exists(id: string, scope?: string) {
+    const validScope = this.validateScope(scope);
+    return this.context.redis
+      .exists(`${this.collection}::${validScope}::${id}`)
+      .then(Boolean);
+  }
+
+  /**
    * Get item
    * @param name style name
    */
