@@ -2,20 +2,20 @@ spec:
   name: amp-cms
   services:
   - name: web
-  git:
-    branch: main
-    repo_clone_url: https://github.com/ValeriaVG/amp-cms.git
-  envs:
-   - key: SUPERUSER_EMAIL
-     scope: RUN_TIME
-     value: "clark.kent@daily.planet"
-   - key: SUPERUSER_PASSWORD
-     scope: RUN_TIME
-     value: "clark&lois"
-   - key: DATABASE_URL
-     scope: RUN_TIME
-     value: ${redis.DATABASE_URL}
-  databases:
-  - name: redis
-    engine: REDIS
-    version: "6"
+    git:
+      branch: main
+      repo_clone_url: https://github.com/ValeriaVG/amp-cms.git
+    envs:
+    - key: SUPERUSER_EMAIL
+      scope: RUN_TIME
+      value: "clark.kent@daily.planet"
+    - key: SUPERUSER_PASSWORD
+      scope: RUN_TIME
+      value: "clark&lois"
+    - key: DATABASE_URL
+      scope: RUN_TIME
+      value: ${redis.DATABASE_URL}
+    databases:
+    - name: redis
+      engine: REDIS
+      version: "6"
