@@ -22,7 +22,7 @@ export default abstract class KeyDataSource<
     return JSON.stringify(input);
   }
 
-  parse(input: string) {
+  decode(input: string) {
     return JSON.parse(input);
   }
 
@@ -31,12 +31,12 @@ export default abstract class KeyDataSource<
     this.scopes.add("source");
     if (!this.collection) throw new Error("Collection must be defined");
 
-    this.context.redis.defineCommand("lexlist" + this.collection, {
-      numberOfKeys: 1,
+    this.context.redis.defineCommand("lexlist", {
+      numberOfKeys: 2,
       lua: `
-      local idx = '${this.collection}::'..ARGV[3];
+      local idx = KEYS[1]..'::'..ARGV[3];
       local count = redis.call('ZCARD', idx);
-      local result = redis.call('ZRANGEBYLEX',idx,'['..idx..'::'..KEYS[1],'['..idx..'::'..KEYS[1]..'\xff','LIMIT',ARGV[1],ARGV[2]);
+      local result = redis.call('ZRANGEBYLEX',idx,'['..KEYS[2],'['..KEYS[2]..'\xff','LIMIT',ARGV[1],ARGV[2]);
       local items = {};
       for k,v in ipairs(result) do
         local text =redis.call('get',v);
@@ -69,7 +69,7 @@ export default abstract class KeyDataSource<
       `${this.collection}::${validScope}::${id}`
     );
     if (!data) return null;
-    return { ...this.parse(data), id, scope };
+    return { ...this.decode(data), id, scope };
   }
 
   /**
@@ -90,6 +90,7 @@ export default abstract class KeyDataSource<
       .zadd(this.collection + "::" + (scope ?? "source"), "0", id)
       .exec()
       .catch(console.error);
+
     return { ...input, id, scope } as T;
   }
 
@@ -109,7 +110,9 @@ export default abstract class KeyDataSource<
     const offset = params.offset ?? "0";
     const scope = this.validateScope(params.scope);
     const search = params.search ?? "";
-    return this.context.redis[`lexlist${this.collection}`](
+
+    return this.context.redis[`lexlist`](
+      this.collection,
       search,
       offset,
       limit,
@@ -120,7 +123,7 @@ export default abstract class KeyDataSource<
       for (let item of arr) {
         const id = item[0].split("::").pop();
         const data = item[1];
-        items.push({ id, scope, ...this.parse(data) });
+        items.push({ id, scope, ...this.decode(data) });
       }
       const next = Number(offset) + Number(limit);
       const nextOffset = next >= count ? null : next;
@@ -138,8 +141,10 @@ export default abstract class KeyDataSource<
    */
   delete(name: string) {
     const pipeline = this.context.redis.multi();
-    this.scopes.forEach((type) =>
-      pipeline.del(this.collection + `::${type}::` + name)
+    this.scopes.forEach((scope) =>
+      pipeline
+        .del(this.collection + `::${scope}::` + name)
+        .zrem(this.collection + `::${scope}`, name)
     );
     return pipeline.exec().then((results) => {
       const { errored, deleted } = results.reduce(

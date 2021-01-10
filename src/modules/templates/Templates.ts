@@ -62,7 +62,7 @@ export default class Templates extends KeyDataSource<TemplateData> {
     const errors = [];
     if (!id) errors.push({ name: "id", message: "ID is required" });
 
-    const exists = await this.get(id);
+    const exists = await this.exists(id);
     if (exists)
       errors.push({
         name: "id",
@@ -79,12 +79,9 @@ export default class Templates extends KeyDataSource<TemplateData> {
     id: string,
     input: Partial<Record<"body" | "head" | "style", string>>
   ) {
-    const item = await this.preview(input);
-    return super.update(id, item);
+    await this.preview(input);
+    return super.update(id, { ...input, scope: "source" });
   }
-
-  encode = (v) => v;
-  decode = (v) => v;
 
   preview = async ({
     head,
