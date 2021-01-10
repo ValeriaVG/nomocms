@@ -10,11 +10,11 @@ spec:
         version: "6"
       envs:
       - key: SUPERUSER_EMAIL
-      scope: RUN_TIME
-      value: clark.kent@daily.planet
+        scope: RUN_TIME
+        value: clark.kent@daily.planet
       - key: SUPERUSER_PASSWORD
-      scope: RUN_TIME
-      value: clark&lois
+        scope: RUN_TIME
+        value: clark&lois
       - key: DATABASE_URL
-      scope: RUN_TIME
-      value: ${redis.DATABASE_URL}    
+        scope: RUN_TIME
+        value: ${redis.DATABASE_URL}
