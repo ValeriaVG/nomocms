@@ -19,7 +19,7 @@ export default class Styles extends KeyDataSource<StyleData> {
     return data;
   }
 
-  parse(data) {
+  decode(data) {
     return { data };
   }
 

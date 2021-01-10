@@ -22,7 +22,6 @@ export default class Editor extends Preact.Component<
     });
     this.editor.onDidChangeModelContent(() => {
       const value = this.editor.getValue();
-      console.log(value);
       this.props.onChange && this.props.onChange(value);
     });
     window.onresize = this.onResize;

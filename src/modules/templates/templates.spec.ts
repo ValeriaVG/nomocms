@@ -53,8 +53,8 @@ describe("Templates Integration test", () => {
         "<title><% title %></title>\n" +
         '<script async custom-template="amp-mustache" src="https://cdn.ampproject.org/v0/amp-mustache-0.2.js"></script>',
       body: '<template type="amp-mustache">\n  Hello {{world}}!\n</template>',
-      style: "body,html{margin:0}",
-      scope: "compiled",
+      style: "body,html{margin:0;}",
+      scope: "source",
     });
   });
 });

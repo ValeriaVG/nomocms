@@ -155,11 +155,11 @@ export default abstract class KeyDataSource<
         },
         { errored: false, deleted: 0 }
       );
-      const success = !errored && deleted === this.scopes.size;
+      const success = !errored;
       if (errored) {
         console.error(`error:${this.collection}`, results);
       }
-      if (deleted !== this.scopes.size) {
+      if (deleted !== this.scopes.size * 2) {
         console.warn(`mismatch:${this.collection}`, results);
       }
       return { deleted: success };
