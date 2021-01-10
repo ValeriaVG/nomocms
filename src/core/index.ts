@@ -36,7 +36,7 @@ export default function core(
       // TODO: check accept header
       // Look for existing page
       const url = new NormalizedURL(req.url);
-      const page = await context.redis.hgetall("pages::" + url.normalizedPath);
+      const page = await context.redis?.hgetall("pages::" + url.normalizedPath);
       if (page?.id) return sendResponse({ type: "amp", ...page });
       if (["HEAD", "OPTIONS"].includes(method)) return res.end();
 
