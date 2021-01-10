@@ -1,4 +1,3 @@
-import { RedisOptions } from "ioredis";
 import path from "path";
 
 if (typeof process !== undefined) {
@@ -10,7 +9,7 @@ if (typeof process !== undefined) {
 export const redis = process.env.REDIS_URL;
 export const dashboard = {
   pathname: "/admin",
-  dist: path.resolve(__dirname, "..", ".dashboard"),
+  dist: path.resolve(process.cwd(), ".dashboard"),
   get path(): string {
     return this.pathname + "/";
   },

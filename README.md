@@ -5,16 +5,25 @@
 
 Content management system for blazingly fast AMP websites, written in TypeScript and powered by Redis.
 
-AMP CMS is currently in active development and the alpha version should be expected before Jan 10, 2021.
+AMP CMS is currently in active development. It's not ready for production use until it reaches v1.0.
 
-[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/ValeriaVG/amp-cms/tree/main)
+Current stage: \__alpha_
+
+## How to deploy
+
+Note: Currenty it's not possible to automatically create Redis database for you,
+please do it manually and then link to the app deployment either by adding existing database in App dashboard components and setting env variable `REDIS_URL` to `${your-db-name.REDIS_URL}`
+
+[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/ValeriaVG/amp-cms/tree/main&refcode=6ad1223ed047)
 
 ## First-time & Emergency access
 
 You can set up a superuser account though the following environment variables:
 
-- `SUPERUSER_EMAIL`
-- `SUPERUSER_PASSWORD`
+- `SUPERUSER_EMAIL`, by default is set to `clark.kent@daily.planet`
+- `SUPERUSER_PASSWORD`, by default is set to `clark&lois`
+
+> WARNING: consider changing the default superuser credentials
 
 This user is never stored or rendered anywhere else, but has all possible permissions.
 

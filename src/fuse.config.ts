@@ -1,3 +1,4 @@
+import path from "path";
 import { dashboard } from "config";
 import { IPublicConfig } from "fuse-box/config/IConfig";
 
@@ -6,7 +7,6 @@ export default {
   target: "browser",
   webIndex: {
     publicPath: dashboard.path,
-    template: "./dashboard/index.html",
   },
   alias: {
     "^react$": "preact/compat",
