@@ -105,16 +105,18 @@ export default class Templates extends KeyDataSource<TemplateData> {
   ) => {
     try {
       // Parse head and body
-      const tmp = (head ?? "") + Templates.delimiter + (body ?? "");
-      await this.renderText(tmp, params);
+      let tmp = (head ?? "") + Templates.delimiter + (body ?? "");
+
+      const result = await this.renderText(tmp, params);
+      const [renderedHead, renderedBody] = result.split(Templates.delimiter);
       // Parse style
       const parsedStyle =
         style && (await (this.context["styles"] as Styles).compile(style));
       const item = {
         id: "preview",
         scope: "compiled" as const,
-        head,
-        body,
+        head: renderedHead,
+        body: renderedBody,
         style: parsedStyle?.css?.toString() ?? "",
       };
 

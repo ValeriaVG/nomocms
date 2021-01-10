@@ -5,6 +5,7 @@ import ItemRoutes from "dashboard/ItemRoutes";
 import api from "dashboard/utils/api";
 import FontAwesomeIcon from "dashboard/utils/FontAwesomeIcon";
 import useNotification from "dashboard/utils/notifications";
+import usePreview from "dashboard/utils/usePreview";
 import { TemplateData } from "modules/templates/types";
 import * as Preact from "preact";
 import { useEffect, useRef, useState } from "preact/hooks";
@@ -58,39 +59,8 @@ export default function Templates() {
 }
 
 const TemplateForm = ({ values, setValue, onValueChange, update }) => {
-  const [previewEnabled, setPreviewEnabled] = useState<boolean>(false);
-  const preview = useRef<{ timer?: NodeJS.Timeout; window?: Window }>({});
-
   const [tab, setTab] = useState<"body" | "head" | "style">("body");
-  const { showErrors } = useNotification();
-  const timer = preview.current?.timer;
-
-  const togglePreview = () =>
-    setPreviewEnabled((enabled) => {
-      if (preview.current?.window) {
-        preview.current?.window.focus();
-      }
-      return true;
-    });
-  useEffect(() => {
-    const cleanup = () => timer && clearTimeout(timer);
-    if (!previewEnabled) return cleanup();
-    if (timer) cleanup();
-    preview.current.timer = setTimeout(
-      () =>
-        api.post("/template/preview", values).then((r) => {
-          if (typeof r === "object") return showErrors(r.errors);
-          const url = URL.createObjectURL(new Blob([r], { type: "text/html" }));
-          if (!preview.current.window) {
-            preview.current.window = window.open(url, "blank");
-          } else {
-            preview.current.window.document.location.href = url;
-          }
-        }),
-      1000
-    );
-    return cleanup;
-  }, [values, previewEnabled]);
+  const { togglePreview } = usePreview("/template/preview", values);
   return (
     <>
       <fieldset className="columns small">

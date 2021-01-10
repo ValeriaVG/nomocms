@@ -1,5 +1,6 @@
 import CRUDLResolver from "core/CRUDLResolver";
 import { requiresPermission } from "modules/authorization/lib";
+import Styles from "modules/styles/Styles";
 import Templates from "modules/templates/Templates";
 import Pages from "./Pages";
 
@@ -13,15 +14,19 @@ routes["/page/preview"] = {
     { scope: "pages", permissions: 1 },
     async (
       { input },
-      { templates, pages }: { templates: Templates; pages: Pages }
+      {
+        templates,
+        pages,
+        styles,
+      }: { templates: Templates; pages: Pages; styles: Styles }
     ) => {
-      const template = await templates.get(input.template);
       const { content, html, ...params } = pages.parse(input);
-      const result = await templates.preview(template, {
+      const result = await templates.render(input.template, {
         ...params,
         content: html,
       });
-      return { ...result, type: "amp" } as any;
+      const style = await styles.compiled.get(input.template + ".style");
+      return { ...result, type: "amp", style: style.data } as any;
     }
   ),
 } as any;
