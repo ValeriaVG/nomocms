@@ -52,7 +52,7 @@ export default function Styles() {
             <Editor
               theme="vs-dark"
               value={values.source}
-              language="css"
+              language="scss"
               onChange={setValue("source")}
             />
           </fieldset>
