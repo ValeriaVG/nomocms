@@ -45,7 +45,6 @@ export default function core(
         "pages::" + context.url.normalizedPath
       );
       if (page?.id) return sendResponse({ type: "amp", ...page });
-      if (["HEAD", "OPTIONS"].includes(method)) return res.end();
 
       context.cookies = req.headers.cookie
         ? cookie.parse(req.headers.cookie)
@@ -75,6 +74,7 @@ export default function core(
         context.url.normalizedPath.startsWith(dashboard.pathname)
       )
         return renderDashboard(req, res, next);
+      if (["HEAD", "OPTIONS"].includes(method)) return res.end();
       const { resolver, params: routeParams } = routeRequest(
         context.url,
         method as HTTPMethod,
