@@ -1,8 +1,7 @@
 spec:
   name: amp-cms
   services:
-  - name: web
-    git:
+  - git:
       branch: main
       repo_clone_url: https://github.com/ValeriaVG/amp-cms.git
     envs:
