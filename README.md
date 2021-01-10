@@ -7,6 +7,8 @@ Content management system for blazingly fast AMP websites, written in TypeScript
 
 AMP CMS is currently in active development and the alpha version should be expected before Jan 10, 2021.
 
+[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/ValeriaVG/amp-cms/tree/main)
+
 ## First-time & Emergency access
 
 You can set up a superuser account though the following environment variables:
