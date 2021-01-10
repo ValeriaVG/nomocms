@@ -13,6 +13,3 @@ spec:
     - key: SUPERUSER_PASSWORD
       scope: RUN_TIME
       value: "clark&lois"
-    - key: DATABASE_URL
-      scope: RUN_TIME
-      value: ${redis.DATABASE_URL}
