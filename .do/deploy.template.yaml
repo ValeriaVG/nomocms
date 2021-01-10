@@ -1,7 +1,9 @@
 spec:
   name: amp-cms
   services:
-  - git:
+  - name: cms
+    environment_slug: node-js
+    git:
       branch: main
       repo_clone_url: https://github.com/ValeriaVG/amp-cms.git
     envs:
