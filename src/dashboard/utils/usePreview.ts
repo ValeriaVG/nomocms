@@ -13,7 +13,9 @@ export default function usePreview(path: string, values: any) {
   const getPreview = () =>
     api.post(path, values).then((r) => {
       if (typeof r === "object") return showErrors(r.errors);
-      const url = URL.createObjectURL(new Blob([r], { type: "text/html" }));
+      const url =
+        URL.createObjectURL(new Blob([r], { type: "text/html" })) +
+        "#development=1";
       if (!preview.current.window) {
         preview.current.window = window.open(url, "blank");
       } else {

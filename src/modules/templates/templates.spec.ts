@@ -9,19 +9,20 @@ const redis = new Redis({ db: 9 });
 const styles = new Styles({ redis });
 const templates = new Templates({ redis, styles } as any);
 
-const basicTpl: TemplateData = {
-  id: "name",
-  scope: "source",
-  body: `<% name | default: '____' | capitalize %>`,
-  head: "Hello, <% name | capitalize %>",
-};
-
 describe("Templates Integration test", () => {
   before(async () => {
     redis
       .multi()
-      .set("templates::source::name", JSON.stringify(basicTpl))
-
+      .hset(
+        "templates::name",
+        "id",
+        "name",
+        "body",
+        `<% name | default: '____' | capitalize %>`,
+        "head",
+        "Hello, <% name | capitalize %>"
+      )
+      .zadd("templates", "0", "name")
       .exec();
   });
   after(async () => {
@@ -38,7 +39,7 @@ describe("Templates Integration test", () => {
     expect(tpl).to.have.property("head", "Hello, Clark");
   });
 
-  it("can save and compile template", async () => {
+  it("can compile ans save template", async () => {
     const tpl = await templates.update("name", {
       head:
         '<title><% title %></title>\n<script async custom-template="amp-mustache" src="https://cdn.ampproject.org/v0/amp-mustache-0.2.js"></script>',
@@ -54,7 +55,7 @@ describe("Templates Integration test", () => {
         '<script async custom-template="amp-mustache" src="https://cdn.ampproject.org/v0/amp-mustache-0.2.js"></script>',
       body: '<template type="amp-mustache">\n  Hello {{world}}!\n</template>',
       style: "body,html{margin:0;}",
-      scope: "source",
+      compiled: "body,html{margin:0}",
     });
   });
 });

@@ -31,7 +31,7 @@ export default function Styles() {
       }}
       defaultValue={{
         id: "template-style",
-        data: `.template-class{\n\n}`,
+        source: `.template-class{\n\n}`,
       }}
       renderForm={({ values, setValue, onValueChange, update }) => (
         <>
@@ -51,9 +51,9 @@ export default function Styles() {
           <fieldset>
             <Editor
               theme="vs-dark"
-              value={values.data}
+              value={values.source}
               language="css"
-              onChange={setValue("data")}
+              onChange={setValue("source")}
             />
           </fieldset>
         </>

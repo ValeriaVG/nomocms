@@ -1,12 +1,12 @@
 import { describe, it, beforeEach, afterEach, after } from "mocha";
 import { expect } from "chai";
 import Redis from "ioredis";
-import HashDataSource from "./HashDataSource";
+import RedisDataSource from "./RedisDataSource";
 import { TBoolean, TString } from "./datatypes";
 
 const redis = new Redis({ db: 9 });
 
-class Items extends HashDataSource<{
+class Items extends RedisDataSource<{
   id: string;
   username: string;
   email: string;
@@ -142,5 +142,39 @@ describe("HashDataSource Integration Test", () => {
     expect(result).to.have.property("deleted", true);
     const exists = await redis.exists("items::itm_1");
     expect(exists).to.be.eq(0);
+  });
+
+  it("can CRUDL", async () => {
+    const source = new Items({ redis });
+    const item1 = await source.create({ username: "clark" });
+    expect(item1).to.have.property("id", "itm_1");
+    expect(item1).to.have.property("username", "clark");
+    const item2 = await source.upsert({ id: "usr_lex", username: "lex" });
+    expect(item2).to.have.property("id", "usr_lex");
+    expect(item2).to.have.property("username", "lex");
+    const list = await source.list();
+    expect(list).to.have.property("count", 2);
+    expect(list).to.have.property("nextOffset", null);
+    expect(list).to.have.property("items");
+    expect(list.items[0]).to.have.property("id", "usr_lex");
+    expect(list.items[1]).to.have.property("id", "itm_1");
+    const partial = await source.list({ limit: 1 });
+    expect(partial).to.have.property("count", 2);
+    expect(partial).to.have.property("nextOffset", 1);
+    expect(partial.items).to.have.length(1);
+    const partial2 = await source.list({ offset: 1 });
+    expect(partial2).to.have.property("count", 2);
+    expect(partial2).to.have.property("nextOffset", null);
+    expect(partial2.items).to.have.length(1);
+    const del1 = await source.delete("itm_1");
+    expect(del1).to.have.property("deleted", true);
+    const del2 = await source.delete("usr_lex");
+    expect(del2).to.have.property("deleted", true);
+    const empty = await source.list();
+    expect(empty).to.have.property("count", 0);
+    expect(empty.items).to.have.length(0);
+    expect(empty).to.have.property("nextOffset", null);
+    expect(await source.get("itm_1")).to.be.null;
+    expect(await source.get("usr_lex")).to.be.null;
   });
 });

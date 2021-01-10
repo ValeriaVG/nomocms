@@ -17,7 +17,6 @@ routes["/page/preview"] = {
       {
         templates,
         pages,
-        styles,
       }: { templates: Templates; pages: Pages; styles: Styles }
     ) => {
       const { content, html, ...params } = pages.parse(input);
@@ -25,8 +24,7 @@ routes["/page/preview"] = {
         ...params,
         content: html,
       });
-      const style = await styles.compiled.get(input.template + ".style");
-      return { ...result, type: "amp", style: style.data } as any;
+      return { ...result, type: "amp" } as any;
     }
   ),
 } as any;

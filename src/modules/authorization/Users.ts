@@ -1,7 +1,7 @@
 import {
   collect,
   flatten,
-  HashDataSource,
+  RedisDataSource,
   TInt,
   TString,
 } from "core/DataSource";
@@ -28,7 +28,7 @@ export type User = {
   createdAt?: number;
   updatedAt?: number;
 };
-export default class Users extends HashDataSource<User, UserInput> {
+export default class Users extends RedisDataSource<User, UserInput> {
   collection = "users";
   prefix = "usr";
   schema = {

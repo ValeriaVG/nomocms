@@ -3,5 +3,8 @@ export type TemplateData = {
   body?: string;
   style?: string;
   head?: string;
-  scope: "compiled" | "source";
+  /**
+   * Compiled template style
+   */
+  compiled?: string;
 };

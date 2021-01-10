@@ -1,18 +1,11 @@
-import { KeyDataSource } from "core/DataSource";
+import { RedisDataSource } from "core/DataSource";
 import { TemplateData } from "./types";
 import { Liquid } from "liquidjs";
 import { HTTPUserInputError } from "core/errors";
 import Styles from "modules/styles/Styles";
-import { APIContext } from "core/types";
 
-// TODO: when template is required, automatically add it styles
-export default class Templates extends KeyDataSource<TemplateData> {
-  static collectionName = "templates";
-  static scopeSet = new Set(["source", "compiled"]);
-
-  constructor(context: APIContext & { styles: Styles }) {
-    super(context);
-  }
+export default class Templates extends RedisDataSource<TemplateData> {
+  collection = "templates";
 
   private engine = new Liquid({
     outputDelimiterLeft: "<%",
@@ -26,10 +19,7 @@ export default class Templates extends KeyDataSource<TemplateData> {
 
       readFile: async (file) => {
         const [id, ext] = file.split(".");
-        return this.get(id).then((result) => {
-          if (!result) return null;
-          return result[ext ?? "body"];
-        });
+        return this.context.redis.hget(this.cid(id), ext ?? "body");
       },
       exists: async (file) => {
         return this.exists(file.split(".").shift());
@@ -46,11 +36,10 @@ export default class Templates extends KeyDataSource<TemplateData> {
   async render(id: string, variables: Record<string, any> = {}) {
     const tpl = await this.get(id);
     if (!tpl) return null;
-
     const tmp = (tpl.head ?? "") + Templates.delimiter + (tpl.body ?? "");
     return this.renderText(tmp, variables).then((result) => {
       const [head, body] = result.split(Templates.delimiter);
-      return { head, body, id, scope: "compiled" };
+      return { head, body, id, style: tpl.compiled };
     });
   }
 
@@ -70,33 +59,20 @@ export default class Templates extends KeyDataSource<TemplateData> {
       });
     if (errors.length) return { errors, code: 400 };
 
-    const result = await this.update(id, data);
-    if ("errors" in result) return result;
-    return result;
+    return this.update(id, data);
   }
 
   async update(
     id: string,
     input: Partial<Record<"body" | "head" | "style", string>>
   ) {
-    await this.preview(input);
-    // save styles
-    if (input.style) {
-      await (this.context["styles"] as Styles).save(`${id}.style`, input.style);
-    }
-    return super.update(id, { ...input, scope: "source" });
+    const { style } = await this.preview(input);
+    return this.upsert({ id, ...input, compiled: style });
   }
 
-  async get(id: string, scope?: string) {
-    const template = await super.get(id, scope);
+  async get(id: string) {
+    const template = await super.get(id);
     if (!template) return template;
-    // TODO: figure out a better way
-    if ("styles" in template) {
-      const styles = await (this.context["styles"] as Styles).get(
-        `${id}.style`
-      );
-      if (styles) template.style = styles.data as string;
-    }
     return template;
   }
   preview = async (

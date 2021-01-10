@@ -46,8 +46,3 @@ export abstract class CRUDLDataSource<
     throw new NotImplementedError(this.constructor.name, "get");
   }
 }
-
-export type TypedData = {
-  id: string;
-  scope: string;
-};

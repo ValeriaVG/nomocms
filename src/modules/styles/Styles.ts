@@ -1,77 +1,42 @@
-import { KeyDataSource } from "core/DataSource";
-import { TypedData } from "core/DataSource/types";
-import { ErrorResponse } from "core/types";
+import { RedisDataSource } from "core/DataSource";
 
 import { Redis } from "ioredis";
 import sass from "sass";
 
-export type StyleData = TypedData & {
-  data: string;
-  scope: "compiled" | "source";
+export type StyleData = {
+  id: string;
+  source: string;
+  compiled?: string;
 };
 
-// TODO: allow requiring template styles
-export default class Styles extends KeyDataSource<StyleData> {
-  static collectionName = "styles";
-  static scopeSet = new Set(["source", "compiled"]);
-
-  encode({ data }) {
-    return data;
-  }
-
-  decode(data) {
-    return { data };
-  }
+export default class Styles extends RedisDataSource<StyleData> {
+  readonly collection = "styles";
 
   constructor(protected context: { redis: Redis }) {
     super(context);
-    this.context.redis.defineCommand("mergestyles", {
-      numberOfKeys: 1,
-      lua: `
-      local merged = '';
-      for i,name in ipairs(ARGV) do
-        local style = redis.call('GET','${this.collection}::compiled::'..name);
-        if type(style) == 'string'
-          then
-           merged = merged..style..' ';
-        end
-       end
-       return merged;     
-      `,
-    });
   }
 
   /**
-   * Save source code and compiled css
+   * Compile and save
    * @param name
    * @param scss
    */
-  save(id: string, scss: string): Promise<{ saved: boolean } | ErrorResponse> {
-    return Promise.all([
-      this.update(id, { data: scss, scope: "source" }),
-      this.compiled.save(id, scss),
-    ])
-      .then((results) => {
-        return { saved: Boolean(results[0] && results[1]) };
-      })
-      .catch((error) => ({
-        errors: [{ name: error.name, message: error.message }],
-        code: 400,
-      }));
+
+  async update(id: string, { source }): Promise<StyleData> {
+    const { css } = await this.compile(source);
+    return this.upsert({ id, source, compiled: css?.toString() });
   }
 
-  async create({ id, data }: StyleData) {
+  async create({ id, source }: StyleData) {
     const errors = [];
-    if (!id) errors.push({ name: "id", message: "ID is required" });
-    if (!data) errors.push({ name: "data", message: "Code is required" });
-    const exists = await this.get(id);
+    if (!source) errors.push({ name: "source", message: "Code is required" });
+    const exists = await this.exists(id);
     if (exists)
       errors.push({ name: "id", message: "Style with this ID already exists" });
     if (errors.length) return { errors, code: 400 };
-
-    const result = await this.save(id, data);
-    if ("errors" in result) return result;
-    return { id, data, scope: "compiled" };
+    const result = await this.update(id, { source });
+    if (!result) return result;
+    return { id, source, compiled: result.compiled };
   }
 
   /**
@@ -86,9 +51,22 @@ export default class Styles extends KeyDataSource<StyleData> {
           sourceMap: false,
           outputStyle: "compressed",
           importer: (url, _, done) => {
-            this.get(url)
-              .then(({ data: contents }) => done({ contents }))
-              .catch(done);
+            const getSource = () =>
+              this.context.redis
+                .hget(this.cid(url), "source")
+                .then((contents) => done({ contents }))
+                .catch(done);
+            // If imported 'template.style'
+            if (url.endsWith(".style")) {
+              this.context.redis
+                .hget("templates::" + url, "style")
+                .then((contents) => {
+                  if (contents) return done({ contents });
+                  getSource();
+                })
+                .catch(console.error);
+            }
+            getSource();
           },
         },
         (error, result) => {
@@ -97,34 +75,5 @@ export default class Styles extends KeyDataSource<StyleData> {
         }
       )
     );
-  }
-
-  compiled = {
-    /**
-     * Get compiled css
-     * @param name
-     */
-    get: (name: string) => {
-      return this.get(name, "compiled");
-    },
-    /**
-     * Compile and save resulting css in `name`
-     * @param name
-     * @param scss
-     */
-    save: (name: string, scss: string) => {
-      return this.compile(scss).then((result) =>
-        this.update(name, { data: result.css.toString(), scope: "compiled" })
-      );
-    },
-  };
-
-  /**
-   * Merge compiled styles together and return resulting css.
-   * Styles are merged in the same order as names are.
-   * @param names
-   */
-  merged(names: string[]) {
-    return this.context.redis["mergestyles"](this.collection, ...names);
   }
 }

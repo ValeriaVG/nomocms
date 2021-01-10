@@ -1,3 +1,4 @@
+import { HTTPUserInputError } from "core/errors";
 import { ExcludeReserved } from "core/types";
 import { Redis } from "ioredis";
 import { SomeDataType } from "./datatypes";
@@ -8,7 +9,7 @@ import { collect, decode, encode, flatten } from "./utils";
  * Primary CRUD interface for generic entities
  * stored as Redis hash
  */
-export default abstract class HashDataSource<
+export default abstract class RedisDataSource<
   T extends ExcludeReserved<T>,
   I = Partial<T>,
   P = Partial<I>
@@ -39,6 +40,7 @@ export default abstract class HashDataSource<
    * @param value
    */
   decode = (value: Record<string, string>): T => {
+    if (!this.schema) return value as T;
     return decode(this.schema, value);
   };
 
@@ -48,6 +50,7 @@ export default abstract class HashDataSource<
    * @param value
    */
   protected encode = (value: Record<string, any>): Record<string, string> => {
+    if (!this.schema) return value as T;
     return encode(this.schema, value);
   };
 
@@ -79,6 +82,23 @@ export default abstract class HashDataSource<
       redis.call('hset',cid,'id',id, unpack(ARGV));
       redis.call('zadd',KEYS[1], 0, id);
       return redis.call('hgetall',cid);
+      `,
+    });
+    context.redis.defineCommand("upserthash", {
+      numberOfKeys: 2,
+      lua: `
+      local cid = KEYS[1]..'::'..KEYS[2];
+      redis.call('hset',cid,'id',KEYS[2], unpack(ARGV));
+      redis.call('zadd',KEYS[1], 0, KEYS[2]);
+      return redis.call('hgetall',cid);
+      `,
+    });
+    context.redis.defineCommand("zremhash", {
+      numberOfKeys: 2,
+      lua: `
+      local zrem_result = redis.call('zrem',KEYS[1], KEYS[2]);
+      local del_result = redis.call('del',KEYS[1]..'::'..KEYS[2]);
+      return del_result;
       `,
     });
     context.redis.defineCommand("listhash", {
@@ -120,6 +140,7 @@ export default abstract class HashDataSource<
    */
   get(id: string) {
     return this.context.redis.hgetall(this.cid(id)).then((value) => {
+      if (Object.keys(value).length === 0) return null;
       return this.decode(value);
     });
   }
@@ -154,18 +175,29 @@ export default abstract class HashDataSource<
   }
 
   /**
+   * Upsert  item
+   * @param item
+   */
+  upsert({ id, ...item }: I & { id: string }) {
+    if (!id) throw new HTTPUserInputError("id", "ID is required");
+    return this.context.redis["upserthash"](
+      this.collection,
+      id,
+      ...flatten(this.encode(item))
+    ).then((result) => {
+      return this.decode(collect(result));
+    });
+  }
+
+  /**
    * Delete item by id
    * @param id
    */
   delete(id: string) {
-    return this.context.redis
-      .multi()
-      .del(this.cid(id))
-      .zrem(this.collection, id)
-      .exec()
-      .then((deleted) => {
-        return { deleted: Boolean(deleted) };
-      });
+    return this.context.redis["zremhash"](
+      this.collection,
+      id
+    ).then((deleted) => ({ deleted: Boolean(deleted) }));
   }
 
   /**

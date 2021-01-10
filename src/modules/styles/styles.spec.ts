@@ -11,12 +11,14 @@ describe("Styles Integration Test", () => {
   before(async () => {
     redis
       .multi()
-      .set("styles::source::colors", "$red: red;\n$blue: blue;")
-      .set("styles::compiled::header", ".header{background:green}")
-      .set("styles::compiled::body", "body{background:red}")
-      .zadd("styles::source", "0", "styles::source::colors")
-      .zadd("styles::compiled", "0", "styles::compiled::header")
-      .zadd("styles::compiled", "0", "styles::compiled::body")
+      .hset(
+        "styles::colors",
+        "id",
+        "colors",
+        "source",
+        "$red: red;\n$blue: blue;"
+      )
+      .zadd("styles", "0", "colors")
       .exec();
   });
   after(async () => {
@@ -37,26 +39,7 @@ describe("Styles Integration Test", () => {
     expect(css).to.eq("body{background:red}");
   });
 
-  it("stores compilation results", async () => {
-    await styles.compiled.save(
-      "name",
-      "@use 'colors'; body{background:colors.$red}"
-    );
-    expect(await styles.compiled.get("name")).to.have.property(
-      "data",
-      "body{background:red}"
-    );
-  });
-
-  it("stores compiled styles merged together", async () => {
-    expect(await styles.merged(["header", "body"])).to.eq(
-      ".header{background:green} body{background:red} "
-    );
-    expect(await styles.merged(["body", "header"])).to.eq(
-      "body{background:red} .header{background:green} "
-    );
-  });
-  it("can list source  styles", async () => {
+  it("can list styles", async () => {
     const result = await styles.list();
     expect(result).to.have.property("items");
     expect(result).to.have.property("nextOffset");
@@ -64,26 +47,29 @@ describe("Styles Integration Test", () => {
     expect(result).to.have.property("count", 1);
     expect(result.items[0]).to.have.property("id", "colors");
     expect(result.items[0]).to.have.property(
-      "data",
+      "source",
       "$red: red;\n$blue: blue;"
     );
   });
   it("can delete styles", async () => {
-    expect(await styles.save("delete-me", "body{margin:0;}")).to.deep.eq({
-      saved: true,
+    expect(
+      await styles.create({ id: "delete-me", source: "body{margin:0;}" })
+    ).to.deep.eq({
+      id: "delete-me",
+      source: "body{margin:0;}",
+      compiled: "body{margin:0}",
     });
     expect(await styles.get("delete-me")).to.have.property(
-      "data",
+      "source",
       "body{margin:0;}"
     );
-    expect(await styles.compiled.get("delete-me")).to.have.property(
-      "data",
+    expect(await styles.get("delete-me")).to.have.property(
+      "compiled",
       "body{margin:0}"
     );
     expect(await styles.delete("delete-me")).to.deep.eq({
       deleted: true,
     });
     expect(await styles.get("delete-me")).to.be.null;
-    expect(await styles.compiled.get("delete-me")).to.be.null;
   });
 });
