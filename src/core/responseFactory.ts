@@ -1,5 +1,5 @@
 import boilerplate from "amp/boilerplate";
-import { baseUrl } from "config";
+import { appUrl } from "config";
 import { IncomingMessage, ServerResponse } from "http";
 import { Readable } from "stream";
 import { AMPResponse, RouteResponse } from "./types";
@@ -16,7 +16,7 @@ export default function responseFactory(
         res.setHeader("Content-Type", "text/html");
         const inferredUrl = req.headers.host.replace(/\/$/, "");
         const url =
-          baseUrl ??
+          appUrl ??
           `http${
             inferredUrl.startsWith("localhost") ? "" : "s"
           }://${inferredUrl}`;

@@ -34,4 +34,4 @@ export const superuser = {
   password: process.env.SUPERUSER_PASSWORD,
 };
 
-export const baseUrl = process.env.BASE_URL;
+export const appUrl = process.env.APP_URL;
