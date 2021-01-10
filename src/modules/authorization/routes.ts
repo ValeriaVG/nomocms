@@ -80,4 +80,19 @@ routes["/users/:id"].GET = requiresPermission(
   }
 );
 
+routes["/users/:id"].POST = requiresPermission(
+  { scope: "users", permissions: Permission.view },
+  async (
+    { id },
+    { users, permissions }: { users: Users; permissions: Permissions } & any
+  ) => {
+    const user = await users.get(id);
+    if (!user) throw new HTTPNotFound();
+    const userPermissions = await (permissions as Permissions).get({
+      user: user.id,
+    });
+    return { ...user, permissions: userPermissions };
+  }
+);
+
 export default routes;
