@@ -24,12 +24,13 @@ This user is never stored or rendered anywhere else, but has all possible permis
   - [x] Permissions
   - [x] Custom user fields
   - [x] Render user pages
+  - [x] Analytics
 - [x] Control Panel
   - [x] Base layout
   - [x] Templates Editor
   - [x] Styles Editor
   - [x] Content/Markup Editor
+  - [x] Show pageviews
   - [ ] File manager / Image upload
-- [x] Page Analytics
 - [ ] Deploy at least one project with AMP CMS
 - [ ] Digital Ocean One-Click-Deploy

@@ -1,3 +1,4 @@
+import useQuery from "dashboard/utils/useQuery";
 import * as Preact from "preact";
 import {
   LineChart,
@@ -8,33 +9,6 @@ import {
   ResponsiveContainer,
   YAxis,
 } from "recharts";
-
-const data: { date: number; visitors: number }[] = [
-  {
-    date: new Date("2020-12-01").getTime(),
-    visitors: 0,
-  },
-  {
-    date: new Date("2020-12-05").getTime(),
-    visitors: 30,
-  },
-  {
-    date: new Date("2020-12-11").getTime(),
-    visitors: 54,
-  },
-  {
-    date: new Date("2020-11-23").getTime(),
-    visitors: 80,
-  },
-  {
-    date: new Date("2020-12-25").getTime(),
-    visitors: 90,
-  },
-  {
-    date: new Date("2021-01-01").getTime(),
-    visitors: 150,
-  },
-];
 
 const months = [
   "Jan",
@@ -52,9 +26,11 @@ const months = [
 ];
 
 export default function Home(): any {
+  const { result } = useQuery("/analytics/pageviews");
+  const data = result?.items ?? [];
+
   return (
     <>
-      <h1>Website name</h1>
       <section style="padding:2rem 2rem 2rem 0;">
         <ResponsiveContainer width={"100%"} minHeight={260}>
           {/* @ts-ignore */}
@@ -64,12 +40,7 @@ export default function Home(): any {
               padding={{ left: 40, right: 40 }}
               tickLine={false}
               axisLine={false}
-              tickFormatter={(ts: number) => {
-                const date = new Date(ts);
-                return `${
-                  months[date.getMonth()]
-                } ${date.getDate()}, ${date.getFullYear()}`;
-              }}
+              tickFormatter={formatDate}
             />
             <YAxis
               type="number"
@@ -79,11 +50,11 @@ export default function Home(): any {
                 (visitors ? visitors : "") as any
               }
             />
-            <Tooltip />
+            <Tooltip labelFormatter={formatDate} />
             <CartesianGrid vertical={false} />
             <Line
               type="monotone"
-              dataKey="visitors"
+              dataKey="pageviews"
               yAxisId={0}
               strokeWidth={2}
               color="#03a9f4"
@@ -93,4 +64,9 @@ export default function Home(): any {
       </section>
     </>
   );
+}
+
+function formatDate(ts: number) {
+  const date = new Date(ts);
+  return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
 }
