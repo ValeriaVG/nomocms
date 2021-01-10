@@ -1,11 +1,16 @@
 import { dashboard } from "config";
 import { fusebox } from "fuse-box";
 import config from "./fuse.config";
+import compile from "./tools/compile";
 
 const fuse = fusebox(config);
 
-fuse.runProd({
-  bundles: {
-    distRoot: dashboard.dist,
-  },
-});
+const compileServer = () => compile("index.ts");
+compileServer();
+// fuse
+//   .runProd({
+//     bundles: {
+//       distRoot: dashboard.dist,
+//     },
+//   })
+//   .then(compileServer);

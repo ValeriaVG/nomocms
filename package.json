@@ -8,7 +8,7 @@
   "license": "MIT",
   "scripts": {
     "build": "ts-node -r tsconfig-paths/register src/build",
-    "start": "ts-node -r tsconfig-paths/register src/index",
+    "start": "node .server/index",
     "dev": "ts-node-dev -r tsconfig-paths/register src/dev",
     "test": "find ./src -name '*.spec.ts' | xargs mocha -r ts-node/register -r tsconfig-paths/register",
     "coverage": "find ./src -name '*.spec.ts' | xargs nyc --reporter=lcov --reporter=text-summary mocha -r ts-node/register -r tsconfig-paths/register"
