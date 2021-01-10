@@ -5,7 +5,7 @@ import { useHistory } from "react-router-dom";
 export default function Logout() {
   const onSubmit = (e) => {
     e.preventDefault();
-    api.put("/logout").then(() => (document.location.href = "/admin"));
+    api.put("/_api/logout").then(() => (document.location.href = "/admin"));
   };
   const history = useHistory();
   return (
