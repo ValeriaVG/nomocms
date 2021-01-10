@@ -7,13 +7,15 @@ if (typeof process !== undefined) {
   let process = { env: {} };
 }
 
-export const redis: RedisOptions = {
-  username: process.env.REDIS_USERNAME,
-  password: process.env.REDIS_PASSWORD,
-  host: process.env.REDIS_HOST,
-  port: process.env.REDIS_PORT && parseInt(process.env.REDIS_PORT),
-  tls: Boolean(process.env.REDIS_TLS) as any,
-};
+export const redis: RedisOptions = process.env.DATABASE_URL
+  ? (process.env.DATABASE_URL as any)
+  : {
+      username: process.env.REDIS_USERNAME,
+      password: process.env.REDIS_PASSWORD,
+      host: process.env.REDIS_HOST,
+      port: process.env.REDIS_PORT && parseInt(process.env.REDIS_PORT),
+      tls: Boolean(process.env.REDIS_TLS) as any,
+    };
 export const dashboard = {
   pathname: "/admin",
   dist: path.resolve(__dirname, "..", ".dashboard"),

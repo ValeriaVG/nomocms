@@ -10,6 +10,7 @@ export const routes = {
       } catch (error) {
         return {
           status: "NOT OK",
+          code: 500,
         };
       }
     },
