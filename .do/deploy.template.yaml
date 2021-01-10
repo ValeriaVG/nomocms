@@ -2,7 +2,6 @@ spec:
   name: amp-cms
   services:
   - name: cms
-    environment_slug: node-js
     git:
       branch: main
       repo_clone_url: https://github.com/ValeriaVG/amp-cms.git
@@ -13,3 +12,6 @@ spec:
     - key: SUPERUSER_PASSWORD
       scope: RUN_TIME
       value: "clark&lois"
+    environment_slug: node-js      
+    run_command: yarn start
+    build_command: yarn build  
