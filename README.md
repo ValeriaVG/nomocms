@@ -18,13 +18,13 @@ This user is never stored or rendered anywhere else, but has all possible permis
 
 ## Roadmap
 
-- [ ] API
+- [x] API
   - [x] Core functionality
   - [x] Authorization
   - [x] Permissions
   - [x] Custom user fields
-  - [ ] Render user pages
-- [ ] Control Panel
+  - [x] Render user pages
+- [x] Control Panel
   - [x] Base layout
   - [x] Templates Editor
   - [x] Styles Editor

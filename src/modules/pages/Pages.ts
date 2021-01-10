@@ -99,4 +99,10 @@ export default class Pages extends RedisDataSource<ContentPage> {
     const values = { ...data, ...input, content: input.content, html };
     return values;
   }
+
+  async delete(id: string) {
+    const path = await this.context.redis.hget(this.cid(id), "path");
+    await this.context.redis.del(this.pageKey(path));
+    return super.delete(id);
+  }
 }
