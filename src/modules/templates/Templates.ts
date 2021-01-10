@@ -80,9 +80,25 @@ export default class Templates extends KeyDataSource<TemplateData> {
     input: Partial<Record<"body" | "head" | "style", string>>
   ) {
     await this.preview(input);
+    // save styles
+    if (input.style) {
+      await (this.context["styles"] as Styles).save(`${id}.style`, input.style);
+    }
     return super.update(id, { ...input, scope: "source" });
   }
 
+  async get(id: string, scope?: string) {
+    const template = await super.get(id, scope);
+    if (!template) return template;
+    // TODO: figure out a better way
+    if ("styles" in template) {
+      const styles = await (this.context["styles"] as Styles).get(
+        `${id}.style`
+      );
+      if (styles) template.style = styles.data as string;
+    }
+    return template;
+  }
   preview = async ({
     head,
     body,
