@@ -10,7 +10,7 @@ export const routes = CRUDLResolver<Templates>("templates");
 
 routes["/template/preview"] = {
   POST: requiresPermission(
-    { scope: "template", permissions: 1 },
+    { scope: "templates", permissions: 1 },
     async ({ input }, { templates }: { templates: Templates }) => {
       const result = await templates.preview(input);
       return { ...result, type: "amp" } as any;

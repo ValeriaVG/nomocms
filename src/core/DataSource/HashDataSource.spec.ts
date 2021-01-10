@@ -115,7 +115,7 @@ describe("HashDataSource Integration Test", () => {
         "email",
         "lex@luther.corp"
       )
-      .zadd("items", "0", "items::itm_1", "0", "items::itm_2")
+      .zadd("items", "0", "itm_1", "0", "itm_2")
       .exec();
     const source = new Items({ redis });
     const list = await source.list();

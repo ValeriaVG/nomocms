@@ -99,15 +99,14 @@ export default class Templates extends KeyDataSource<TemplateData> {
     }
     return template;
   }
-  preview = async ({
-    head,
-    body,
-    style,
-  }: Partial<Record<"body" | "head" | "style", string>>) => {
+  preview = async (
+    { head, body, style }: Partial<Record<"body" | "head" | "style", string>>,
+    params?: { content: string; [key: string]: any }
+  ) => {
     try {
       // Parse head and body
       const tmp = (head ?? "") + Templates.delimiter + (body ?? "");
-      await this.renderText(tmp);
+      await this.renderText(tmp, params);
       // Parse style
       const parsedStyle =
         style && (await (this.context["styles"] as Styles).compile(style));

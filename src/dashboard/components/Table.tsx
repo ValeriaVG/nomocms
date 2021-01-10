@@ -42,21 +42,24 @@ export default function Table<T>({
         </tr>
       </thead>
       <tbody>
-        {items?.map((item) => (
-          <tr key={item[keyField]}>
-            {body.map(({ key, field, render }) => {
-              return (
-                <td key={key}>
-                  {render
-                    ? render(item)
-                    : field
-                    ? item[field]
-                    : item[key] ?? ""}
-                </td>
-              );
-            })}
-          </tr>
-        ))}
+        {items?.map(
+          (item) =>
+            item && (
+              <tr key={item[keyField]}>
+                {body.map(({ key, field, render }) => {
+                  return (
+                    <td key={key}>
+                      {render
+                        ? render(item)
+                        : field
+                        ? item[field]
+                        : item[key] ?? ""}
+                    </td>
+                  );
+                })}
+              </tr>
+            )
+        )}
         {!isLoading && !items?.length && (
           <tr>
             <td colSpan={head.length}>No items yet</td>

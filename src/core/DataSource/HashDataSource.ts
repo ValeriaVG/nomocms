@@ -89,7 +89,7 @@ export default abstract class HashDataSource<
       local result = redis.call('ZREVRANGEBYSCORE',idx, '+inf', '-inf' , 'LIMIT',ARGV[1],ARGV[2]);
       local items = {};
       for k,cid in ipairs(result) do
-        local hash =redis.call('hgetall',cid);
+        local hash =redis.call('hgetall',idx..'::'..cid);
         items[k] = {cid, hash};
       end
       return {count,items};
@@ -158,9 +158,14 @@ export default abstract class HashDataSource<
    * @param id
    */
   delete(id: string) {
-    return this.context.redis.del(this.cid(id)).then((deleted) => {
-      return { deleted: Boolean(deleted) };
-    });
+    return this.context.redis
+      .multi()
+      .del(this.cid(id))
+      .zrem(this.collection, id)
+      .exec()
+      .then((deleted) => {
+        return { deleted: Boolean(deleted) };
+      });
   }
 
   /**

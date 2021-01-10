@@ -1,14 +1,17 @@
 import Editor from "dashboard/components/Editor";
 import ItemRoutes from "dashboard/ItemRoutes";
+import useQuery from "dashboard/utils/useQuery";
 import { ContentPage } from "modules/pages/types";
 
 import * as Preact from "preact";
 
 export default function Pages() {
+  const { result } = useQuery("/templates");
+  const options = result?.items ?? [];
   return (
     <ItemRoutes<ContentPage>
       name="Page"
-      legend="Manage your pages &amp; preview changes"
+      legend="Manage your pages and preview changes"
       defaultValue={{
         content: `
 ---
@@ -38,27 +41,16 @@ Content here`,
               Template:
               <select
                 name="template"
-                required
+                placeholder="Choose template"
                 value={values.template}
                 onChange={onValueChange("template")}
               >
-                <option value="tpl_1" default>
-                  Template 1
-                </option>
-                <option value="tpl_2">Template 2</option>
-                <option value="tpl_3">Template 3</option>
+                {options.map(({ id }) => (
+                  <option value={id} default>
+                    {id}
+                  </option>
+                ))}
               </select>
-            </label>
-          </fieldset>
-          <fieldset style="max-width:320px;margin-left:auto;">
-            <label>
-              Published:
-              <input
-                type="date"
-                name="publishedAt"
-                value={values.publishedAt}
-                onChange={onValueChange("publishedAt")}
-              />
             </label>
           </fieldset>
         </>
