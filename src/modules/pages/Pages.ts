@@ -1,10 +1,12 @@
-import { RedisDataSource } from "core/DataSource";
+import { flatten, RedisDataSource } from "core/DataSource";
 import { ContentPage } from "./types";
 import matter from "gray-matter";
 import marked from "marked";
 import querystring from "querystring";
 import NormalizedURL from "core/NormalizedURL";
 import { html } from "amp/lib";
+import Templates from "modules/templates/Templates";
+import { HTTPUserInputError } from "core/errors";
 
 const renderer = {
   image(href: string, caption: string, text: string) {
@@ -47,15 +49,9 @@ export default class Pages extends RedisDataSource<ContentPage> {
         name: "template",
         message: "Page needs to have a template",
       });
-    const values = this.parse(input);
-    if (!values.path)
-      errors.push({
-        name: "path",
-        message: "Please define a path",
-      });
-    const url = new NormalizedURL(values.path);
+
     const pathExists = await this.context.redis.exists(
-      this.collection + "::" + url.normalizedPath
+      this.pageKey(input.path)
     );
     if (pathExists)
       errors.push({
@@ -64,7 +60,37 @@ export default class Pages extends RedisDataSource<ContentPage> {
       });
     if (errors.length) return { errors, code: 400 };
 
+    const values = await this.parseAndSave(input);
     return super.create(values);
+  }
+
+  async update(id, input: Partial<ContentPage>) {
+    const values = await this.parseAndSave(input);
+    return super.update(id, values);
+  }
+
+  pageKey(path: string) {
+    return this.collection + "::" + new NormalizedURL(path).normalizedPath;
+  }
+  async parseAndSave(input: Partial<ContentPage>) {
+    const values = this.parse(input);
+    if (!values.path)
+      throw new HTTPUserInputError("path", "Please defined a path");
+    if (!input.template)
+      throw new HTTPUserInputError(
+        "template",
+        "Please choose a template for this page"
+      );
+    // Render page into url
+    const result = await (this.context["templates"] as Templates).render(
+      input.template,
+      {
+        ...values,
+        content: values.html,
+      }
+    );
+    await this.context.redis.hset(this.pageKey(input.path), ...flatten(result));
+    return values;
   }
 
   parse(input: Partial<ContentPage>) {

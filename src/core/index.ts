@@ -33,8 +33,12 @@ export default function core(
     const sendResponse = responseFactory(res);
     try {
       const method = req.method?.toUpperCase();
-      if (["HEAD", "OPTIONS"].includes(method)) return res.end();
+      // Look for existing page
       const url = new NormalizedURL(req.url);
+      console.log(url.normalizedPath);
+      const page = await context.redis.hgetall("pages::" + url.normalizedPath);
+      if (page.id) return sendResponse({ type: "amp", ...page });
+      if (["HEAD", "OPTIONS"].includes(method)) return res.end();
 
       context.cookies = req.headers.cookie
         ? cookie.parse(req.headers.cookie)
