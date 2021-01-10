@@ -15,6 +15,3 @@ spec:
     - key: DATABASE_URL
       scope: RUN_TIME
       value: ${redis.DATABASE_URL}
-  databases:
-  - name: redis
-    engine: REDIS
