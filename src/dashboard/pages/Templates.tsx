@@ -60,7 +60,7 @@ export default function Templates() {
 
 const TemplateForm = ({ values, setValue, onValueChange, update }) => {
   const [tab, setTab] = useState<"body" | "head" | "style">("body");
-  const { togglePreview } = usePreview("/template/preview", values);
+  const { togglePreview } = usePreview("/_api/template/preview", values);
   return (
     <>
       <fieldset className="columns small">

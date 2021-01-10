@@ -26,7 +26,7 @@ const months = [
 ];
 
 export default function Home(): any {
-  const { result } = useQuery("/analytics/pageviews");
+  const { result } = useQuery("/_api/analytics/pageviews");
   const data = result?.items ?? [];
 
   return (

@@ -77,18 +77,17 @@ export default class Users extends RedisDataSource<User, UserInput> {
       `,
     });
 
-    const saveuser = [
-      "local next = redis.call('incr',KEYS[1]..'::next');",
-      "local id = KEYS[2]..'_'..next;",
-      "local cid = KEYS[1]..'::'..id;",
-      "redis.call('hset',cid,'id',id, 'email', KEYS[3], unpack(ARGV));",
-      "redis.call('zadd',emailidx,0,KEYS[3]..'::'..id);",
-      "redis.call('zadd',KEYS[1],0,cid);",
-      "return redis.call('hgetall',cid);",
-    ].join("\n");
+    /**
+     * collection
+     * id
+     */
     context.redis.defineCommand("saveuser", {
-      numberOfKeys: 3,
-      lua: saveuser,
+      numberOfKeys: 2,
+      lua: `
+      local cid = KEYS[1]..'::'..KEYS[2];
+      redis.call('hset',cid,unpack(ARGV));
+      return redis.call('hgetall',cid);
+      `,
     });
     context.redis.defineCommand("newuser", {
       numberOfKeys: 3,
@@ -97,7 +96,13 @@ export default class Users extends RedisDataSource<User, UserInput> {
       local emails = redis.call('ZLEXCOUNT', emailidx, '['..KEYS[3], '['..KEYS[3]..':\xff');
       if emails == 0 
         then
-          ${saveuser}
+          local next = redis.call('incr',KEYS[1]..'::next');
+          local id = KEYS[2]..'_'..next;
+          local cid = KEYS[1]..'::'..id;
+          redis.call('hset',cid,'id',id, 'email', KEYS[3], unpack(ARGV));
+          redis.call('zadd',emailidx,0,KEYS[3]..'::'..id);
+          redis.call('zadd',KEYS[1],0,id);
+          return redis.call('hgetall',cid);
         else
           return {err="already_exists"}  
       end  
@@ -107,14 +112,14 @@ export default class Users extends RedisDataSource<User, UserInput> {
     context.redis.defineCommand("remuser", {
       numberOfKeys: 2,
       lua: `
-      redis.call('zrem',KEYS[1],KEYS[1]..'::'..KEYS[2]);
+      redis.call('zrem',KEYS[1],KEYS[2]);
       local email = redis.call('hget',KEYS[1]..'::'..KEYS[2],'email');
       if email == nil
       then
         return 0
       end  
-      redis.call('zrem',KEYS[1]..'::email',email..KEYS[2])
-      return redis.call('del',KEYS[2]);
+      redis.call('zrem',KEYS[1]..'::email',email..'::'..KEYS[2])
+      return redis.call('del',KEYS[1]..'::'..KEYS[2]);
       `,
     });
   }
@@ -163,18 +168,33 @@ export default class Users extends RedisDataSource<User, UserInput> {
     email,
     password,
     permissions,
-    ...rest
+    ...input
   }: UserInput & { id: string | false }) {
     const pwhash = password && (await bcrypt.hash(password, await genSalt(5)));
 
-    const input = { ...rest, email: email.trim().toLowerCase() };
-    return this.context.redis[input.id ? "saveuser" : "newuser"](
-      this.collection,
-      this.prefix,
-      input.email,
-      ...flatten(this.encode(input)),
-      ...(pwhash ? ["pwhash", pwhash] : [])
-    )
+    const newEmail = email.trim().toLowerCase();
+
+    const operation =
+      input.id === false
+        ? this.context.redis["newuser"](
+            this.collection,
+            this.prefix,
+            newEmail,
+            ...flatten(this.encode(input)),
+            ...(pwhash ? ["pwhash", pwhash] : []),
+            "createdAt",
+            Date.now()
+          )
+        : this.context.redis["saveuser"](
+            this.collection,
+            input.id,
+            ...flatten(this.encode(input)),
+            ...(pwhash ? ["pwhash", pwhash] : []),
+            "updatedAt",
+            Date.now()
+          );
+
+    return operation
       .then(async (result) => {
         const user = await this.decode(collect(result));
         if (!user) return null;

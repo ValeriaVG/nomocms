@@ -8,7 +8,7 @@ export const dataSources = {
 
 export const routes = CRUDLResolver<Templates>("templates");
 
-routes["/template/preview"] = {
+routes["/_api/template/preview"] = {
   POST: requiresPermission(
     { scope: "templates", permissions: 1 },
     async ({ input }, { templates }: { templates: Templates }) => {

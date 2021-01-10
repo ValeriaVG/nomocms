@@ -30,7 +30,7 @@ export const routes = {
     },
   },
 
-  "/analytics/pageviews": {
+  "/_api/analytics/pageviews": {
     GET: requiresPermission(
       { scope: "analytics", permissions: Permission.list },
       (params = {}, context: APIContext) => {

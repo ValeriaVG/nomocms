@@ -7,7 +7,7 @@ import { APIContext } from "./types";
 export default function CRUDLResolver<
   T extends CRUDLDataSource<{ id: string }>
 >(name: string, dataSource?: string, path?: string) {
-  const endpoint = path ?? "/" + name;
+  const endpoint = "/_api" + (path ?? "/" + name);
   const ctxKey = dataSource ?? name;
   type CRUDLContext = APIContext & Record<string, T>;
   return {

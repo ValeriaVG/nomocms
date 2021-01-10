@@ -9,7 +9,7 @@ import { ContentPage } from "modules/pages/types";
 import * as Preact from "preact";
 
 export default function Pages() {
-  const { result } = useQuery("/templates");
+  const { result } = useQuery("/_api/templates");
   const options = result?.items ?? [];
   return (
     <ItemRoutes<ContentPage>
@@ -35,7 +35,7 @@ Content here`,
         },
       }}
       renderForm={({ values, setValue, onValueChange }) => {
-        const { togglePreview } = usePreview("/page/preview", values);
+        const { togglePreview } = usePreview("/_api/page/preview", values);
         return (
           <>
             <fieldset>

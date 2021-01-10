@@ -24,7 +24,7 @@ export default function Users() {
         },
         name: { label: "Name" },
       }}
-      renderForm={({ values, setValue, onValueChange }) => {
+      renderForm={({ values, setValue, onValueChange, update }) => {
         const onPermissionChange = (permission: number) => (e) => {
           if (permission === Permission.all) {
             return setValue(
@@ -54,6 +54,7 @@ export default function Users() {
                   value={values.email}
                   onChange={onValueChange("email")}
                   required
+                  readOnly={update}
                 />
               </label>
               <label>

@@ -21,6 +21,7 @@ export function collect(values: string[]): Record<string, string> | null {
  * @param input
  */
 export function flatten(input: Record<string, string>) {
+  if (!input) return null;
   return Object.entries(input).reduce((a, c) => {
     return a.concat(c);
   }, []);

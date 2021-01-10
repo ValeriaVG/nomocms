@@ -9,7 +9,7 @@ export const dataSources = {
 };
 
 export const routes = CRUDLResolver<Pages>("pages");
-routes["/page/preview"] = {
+routes["/_api/page/preview"] = {
   POST: requiresPermission(
     { scope: "pages", permissions: 1 },
     async (
@@ -19,7 +19,9 @@ routes["/page/preview"] = {
         pages,
       }: { templates: Templates; pages: Pages; styles: Styles }
     ) => {
-      const { content, html, ...params } = pages.parse(input);
+      const parsed = pages.parse(input);
+      if ("errors" in parsed) return parsed;
+      const { content, html, ...params } = parsed;
       const result = await templates.render(input.template, {
         ...params,
         content: html,

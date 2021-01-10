@@ -11,7 +11,7 @@ import { requiresPermission } from "./lib";
 
 const routes = {
   [dashboard.pathname]: { GET: () => ({ ...loginPage, type: "amp" }) },
-  "/login": {
+  "/_api/login": {
     POST: async (
       { input: { email, password } },
       {
@@ -42,7 +42,7 @@ const routes = {
       return { user, canAccessDashboard };
     },
   },
-  "/logout": {
+  "/_api/logout": {
     PUT: async (
       _,
       { token, user, tokens }: APIContext & { tokens: Tokens }
@@ -52,12 +52,12 @@ const routes = {
       return { result: Boolean(result) };
     },
   },
-  "/access": {
+  "/_api/access": {
     GET: async (_, { user, canAccessDashboard }: APIContext) => {
       return { canAccessDashboard, user };
     },
   },
-  "/ping": {
+  "/_api/ping": {
     POST: (params) => {
       return { message: "OK" };
     },
@@ -65,22 +65,7 @@ const routes = {
   ...CRUDLResolver<Users>("users"),
 };
 
-routes["/users/:id"].GET = requiresPermission(
-  { scope: "users", permissions: Permission.view },
-  async (
-    { id },
-    { users, permissions }: { users: Users; permissions: Permissions } & any
-  ) => {
-    const user = await users.get(id);
-    if (!user) throw new HTTPNotFound();
-    const userPermissions = await (permissions as Permissions).get({
-      user: user.id,
-    });
-    return { ...user, permissions: userPermissions };
-  }
-);
-
-routes["/users/:id"].POST = requiresPermission(
+routes["/_api/users/:id"].GET = requiresPermission(
   { scope: "users", permissions: Permission.view },
   async (
     { id },

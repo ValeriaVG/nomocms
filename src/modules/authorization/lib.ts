@@ -22,16 +22,7 @@ export function requiresPermission<
 ): ResolverFn<P, C & { user: User; permissions: Permissions }, R> {
   return requiresUser(async (params, context) => {
     if (context.user.id === "superuser") return next(params, context);
-    /**
-     * Allow users to read,
-     * update and delete themselves
-     */
-    if (
-      scope === "users" &&
-      ![Permission.list, Permission.create].includes(permissions) &&
-      params["id"] === context.user.id
-    )
-      return next(params, context);
+    // TODO: Let users update themselves
     const hasAccess = await context.permissions.check({
       scope,
       permissions,

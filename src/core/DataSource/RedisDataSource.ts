@@ -49,7 +49,8 @@ export default abstract class RedisDataSource<
    * according to schema
    * @param value
    */
-  protected encode = (value: Record<string, any>): Record<string, string> => {
+  protected encode = (value?: Record<string, any>): Record<string, string> => {
+    if (!value) return value;
     if (!this.schema) return value as T;
     return encode(this.schema, value);
   };

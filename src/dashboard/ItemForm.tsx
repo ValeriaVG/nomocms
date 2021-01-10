@@ -19,6 +19,7 @@ export type ItemFormProps<T> = {
   singular: string;
   plural: string;
   path: string;
+  apipath: string;
   defaultValue?: Partial<T>;
   children: (
     form: FormValues<Partial<T>> & { update: boolean }
@@ -30,13 +31,14 @@ export function ItemCreate<T extends Record<string, any>>({
   singular,
   plural,
   defaultValue,
+  apipath,
   children,
 }: ItemFormProps<T>) {
   const { add, showErrors } = useNotification();
   const form = useForm<Partial<T>>(defaultValue);
   const history = useHistory();
   const onSubmit = async () => {
-    const result = await api.post(path, form.values);
+    const result = await api.post(apipath, form.values);
     if ("errors" in result) return showErrors(result.errors);
     add({
       id: "saved_" + singular,
@@ -90,6 +92,7 @@ export function ItemUpdate<T extends Record<string, any>>({
   singular,
   plural,
   defaultValue,
+  apipath,
   children,
   id,
 }: ItemFormProps<T> & { id: string }) {
@@ -98,7 +101,7 @@ export function ItemUpdate<T extends Record<string, any>>({
   const history = useHistory();
 
   const onSubmit = async () => {
-    const result = await api.post(`${path}/${id}`, form.values);
+    const result = await api.post(`${apipath}/${id}`, form.values);
     if ("errors" in result) return showErrors(result.errors);
     return add({
       id: "updated_" + singular,
@@ -115,7 +118,7 @@ export function ItemUpdate<T extends Record<string, any>>({
   const label = `${singular} #${id}`;
   const askAndDelete = () => {
     if (confirm(`Are you sure you want to delete ${label}?`)) {
-      return api.delete(`${path}/${id}`).then((result) => {
+      return api.delete(`${apipath}/${id}`).then((result) => {
         if ("errors" in result) return showErrors(result.errors);
         add({
           id: "deleted_" + singular,
@@ -191,7 +194,7 @@ export default function ItemForm<T>(props: ItemFormProps<T>) {
   const {
     params: { id },
   } = useRouteMatch<{ id?: string }>();
-  const { loading, result } = useQuery(id && props.path + "/" + id);
+  const { loading, result } = useQuery(id && props.apipath + "/" + id);
 
   if (id && result?.id)
     return <ItemUpdate {...props} id={id} defaultValue={result} />;

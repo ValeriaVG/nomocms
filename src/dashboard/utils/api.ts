@@ -9,8 +9,8 @@ export class Api {
     path: string,
     method: HTTPMethod = "GET",
     input?: JSONObject | FormData
-  ) =>
-    this.fetch(this.host + path, {
+  ) => {
+    return this.fetch(this.host + path, {
       method,
       mode: "cors",
       body: input && JSON.stringify(input),
@@ -51,6 +51,7 @@ export class Api {
           ],
         };
       });
+  };
 
   get = (path: string) => this.call(path);
   put = (path: string) => this.call(path, "PUT");

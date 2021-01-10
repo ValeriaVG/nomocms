@@ -20,18 +20,38 @@ export default function core(
   },
   ctx: APIContext
 ): any {
-  const context: APIContext & Record<string, any> = Object.assign({}, ctx);
   if (modules.dataSources) {
     for (let source in modules.dataSources) {
-      context[source] = new (modules.dataSources[source] as any)(context);
+      ctx[source] = new (modules.dataSources[source] as any)(ctx);
     }
   }
+  let notFoundPage;
+  ctx.redis?.hgetall("pages::url::wildcard").then((page) => {
+    notFoundPage = page;
+  });
   return async (
     req: IncomingMessage,
     res: ServerResponse,
     next?: () => void
   ) => {
+    // Clean context for each request
+    const context: APIContext & Record<string, any> = Object.assign({}, ctx);
     const sendResponse = responseFactory(req, res);
+
+    const initializeAccess = async () => {
+      if (!context.token) return;
+      context.user = await (context.users as Users).byToken(context.token);
+
+      context.canAccessDashboard =
+        context.user?.id === "superuser"
+          ? true
+          : context.user?.id &&
+            (await (context.permissions as Permissions).check({
+              permissions: Permission.read,
+              user: context.user.id,
+            }));
+    };
+
     try {
       const method = req.method?.toUpperCase();
 
@@ -41,47 +61,41 @@ export default function core(
       // TODO: check accept header
       // Look for existing page
       context.url = new NormalizedURL(req.url);
-      const page = await context.redis?.hgetall(
-        "pages::" + context.url.normalizedPath
-      );
-      if (page?.id) return sendResponse({ type: "amp", ...page });
+      const acceptsJSON = req.headers.accept?.endsWith("/json");
 
       context.cookies = req.headers.cookie
         ? cookie.parse(req.headers.cookie)
         : {};
 
-      context.canAccessDashboard = false;
       const params = await requestParams(req);
-      if ("users" in context && "permissions" in context) {
-        context.token = context.cookies["amp-access"] ?? params.rid;
-
-        context.user = context.token
-          ? await (context.users as Users).byToken(context.token)
-          : undefined;
-
-        context.canAccessDashboard =
-          context.user?.id === "superuser"
-            ? true
-            : context.user?.id &&
-              (await (context.permissions as Permissions).check({
-                permissions: Permission.read,
-                user: context.user.id,
-              }));
-      }
-
+      context.token = context.cookies["amp-access"] ?? params.rid;
+      await initializeAccess().catch(console.error);
       if (
         context.canAccessDashboard &&
+        !acceptsJSON &&
         context.url.normalizedPath.startsWith(dashboard.pathname)
-      )
+      ) {
         return renderDashboard(req, res, next);
-      if (["HEAD", "OPTIONS"].includes(method)) return res.end();
+      }
+      if (!acceptsJSON) {
+        const page = await context.redis?.hgetall(
+          "pages::url::" + context.url.normalizedPath
+        );
+        if (page?.id) {
+          return sendResponse({ type: "amp", ...page });
+        }
+      }
+
       const { resolver, params: routeParams } = routeRequest(
         context.url,
         method as HTTPMethod,
         modules.routes
       );
+
       if (!resolver) {
         if (next) return next();
+        if (notFoundPage)
+          return sendResponse({ type: "amp", ...notFoundPage, code: 404 });
         throw new HTTPNotFound();
       }
 

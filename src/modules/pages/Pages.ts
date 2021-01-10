@@ -7,6 +7,7 @@ import NormalizedURL from "core/NormalizedURL";
 import { html } from "amp/lib";
 import Templates from "modules/templates/Templates";
 import { HTTPUserInputError } from "core/errors";
+import { ErrorResponse } from "core/types";
 
 const renderer = {
   image(href: string, caption: string, text: string) {
@@ -43,61 +44,69 @@ export default class Pages extends RedisDataSource<ContentPage> {
   prefix = "pg";
 
   async create(input: Partial<ContentPage>) {
-    const errors = [];
     if (!input.template)
-      errors.push({
-        name: "template",
-        message: "Page needs to have a template",
-      });
-
+      throw new HTTPUserInputError("template", "Page needs to have a template");
+    const values = this.parse(input);
+    if ("errors" in values) return values;
     const pathExists = await this.context.redis.exists(
-      this.pageKey(input.path)
+      this.pageKey(values.path)
     );
     if (pathExists)
-      errors.push({
-        name: "path",
-        message: "Another page with this path already exists",
-      });
-    if (errors.length) return { errors, code: 400 };
-
-    const values = await this.parseAndSave(input);
+      throw new HTTPUserInputError(
+        "path",
+        "Another page with this path already exists"
+      );
+    await this.validateAndSave(values);
     return super.create(values);
   }
 
   async update(id, input: Partial<ContentPage>) {
-    const values = await this.parseAndSave(input);
+    const values = this.parse(input);
+    if ("errors" in values) return values;
+    await this.validateAndSave(values);
     return super.update(id, values);
   }
 
   pageKey(path: string) {
-    return this.collection + "::" + new NormalizedURL(path).normalizedPath;
+    if (path === "*" || path === "/*")
+      return this.collection + "::url::wildcard";
+    return this.collection + "::url::" + new NormalizedURL(path).normalizedPath;
   }
-  async parseAndSave(input: Partial<ContentPage>) {
-    const values = this.parse(input);
-    if (!values.path)
+  async validateAndSave(input: Partial<ContentPage> & { html: string }) {
+    if (!input.path)
       throw new HTTPUserInputError("path", "Please defined a path");
-    if (!input.template)
+    const templates = this.context["templates"] as Templates;
+    if (!input.template || !(await templates.exists(input.template)))
       throw new HTTPUserInputError(
         "template",
         "Please choose a template for this page"
       );
+
     // Render page into url
-    const result = await (this.context["templates"] as Templates).render(
-      input.template,
-      {
-        ...values,
-        content: values.html,
-      }
-    );
+    const result = await templates.render(input.template, {
+      ...input,
+      content: input.html,
+    });
+    if (input["code"]) {
+      result["code"] = (input["code"] as number).toString();
+    }
     await this.context.redis.hset(this.pageKey(input.path), ...flatten(result));
-    return values;
   }
 
-  parse(input: Partial<ContentPage>) {
-    const { data, content } = matter(input.content.trim());
-    const html = marked(content);
-    const values = { ...data, ...input, content: input.content, html };
-    return values;
+  parse(
+    input: Partial<ContentPage>
+  ): (Partial<ContentPage> & { html: string }) | ErrorResponse {
+    try {
+      const { data, content } = matter(input.content.trim());
+      const html = marked(content);
+      const values = { ...data, ...input, content: input.content, html };
+      return values;
+    } catch (error) {
+      return {
+        errors: [{ name: "content", message: error.message }],
+        code: 400,
+      };
+    }
   }
 
   async delete(id: string) {

@@ -13,14 +13,16 @@ export default function ItemsList<T extends { id: string }>({
   path,
   columns,
   legend,
+  apipath,
 }: {
   singular: string;
   columns: TableColumns<T>;
   path: string;
   plural: string;
   legend?: string | Preact.JSX.Element;
+  apipath: string;
 }) {
-  const { result, loading } = useQuery<{ items: T[] }>(path);
+  const { result, loading } = useQuery<{ items: T[] }>(apipath);
   const items = result && "items" in result ? result.items : [];
 
   return (

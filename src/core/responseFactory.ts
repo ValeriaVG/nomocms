@@ -10,10 +10,47 @@ export default function responseFactory(
 ) {
   return async (response: RouteResponse) => {
     const code = "code" in response ? response.code : 200;
-    res.statusCode = code;
+    const sendError = () => {
+      res.statusCode = 500;
+      return res.end();
+    };
+    const respondWith = (response: RouteResponse) => {
+      res.statusCode = code;
+      if (!("data" in response && "type" in response)) {
+        console.error("Incorrect response", response);
+        return sendError();
+      }
+
+      res.setHeader("Content-Type", response.type);
+      if (typeof response.data === "string") {
+        response.length = response.data.length;
+      }
+
+      if (!("length" in response)) {
+        console.error(
+          "Parameter length must be provided for a stream response",
+          response
+        );
+        return sendError();
+      }
+
+      res.setHeader("Content-Length", response.length.toString());
+      if (["HEAD", "OPTIONS"].includes(req.method.toUpperCase()))
+        return res.end();
+      if (typeof response.data === "string") {
+        res.write(response.data);
+        return res.end();
+      }
+      if (!(response.data instanceof Readable)) {
+        console.error("Unknown response data", response);
+        return sendError();
+      }
+
+      return response.data.pipe(res);
+    };
+
     switch (response.type) {
       case "amp": {
-        res.setHeader("Content-Type", "text/html");
         const inferredUrl = req.headers.host.replace(/\/$/, "");
         const url =
           appUrl ??
@@ -21,40 +58,26 @@ export default function responseFactory(
             inferredUrl.startsWith("localhost") ? "" : "s"
           }://${inferredUrl}`;
         const responseText = boilerplate({ url, ...(response as AMPResponse) });
-        res.setHeader("Content-Length", responseText.length);
-        res.write(responseText);
-        return res.end();
+
+        return respondWith({
+          type: "text/html",
+          data: responseText,
+        });
       }
       case "json":
       case "application/json":
       case undefined:
       case null: {
-        res.setHeader("Content-Type", "application/json");
         const responseText = JSON.stringify({ ...response, code });
-        res.setHeader("Content-Length", responseText.length);
-        res.write(responseText);
-        return res.end();
+        return respondWith({
+          type: "application/json",
+          data: responseText,
+        });
       }
       case "html":
         response.type = "text/html";
       default: {
-        if (!("data" in response && "type" in response)) {
-          throw Error("Incorrect response");
-        }
-        res.setHeader("Content-Type", response.type);
-        if (typeof response.data === "string") {
-          res.setHeader("Content-Length", response.data.length.toString());
-          res.write(response.data);
-          return res.end();
-        }
-        if (!(response.data instanceof Readable))
-          throw new Error("Unknown response data");
-        if (!("length" in response))
-          throw new Error(
-            "Parameter length must be provided for a stream response"
-          );
-        res.setHeader("Content-Length", response.length.toString());
-        return response.data.pipe(res);
+        return respondWith(response as any);
       }
     }
   };

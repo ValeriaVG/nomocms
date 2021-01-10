@@ -47,7 +47,7 @@ export const body = html`
       </svg>
 
       <amp-layout amp-access="NOT canAccessDashboard" amp-access-hide>
-        <form method="post" action-xhr="/login" target="_top">
+        <form method="post" action-xhr="/_api/login" target="_top">
           <fieldset>
             <label>
               <span>Email:</span>
@@ -127,9 +127,9 @@ export const head = html`
 
   <script id="amp-access" type="application/json">
     {
-      "authorization": "/access?rid=READER_ID&url=SOURCE_URL",
-      "pingback": "/ping?rid=READER_ID&url=SOURCE_URL",
-      "login": "/login?rid=READER_ID&url=SOURCE_URL",
+      "authorization": "/_api/access?rid=READER_ID&url=SOURCE_URL",
+      "pingback": "/_api/ping?rid=READER_ID&url=SOURCE_URL",
+      "login": "/_api/login?rid=READER_ID&url=SOURCE_URL",
       "authorizationFallbackResponse": { "error": true }
     }
   </script>

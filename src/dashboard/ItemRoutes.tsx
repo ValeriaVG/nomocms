@@ -11,12 +11,14 @@ export default function ItemRoutes<T extends { id: string }>({
   renderForm,
   defaultValue,
   legend,
+  apipath,
   ...props
 }: {
   name: string;
   columns: TableColumns<T>;
   plural?: string;
   path?: string;
+  apipath?: string;
   defaultValue?: Partial<T>;
   renderForm: (
     form: FormValues<Partial<T>> & { update: boolean }
@@ -25,7 +27,12 @@ export default function ItemRoutes<T extends { id: string }>({
 }) {
   const plural = props.plural ?? name + "s";
   const path = props.path ?? "/" + plural.toLowerCase();
-  const params = { singular: name, plural, path };
+  const params = {
+    singular: name,
+    plural,
+    path,
+    apipath: apipath ? apipath : "/_api" + path,
+  };
   const Page = () => (
     <ItemForm {...params} defaultValue={defaultValue}>
       {renderForm}
