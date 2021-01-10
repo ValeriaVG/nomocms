@@ -25,3 +25,5 @@ export const superuser = {
   email: process.env.SUPERUSER_EMAIL,
   password: process.env.SUPERUSER_PASSWORD,
 };
+
+export const baseUrl = process.env.BASE_URL;

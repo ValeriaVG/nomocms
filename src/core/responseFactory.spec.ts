@@ -7,7 +7,7 @@ import { Readable } from "stream";
 describe("responseFactory Integration Test", () => {
   it("can send JSONResponse", (done) => {
     const middleware = (req, res) => {
-      return responseFactory(res)({ message: "OK" });
+      return responseFactory(req, res)({ message: "OK" });
     };
     request(middleware)
       .get("/")
@@ -22,7 +22,10 @@ describe("responseFactory Integration Test", () => {
   });
   it("can send ErrorResponse", async () => {
     const middleware = (req, res) => {
-      return responseFactory(res)({
+      return responseFactory(
+        req,
+        res
+      )({
         errors: [{ name: "NotFound", message: "Page not found" }],
         code: 404,
       });
@@ -38,7 +41,10 @@ describe("responseFactory Integration Test", () => {
   });
   it.skip("can send AMPResponse", async () => {
     const middleware = (req, res) => {
-      return responseFactory(res)({
+      return responseFactory(
+        req,
+        res
+      )({
         type: "amp",
         body: "<h1>Hello!</h1>",
       });
@@ -51,7 +57,10 @@ describe("responseFactory Integration Test", () => {
   });
   it("can send HTMLResponse", async () => {
     const middleware = (req, res) => {
-      return responseFactory(res)({
+      return responseFactory(
+        req,
+        res
+      )({
         type: "html",
         data: "<html><body><h1>Hello!</h1></html>",
       });
@@ -66,7 +75,10 @@ describe("responseFactory Integration Test", () => {
   });
   it("can send DataResponse", async () => {
     const middleware = (req, res) => {
-      return responseFactory(res)({
+      return responseFactory(
+        req,
+        res
+      )({
         type: "text/plain",
         data: Readable.from(["foo", "bar"]),
         length: 6,

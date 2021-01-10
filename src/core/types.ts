@@ -1,6 +1,8 @@
+import { IncomingHttpHeaders } from "http";
 import { User } from "modules/authorization/Users";
 import { Readable } from "stream";
 import * as context from "./context";
+import NormalizedURL from "./NormalizedURL";
 
 export type HTTPMethod = "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
 
@@ -18,6 +20,10 @@ export type APIContext = typeof context & {
   token?: string;
   user?: User;
   canAccessDashboard?: boolean;
+  headers?: IncomingHttpHeaders;
+  url?: NormalizedURL;
+  ip?: string;
+  ip_num?: number;
 };
 
 export type SimpleTypes = string | number | boolean | null;

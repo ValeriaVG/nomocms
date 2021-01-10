@@ -1,16 +1,26 @@
 import boilerplate from "amp/boilerplate";
-import { ServerResponse } from "http";
+import { baseUrl } from "config";
+import { IncomingMessage, ServerResponse } from "http";
 import { Readable } from "stream";
 import { AMPResponse, RouteResponse } from "./types";
 
-export default function responseFactory(res: ServerResponse) {
+export default function responseFactory(
+  req: IncomingMessage,
+  res: ServerResponse
+) {
   return async (response: RouteResponse) => {
     const code = "code" in response ? response.code : 200;
     res.statusCode = code;
     switch (response.type) {
       case "amp": {
         res.setHeader("Content-Type", "text/html");
-        const responseText = boilerplate(response as AMPResponse);
+        const inferredUrl = req.headers.host.replace(/\/$/, "");
+        const url =
+          baseUrl ??
+          `http${
+            inferredUrl.startsWith("localhost") ? "" : "s"
+          }://${inferredUrl}`;
+        const responseText = boilerplate({ url, ...(response as AMPResponse) });
         res.setHeader("Content-Length", responseText.length);
         res.write(responseText);
         return res.end();

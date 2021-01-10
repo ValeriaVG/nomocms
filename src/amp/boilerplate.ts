@@ -3,17 +3,19 @@ export default ({
   body,
   head,
   style,
+  url,
 }: {
   body?: string;
   head?: string;
   style?: string;
+  url: string;
 }) => html`
   <!DOCTYPE html>
   <html ⚡ lang="en">
     <head>
       <meta charset="utf-8" />
       <script async src="https://cdn.ampproject.org/v0.js"></script>
-      <link rel="canonical" href="http://localhost:8080" />
+      <link rel="canonical" href="${url}" />
       <meta name="viewport" content="width=device-width" />
       <style amp-boilerplate>
         body {
@@ -75,9 +77,32 @@ export default ({
       >
       ${style && ["<style amp-custom>", style, "</style>"].join("")}
       ${head ?? ""}
+      <script
+        async
+        custom-element="amp-analytics"
+        src="https://cdn.ampproject.org/v0/amp-analytics-0.1.js"
+      ></script>
     </head>
     <body>
       ${body ?? ""}
+      <amp-analytics>
+        <script type="application/json">
+          {
+            "requests": {
+              "event": "/_ping?event=${"$"}{eventId}"
+            },
+            "triggers": {
+              "trackPageview": {
+                "on": "visible",
+                "request": "event",
+                "vars": {
+                  "eventId": "pageview"
+                }
+              }
+            }
+          }
+        </script>
+      </amp-analytics>
     </body>
   </html>
 `;

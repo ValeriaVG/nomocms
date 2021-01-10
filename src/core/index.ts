@@ -11,6 +11,7 @@ import NormalizedURL from "./NormalizedURL";
 import renderDashboard from "./renderDashboard";
 import Permissions, { Permission } from "modules/authorization/Permissions";
 import Users from "modules/authorization/Users";
+import { ip2num } from "modules/analytics/lib";
 
 export default function core(
   modules: {
@@ -19,7 +20,7 @@ export default function core(
   },
   ctx: APIContext
 ): any {
-  const context: any = Object.assign({}, ctx);
+  const context: APIContext & Record<string, any> = Object.assign({}, ctx);
   if (modules.dataSources) {
     for (let source in modules.dataSources) {
       context[source] = new (modules.dataSources[source] as any)(context);
@@ -30,13 +31,19 @@ export default function core(
     res: ServerResponse,
     next?: () => void
   ) => {
-    const sendResponse = responseFactory(res);
+    const sendResponse = responseFactory(req, res);
     try {
       const method = req.method?.toUpperCase();
+
+      context.headers = req.headers;
+      context.ip = req.connection.remoteAddress;
+      context.ip_num = ip2num(req.connection.remoteAddress);
       // TODO: check accept header
       // Look for existing page
-      const url = new NormalizedURL(req.url);
-      const page = await context.redis?.hgetall("pages::" + url.normalizedPath);
+      context.url = new NormalizedURL(req.url);
+      const page = await context.redis?.hgetall(
+        "pages::" + context.url.normalizedPath
+      );
       if (page?.id) return sendResponse({ type: "amp", ...page });
       if (["HEAD", "OPTIONS"].includes(method)) return res.end();
 
@@ -65,11 +72,11 @@ export default function core(
 
       if (
         context.canAccessDashboard &&
-        url.normalizedPath.startsWith(dashboard.pathname)
+        context.url.normalizedPath.startsWith(dashboard.pathname)
       )
         return renderDashboard(req, res, next);
       const { resolver, params: routeParams } = routeRequest(
-        url,
+        context.url,
         method as HTTPMethod,
         modules.routes
       );
@@ -81,7 +88,9 @@ export default function core(
       const response = await resolver({ ...routeParams, ...params }, context);
 
       if (typeof response !== "object")
-        throw new Error(`Wrong response returned from ${url}`);
+        throw new Error(
+          `Wrong response returned from ${context.url.normalizedPath}`
+        );
 
       return sendResponse(response);
     } catch (error) {
