@@ -7,7 +7,7 @@ if (typeof process !== undefined) {
   let process = { env: {} };
 }
 
-export const redis = process.env.DATABASE_URL;
+export const redis = process.env.REDIS_URL;
 export const dashboard = {
   pathname: "/admin",
   dist: path.resolve(__dirname, "..", ".dashboard"),
