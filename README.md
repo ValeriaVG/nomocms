@@ -11,8 +11,9 @@ Current stage: \__alpha_
 
 ## How to deploy
 
-Note: Currenty it's not possible to automatically create Redis database for you,
-please do it manually and then link to the app deployment either by adding existing database in App dashboard components and setting env variable `REDIS_URL` to `${your-db-name.REDIS_URL}`
+> Note: Currenty it's not possible to automatically create Redis database for you, please do it manually and then link to the app deployment either by adding existing database in App dashboard components and setting env variable `REDIS_URL` to `${your-db-name.REDIS_URL}`
+
+> Note: App Platform uses public paths and CMS won't run without a database, do not restrict access by api until you know it's IP address
 
 [![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/ValeriaVG/amp-cms/tree/main&refcode=6ad1223ed047)
 
@@ -43,5 +44,9 @@ This user is never stored or rendered anywhere else, but has all possible permis
   - [x] Content/Markup Editor
   - [x] Show pageviews
   - [ ] File manager / Image upload
-- [ ] Deploy at least one project with AMP CMS
-- [ ] Digital Ocean One-Click-Deploy
+- [x] Deploy at least one project with AMP CMS
+- [x] Digital Ocean One-Click-Deploy
+
+## Known bugs
+
+- Currently updating template doesn't trigger update on existing pages
