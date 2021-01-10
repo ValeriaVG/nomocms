@@ -7,7 +7,7 @@
   "author": "ValeriaVG <valeria.viana.gusmao@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "build": "ts-node -r tsconfig-paths/register src/build",
+    "build": "yarn && ts-node -r tsconfig-paths/register src/build",
     "start": "node .server/index",
     "dev": "ts-node-dev -r tsconfig-paths/register src/dev",
     "test": "find ./src -name '*.spec.ts' | xargs mocha -r ts-node/register -r tsconfig-paths/register",
