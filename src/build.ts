@@ -6,11 +6,11 @@ import compile from "./tools/compile";
 const fuse = fusebox(config);
 
 const compileServer = () => compile("index.ts");
-compileServer();
-// fuse
-//   .runProd({
-//     bundles: {
-//       distRoot: dashboard.dist,
-//     },
-//   })
-//   .then(compileServer);
+
+fuse
+  .runProd({
+    bundles: {
+      distRoot: dashboard.dist,
+    },
+  })
+  .then(compileServer);
