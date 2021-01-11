@@ -1,7 +1,5 @@
 import * as Preact from "preact";
-import * as monaco from "monaco-editor";
 
-// TODO: add web workers
 export default class Editor extends Preact.Component<
   {
     value?: string;
@@ -13,6 +11,13 @@ export default class Editor extends Preact.Component<
   ref = Preact.createRef();
   editor;
   componentDidMount() {
+    //@ts-ignore
+    require(["vs/editor/editor.main"], () => {
+      this.onLoad();
+    });
+  }
+  onLoad = () => {
+    //@ts-ignore
     this.editor = monaco.editor.create(this.ref.current, {
       value: this.props.value,
       language: this.props.language ?? "markdown",
@@ -25,7 +30,7 @@ export default class Editor extends Preact.Component<
       this.props.onChange && this.props.onChange(value);
     });
     window.onresize = this.onResize;
-  }
+  };
   componentWillUnmount() {
     delete window.onresize;
   }

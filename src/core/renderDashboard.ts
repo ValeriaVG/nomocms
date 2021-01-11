@@ -15,7 +15,10 @@ const loadFiles = (dir: string) => {
     const filePath = path.resolve(dir, entry.name);
     if (entry.isDirectory()) return loadFiles(filePath);
     const stats = fs.statSync(filePath);
-    let fileUrl = filePath.replace(dashboard.dist, "");
+    let fileUrl = filePath
+      .replace(dashboard.dist, "")
+      .replace(process.cwd(), ""); // TODO: fix loading static files
+
     files.set(fileUrl, {
       size: stats.size,
       data: fs.readFileSync(filePath),
@@ -28,6 +31,7 @@ let template;
 if (process.env.NODE_ENV !== "test") {
   console.log("Loading", dashboard.dist);
   loadFiles(dashboard.dist);
+  loadFiles(path.resolve(process.cwd(), "static"));
   console.log("Loaded", files.size, "files");
 
   if (!files.has("/manifest-browser.json")) {
@@ -52,12 +56,25 @@ if (process.env.NODE_ENV !== "test") {
     { js: [], css: [] } as { js: string[]; css: string[] }
   );
 
+  const workerUrl = `data:text/javascript;charset=utf-8,${encodeURIComponent(`
+  self.MonacoEnvironment = {
+    baseUrl: '/admin/static/vs/'
+  };
+  importScripts('/admin/static/vs/base/worker/workerMain.js');`)}`;
+
   template = html`
     <!DOCTYPE html>
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <script
+          type="text/javascript"
+          src="/admin/static/vs/loader.js"
+        ></script>
+        <script>
+          require.config({ paths: { vs: "/admin/static/vs" } });
+        </script>
         <title>AMP CMS</title>
         ${css.map((link) => html`<link rel="stylesheet" href="${link}" />`)}
       </head>

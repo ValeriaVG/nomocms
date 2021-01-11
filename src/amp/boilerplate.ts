@@ -1,3 +1,4 @@
+import { appUrl } from "config";
 import { html } from "./lib";
 export default ({
   body,
@@ -89,7 +90,7 @@ export default ({
         <script type="application/json">
           {
             "requests": {
-              "event": "/_ping?event=${"$"}{eventId}"
+              "event": "${appUrl ?? ""}/_ping?event=${"$"}{eventId}"
             },
             "triggers": {
               "trackPageview": {

@@ -26,7 +26,6 @@
     "liquidjs": "^9.19.0",
     "marked": "^1.2.7",
     "mime-types": "^2.1.28",
-    "monaco-editor": "^0.21.2",
     "preact": "^10.5.9",
     "ramda": "^0.27.1",
     "react-router-dom": "^5.2.0",

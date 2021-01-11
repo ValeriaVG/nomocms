@@ -2,6 +2,7 @@ import boilerplate from "amp/boilerplate";
 import { appUrl } from "config";
 import { IncomingMessage, ServerResponse } from "http";
 import { Readable } from "stream";
+import NormalizedURL from "./NormalizedURL";
 import { AMPResponse, RouteResponse } from "./types";
 
 export default function responseFactory(
@@ -38,8 +39,8 @@ export default function responseFactory(
       if (["HEAD", "OPTIONS"].includes(req.method.toUpperCase()))
         return res.end();
       if (typeof response.data === "string") {
-        res.write(response.data);
-        return res.end();
+        const stream = Readable.from(response.data);
+        return stream.pipe(res);
       }
       if (!(response.data instanceof Readable)) {
         console.error("Unknown response data", response);
@@ -53,10 +54,11 @@ export default function responseFactory(
       case "amp": {
         const inferredUrl = req.headers.host.replace(/\/$/, "");
         const url =
-          appUrl ??
-          `http${
-            inferredUrl.startsWith("localhost") ? "" : "s"
-          }://${inferredUrl}`;
+          (appUrl ??
+            `http${
+              inferredUrl.startsWith("localhost") ? "" : "s"
+            }://${inferredUrl}`) + new NormalizedURL(req.url).normalizedPath;
+
         const responseText = boilerplate({ url, ...(response as AMPResponse) });
 
         return respondWith({
