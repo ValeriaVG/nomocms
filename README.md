@@ -50,3 +50,8 @@ This user is never stored or rendered anywhere else, but has all possible permis
 ## Known bugs
 
 - Currently updating template doesn't trigger update on existing pages
+- Updates to templates are not propagated to pages unless pages are manually saved
+- No file management system
+- No way to list pages from <amp/> yet
+- Sometimes errors are showing Unexpected JSON instead of a proper response
+- Dashboard does not work in Safari
