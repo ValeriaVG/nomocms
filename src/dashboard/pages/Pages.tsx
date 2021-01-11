@@ -39,7 +39,11 @@ Content here`,
         return (
           <>
             <fieldset>
-              <Editor value={values.content} onChange={setValue("content")} />
+              <Editor
+                value={values.content}
+                onChange={setValue("content")}
+                style={{ background: "white" }}
+              />
             </fieldset>
             <fieldset class="buttons" style="margin-left:auto;">
               <label>

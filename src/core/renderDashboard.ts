@@ -68,13 +68,6 @@ if (process.env.NODE_ENV !== "test") {
       <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <script
-          type="text/javascript"
-          src="/admin/static/vs/loader.js"
-        ></script>
-        <script>
-          require.config({ paths: { vs: "/admin/static/vs" } });
-        </script>
         <title>AMP CMS</title>
         ${css.map((link) => html`<link rel="stylesheet" href="${link}" />`)}
       </head>

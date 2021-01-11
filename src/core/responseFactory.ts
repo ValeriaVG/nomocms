@@ -40,13 +40,18 @@ export default function responseFactory(
         return res.end();
       if (typeof response.data === "string") {
         const stream = Readable.from(response.data);
+        const unpipe = () => stream.unpipe();
+        res.on("close", unpipe);
+        res.on("end", unpipe);
         return stream.pipe(res);
       }
       if (!(response.data instanceof Readable)) {
         console.error("Unknown response data", response);
         return sendError();
       }
-
+      const unpipe = () => (response.data as Readable).unpipe();
+      res.on("close", unpipe);
+      res.on("end", unpipe);
       return response.data.pipe(res);
     };
 

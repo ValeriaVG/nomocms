@@ -11,38 +11,34 @@ export default class Editor extends Preact.Component<
   ref = Preact.createRef();
   editor;
   componentDidMount() {
-    //@ts-ignore
-    require(["vs/editor/editor.main"], () => {
-      this.onLoad();
-    });
+    this.ref.current.onload = () => {
+      this.ref.current.contentWindow.postMessage({
+        value: this.props.value,
+        language: this.props.language ?? "markdown",
+        lineNumbers: "off",
+        theme: this.props.theme,
+        minimap: { enabled: false },
+      });
+    };
+    window.onmessage = (e) => {
+      console.log(e.data);
+      this.props.onChange && this.props.onChange(e.data);
+    };
   }
-  onLoad = () => {
-    //@ts-ignore
-    this.editor = monaco.editor.create(this.ref.current, {
-      value: this.props.value,
-      language: this.props.language ?? "markdown",
-      lineNumbers: "off",
-      theme: this.props.theme,
-      minimap: { enabled: false },
-    });
-    this.editor.onDidChangeModelContent(() => {
-      const value = this.editor.getValue();
-      this.props.onChange && this.props.onChange(value);
-    });
-    window.onresize = this.onResize;
-  };
-  componentWillUnmount() {
-    delete window.onresize;
-  }
-  onResize = () => {
-    this.editor.layout();
-  };
+
   render() {
     const { value, onChange, style, ...props } = this.props;
     return (
-      <div
+      <iframe
+        src="/admin/static/vs/editor.html"
         ref={this.ref}
-        style={Object.assign({ width: "100%", minHeight: 300 }, style)}
+        frameBorder="0"
+        crossOrigin="true"
+        sandbox="allow-scripts allow-same-origin"
+        style={Object.assign(
+          { width: "100%", minHeight: 300, background: "#1e1e1e" },
+          style
+        )}
         {...props}
       />
     );

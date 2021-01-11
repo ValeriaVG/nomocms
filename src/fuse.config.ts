@@ -8,6 +8,7 @@ export default {
   webIndex: {
     publicPath: dashboard.path,
   },
+
   alias: {
     "^react$": "preact/compat",
     "^react-dom$": "preact/compat",
