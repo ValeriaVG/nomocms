@@ -1,4 +1,5 @@
 import { RedisDataSource } from "core/DataSource";
+import { ErrorResponse } from "core/types";
 
 import { Redis } from "ioredis";
 import sass from "sass";
@@ -22,9 +23,16 @@ export default class Styles extends RedisDataSource<StyleData> {
    * @param scss
    */
 
-  async update(id: string, { source }): Promise<StyleData> {
-    const { css } = await this.compile(source);
-    return this.upsert({ id, source, compiled: css?.toString() });
+  async update(id: string, { source }): Promise<StyleData | ErrorResponse> {
+    try {
+      const { css } = await this.compile(source);
+      return this.upsert({ id, source, compiled: css?.toString() });
+    } catch (error) {
+      return {
+        errors: [{ name: error.name, message: error.message }],
+        code: 400,
+      };
+    }
   }
 
   async create({ id, source }: StyleData) {
@@ -35,7 +43,7 @@ export default class Styles extends RedisDataSource<StyleData> {
       errors.push({ name: "id", message: "Style with this ID already exists" });
     if (errors.length) return { errors, code: 400 };
     const result = await this.update(id, { source });
-    if (!result) return result;
+    if (!result || "errors" in result) return result;
     return { id, source, compiled: result.compiled };
   }
 

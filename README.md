@@ -7,7 +7,7 @@ Content management system for blazingly fast AMP websites, written in TypeScript
 
 AMP CMS is currently in active development. It's not ready for production use until it reaches v1.0.
 
-Current stage: \__alpha_
+Current stage: alpha
 
 ## How to deploy
 

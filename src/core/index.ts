@@ -25,10 +25,7 @@ export default function core(
       ctx[source] = new (modules.dataSources[source] as any)(ctx);
     }
   }
-  let notFoundPage;
-  ctx.redis?.hgetall("pages::url::wildcard").then((page) => {
-    notFoundPage = page;
-  });
+
   return async (
     req: IncomingMessage,
     res: ServerResponse,
@@ -94,6 +91,7 @@ export default function core(
 
       if (!resolver) {
         if (next) return next();
+        const notFoundPage = await ctx.redis?.hgetall("pages::url::wildcard");
         if (notFoundPage)
           return sendResponse({ type: "amp", ...notFoundPage, code: 404 });
         throw new HTTPNotFound();
