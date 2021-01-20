@@ -13,7 +13,8 @@
     "jsxFragmentFactory": "Preact.Fragment",
     "noEmitOnError": true,
     "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "experimentalDecorators": true
   },
   "include": ["src"],
   "exclude": ["node_modules"]
