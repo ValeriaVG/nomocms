@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
-    "@fortawesome/free-solid-svg-icons": "^5.15.1",
+    "@fortawesome/free-solid-svg-icons": "^5.15.2",
     "amp-toolbox-cors": "^1.2.0-alpha.2",
     "bcryptjs": "^2.4.3",
     "cookie": "^0.4.1",
