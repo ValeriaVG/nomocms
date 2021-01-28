@@ -47,7 +47,7 @@
     "@types/sass": "^1.16.0",
     "@types/supertest": "^2.0.10",
     "chai": "^4.2.0",
-    "fuse-box": "^4.0.0-next.447",
+    "fuse-box": "^4.0.0",
     "mocha": "^8.2.1",
     "node-fetch": "^2.6.1",
     "node-sass": "^5.0.0",
