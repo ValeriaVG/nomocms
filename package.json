@@ -14,7 +14,7 @@
     "coverage": "export NODE_ENV=test && find ./src -name '*.spec.ts' | xargs nyc --reporter=lcov --reporter=text-summary mocha -r ts-node/register -r tsconfig-paths/register"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.32",
+    "@fortawesome/fontawesome-svg-core": "^1.2.34",
     "@fortawesome/free-solid-svg-icons": "^5.15.2",
     "amp-toolbox-cors": "^1.2.0-alpha.2",
     "bcryptjs": "^2.4.3",
