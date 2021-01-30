@@ -9,9 +9,6 @@ const client = new Client({ user: "amp-cms", password: "amp-cms" });
 describe("SQL query builder PostgreSQL integration", () => {
   before(async () => {
     await client.connect();
-    await client.query("DROP DATABASE IF EXISTS test");
-    await client.query("CREATE DATABASE test");
-    client.database = "test";
   });
   after(async () => {
     await client.end();
@@ -50,7 +47,11 @@ describe("SQL query builder PostgreSQL integration", () => {
 
     it("can insert item", async () => {
       const result = await client.query(
-        ...insertInto("users", { name: "John Doe" })
+        ...insertInto(
+          "users",
+          { name: "John Doe" },
+          { returning: ["id", "name"] }
+        )
       );
       expect(result.rowCount).to.eq(1);
     });

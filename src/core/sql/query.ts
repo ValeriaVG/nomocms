@@ -43,12 +43,22 @@ export const selectFrom = (
 
 export const insertInto = (
   table: string,
-  data: Record<string, SimpleType>
+  data: Record<string, SimpleType>,
+  options: {
+    returning?: string | string[];
+  } = {}
 ): QueryAndValues => {
   const columns = Object.keys(data);
-  const query = sql`INSERT INTO ${table} (${columns.join(
+  let query = sql`INSERT INTO ${table} (${columns.join(
     ","
   )}) VALUES (${columns.map((_, i) => `$${i + 1}`).join(",")})`;
+  if (options.returning) {
+    query += ` RETURNING ${
+      typeof options.returning === "string"
+        ? options.returning
+        : options.returning.join(",")
+    }`;
+  }
   return [query, Object.values(data)];
 };
 
