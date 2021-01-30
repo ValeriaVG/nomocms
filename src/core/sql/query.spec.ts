@@ -1,6 +1,6 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import { where, selectFrom, deleteFrom, insertInto } from "./query";
+import { where, selectFrom, deleteFrom, insertInto, update } from "./query";
 
 describe("SQLQuery", () => {
   describe("where", () => {
@@ -109,6 +109,20 @@ describe("SQLQuery", () => {
       expect(insertInto("users", { name: "John", surname: "Doe" })).to.deep.eq([
         "INSERT INTO users (name,surname) VALUES ($1,$2)",
         ["John", "Doe"],
+      ]);
+    });
+  });
+
+  describe("update", () => {
+    it("can create update query", () => {
+      expect(
+        update("users", {
+          where: { id: 1 },
+          set: { name: "John", surname: "Doe" },
+        })
+      ).to.deep.eq([
+        "UPDATE users SET name=$1,surname=$2 WHERE id = $3",
+        ["John", "Doe", 1],
       ]);
     });
   });

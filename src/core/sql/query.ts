@@ -77,6 +77,37 @@ export const deleteFrom = (
 
   return [query, values];
 };
+
+export const update = (
+  table: string,
+  options: {
+    set: Record<string, SimpleType>;
+    where?: Query | Query[];
+    returning?: string | string[];
+  }
+): QueryAndValues => {
+  const values = [...Object.values(options.set)];
+  const columns = Object.keys(options.set);
+  let query = sql`UPDATE ${table} SET ${columns
+    .map((column, i) => `${column}=$${i + 1}`)
+    .join(",")}`;
+
+  if (options.where) {
+    const [q, v] = where(options.where, values.length);
+    query += ` WHERE ${q}`;
+    values.push(...v);
+  }
+
+  if (options.returning) {
+    query += ` RETURNING ${
+      typeof options.returning === "string"
+        ? options.returning
+        : options.returning.join(",")
+    }`;
+  }
+  return [query, values];
+};
+
 const operators = [
   "=",
   ">",

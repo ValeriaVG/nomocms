@@ -2,7 +2,7 @@ import { describe, it, before, after } from "mocha";
 import { expect } from "chai";
 import { Client } from "pg";
 import { createTable, dropTable } from "./table";
-import { insertInto } from "./query";
+import { deleteFrom, insertInto, selectFrom, update } from "./query";
 
 const client = new Client({ user: "amp-cms", password: "amp-cms" });
 
@@ -45,15 +45,32 @@ describe("SQL query builder PostgreSQL integration", () => {
     );
     after(() => client.query(dropTable("users", { ifExists: true })));
 
-    it("can insert item", async () => {
-      const result = await client.query(
-        ...insertInto(
-          "users",
-          { name: "John Doe" },
-          { returning: ["id", "name"] }
-        )
+    it("can CRUD item", async () => {
+      const create = await client.query(
+        ...insertInto("users", { name: "John Doe" }, { returning: ["id"] })
       );
-      expect(result.rowCount).to.eq(1);
+      expect(create.rowCount).to.eq(1);
+      const id = create.rows[0].id;
+      const get = await client.query(...selectFrom("users", { where: { id } }));
+      expect(get.rowCount).to.eq(1);
+      expect(get.rows[0]).to.have.property("id", id);
+      expect(get.rows[0]).to.have.property("name", "John Doe");
+      const upd = await client.query(
+        ...update("users", {
+          where: { id },
+          set: { name: "Jane Doe" },
+          returning: "*",
+        })
+      );
+      expect(upd.rowCount).to.eq(1);
+      expect(upd.rows[0]).to.have.property("id", id);
+      expect(upd.rows[0]).to.have.property("name", "Jane Doe");
+      const del = await client.query(
+        ...deleteFrom("users", {
+          where: { id },
+        })
+      );
+      expect(del.rowCount).to.eq(1);
     });
   });
 });
