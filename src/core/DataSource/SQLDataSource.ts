@@ -7,7 +7,6 @@ import {
   selectFrom,
   update,
 } from "core/sql";
-import { ExcludeReserved, SimpleType } from "core/types";
 import { Client } from "pg";
 
 import { CRUDLDataSource } from "./types";
@@ -17,9 +16,9 @@ import { CRUDLDataSource } from "./types";
  * stored in PostgreSQL table
  */
 export default abstract class SQLDataSource<
-  T extends Record<string, SimpleType>,
-  I extends Record<string, SimpleType> = Partial<T>,
-  P extends Record<string, SimpleType> = Partial<I>
+  T extends Record<string, any>,
+  I extends Record<string, any> = Partial<T>,
+  P extends Record<string, any> = Partial<I>
 > extends CRUDLDataSource<T, I, P> {
   /**
    * Table name

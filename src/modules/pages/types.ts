@@ -5,9 +5,9 @@ export type ContentPage = {
   title: string;
   description?: string;
   content: string;
-  created?: number;
-  updated?: number;
-  published?: number;
+  created?: Date;
+  updated?: Date;
+  published?: Date;
   // generated
   html: string;
 };

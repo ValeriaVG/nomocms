@@ -74,6 +74,7 @@ export const insertInto = (
   let query = sql`INSERT INTO ${table} (${columns.join(
     ","
   )}) VALUES (${columns.map((_, i) => `$${i + 1}`).join(",")})`;
+  const values = Object.values(data);
   if (options.onConflict) {
     query += ` ON CONFLICT(${options.onConflict.constraint ?? "id"})`;
     if ("do" in options.onConflict) {
@@ -81,8 +82,9 @@ export const insertInto = (
     } else {
       const columns = Object.keys(options.onConflict.update.set);
       query += sql` DO UPDATE SET ${columns
-        .map((column, i) => `${column}=$${i + 1}`)
+        .map((column, i) => `${column}=$${i + values.length + 1}`)
         .join(",")}`;
+      values.push(...Object.values(options.onConflict.update.set));
     }
   }
   if (options.returning) {
@@ -92,7 +94,7 @@ export const insertInto = (
         : options.returning.join(",")
     }`;
   }
-  return [query, Object.values(data)];
+  return [query, values];
 };
 
 export const deleteFrom = (
