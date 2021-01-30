@@ -19,16 +19,17 @@ export const makeColumn = (key: string, definition: ColumnDefinition) => {
   return `${key} ${definition.type} ${properties.join(" ")}`;
 };
 
-export const createTable = (
+export const createTable = <C extends Record<string, ColumnDefinition>>(
   name: string,
-  columns: Record<string, ColumnDefinition>,
-  options: { ifNotExists?: boolean } = {}
+  columns: C,
+  options: { ifNotExists?: boolean; primaryKey?: Array<keyof C> } = {}
 ): string => {
-  return sql`CREATE TABLE${
-    options.ifNotExists && " IF NOT EXISTS"
-  } ${name} (${Object.entries(columns)
-    .map((args) => makeColumn(...args))
-    .join(",")});`;
+  return sql`CREATE TABLE${options.ifNotExists && " IF NOT EXISTS"} ${name} (${[
+    ...Object.entries(columns).map((args) => makeColumn(...args)),
+    options.primaryKey && ` PRIMARY KEY (${options.primaryKey.join(",")})`,
+  ]
+    .filter(Boolean)
+    .join(",")})`;
 };
 
 export const dropTable = (name: string, options: { ifExists?: boolean } = {}) =>
@@ -125,5 +126,4 @@ export type ColumnType =
   | "tsvector"
   | "txid_snapshot"
   | "uuid"
-  | "xml"
-  | string;
+  | "xml";

@@ -62,7 +62,7 @@ export default class Styles extends SQLDataSource<StyleData> {
           importer: (url, _, done) => {
             const getSource = () =>
               this.get(url, "source")
-                .then((contents) => done({ contents }))
+                .then((contents: string) => done({ contents }))
                 .catch(done);
             // If imported 'template.style'
             if (url.endsWith(".style")) {

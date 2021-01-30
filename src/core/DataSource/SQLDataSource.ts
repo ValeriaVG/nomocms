@@ -5,6 +5,7 @@ import {
   insertInto,
   Query,
   selectFrom,
+  SelectOptions,
   update,
 } from "core/sql";
 import { Client } from "pg";
@@ -30,6 +31,8 @@ export default abstract class SQLDataSource<
    */
   readonly schema: Record<string, ColumnDefinition>;
 
+  readonly primaryKey?: Array<keyof T>;
+
   /**
    * Requires context with db
    * @param context
@@ -49,20 +52,40 @@ export default abstract class SQLDataSource<
   }
 
   /**
-   * Retreive item by id
+   * Retrieve item by id
    * @param id
    */
   get(id: string, field?: keyof T) {
+    return this.findOne({
+      where: { id },
+      columns: [(field as string) ?? "*"],
+    }).then((result) => {
+      if (field) return result[field];
+      return result;
+    });
+  }
+
+  /**
+   * Retrieve item by query
+   * @param options
+   */
+  findOne(options: SelectOptions): Promise<T | undefined> {
     return this.context.db
-      .query(
-        ...selectFrom(this.collection, {
-          where: { id },
-          columns: [(field as string) ?? "*"],
-        })
-      )
+      .query(...selectFrom(this.collection, options))
       .then(({ rows }) => {
-        if (field) return rows[0][field];
         return rows[0];
+      });
+  }
+
+  /**
+   * Retrieve items by query
+   * @param options
+   */
+  find(options: SelectOptions): Promise<T[]> {
+    return this.context.db
+      .query(...selectFrom(this.collection, options))
+      .then(({ rows }) => {
+        return rows;
       });
   }
 

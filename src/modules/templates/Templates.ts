@@ -28,7 +28,7 @@ export default class Templates extends SQLDataSource<TemplateData> {
 
       readFile: async (file) => {
         const [id, ext] = file.split(".");
-        return this.get(id, (ext || "body") as any);
+        return this.get(id, (ext || "body") as any) as Promise<string>;
       },
       exists: async (file) => {
         return this.exists({ id: file.split(".").shift() });
@@ -43,7 +43,7 @@ export default class Templates extends SQLDataSource<TemplateData> {
   static delimiter = "\u0000\u0000\u0000";
 
   async render(id: string, variables: Record<string, any> = {}) {
-    const tpl = await this.get(id);
+    const tpl = (await this.get(id)) as TemplateData;
     if (!tpl) return null;
     const tmp = (tpl.head ?? "") + Templates.delimiter + (tpl.body ?? "");
     return this.renderText(tmp, variables).then((result) => {

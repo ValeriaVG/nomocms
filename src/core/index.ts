@@ -1,7 +1,7 @@
 import { IncomingMessage, ServerResponse } from "http";
 import cookie from "cookie";
 import { APIContext, Routes, HTTPMethod } from "./types";
-import { dashboard } from "config";
+import { dashboard, superuser } from "config";
 import requestParams from "./requestParams";
 import routeRequest from "./routeRequest";
 import { DataSource } from "./DataSource";
@@ -40,12 +40,12 @@ export default function core(
       context.user = await (context.users as Users).byToken(context.token);
 
       context.canAccessDashboard =
-        context.user?.id === "superuser"
+        context.user?.email === superuser.email
           ? true
           : context.user?.id &&
             (await (context.permissions as Permissions).check({
               permissions: Permission.read,
-              user: context.user.id,
+              user_id: context.user.id,
             }));
     };
 

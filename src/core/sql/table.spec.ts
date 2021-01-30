@@ -23,7 +23,7 @@ describe("SQLTable", () => {
         "pwhash text NOT NULL," +
         "email varchar (50) UNIQUE NOT NULL," +
         "created_at timestamp NOT NULL DEFAULT NOW()" +
-        ");"
+        ")"
     );
     expect(
       createTable("users", {
@@ -40,7 +40,7 @@ describe("SQLTable", () => {
         "pwhash text NOT NULL," +
         "email varchar (50) UNIQUE NOT NULL," +
         "created_at timestamp NOT NULL DEFAULT NOW()" +
-        ");"
+        ")"
     );
   });
   it("can generate drop table query", () => {

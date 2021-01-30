@@ -1,6 +1,5 @@
-import { DataSource } from "core/DataSource";
-import { HTTPUserInputError } from "core/errors";
-import { Redis } from "ioredis";
+import { SQLDataSource } from "core/DataSource";
+import { ColumnDefinition, deleteFrom, insertInto } from "core/sql";
 
 /**
  * User role includes possible permissions
@@ -23,49 +22,27 @@ export enum Permission {
 }
 
 export type PermissionsInput = {
-  user: string;
+  user_id: number;
   scope?: string;
 };
 
-export type UserRoleInput = PermissionsInput & {
+export type UserPermissions = PermissionsInput & {
   permissions: number;
 };
 
-export default class Permissions extends DataSource {
+export default class Permissions extends SQLDataSource<
+  UserPermissions,
+  UserPermissions
+> {
   readonly collection = "permissions";
 
-  constructor(protected context: { redis: Redis }) {
-    super(context);
-    this.context.redis.defineCommand("scanpermissions", {
-      numberOfKeys: 1,
-      lua: `
-      local permissions = redis.call('SCAN', 0 ,'MATCH',KEYS[1],unpack(ARGV));
-      local result = {};
-      for k,v in ipairs(permissions[2]) do
-        local value = redis.call('GET',v);
-        result[k]={v,value};
-      end
-      return result
-      `,
-    });
-  }
+  readonly schema: Record<keyof UserPermissions, ColumnDefinition> = {
+    user_id: { type: "int" },
+    permissions: { type: "smallint" },
+    scope: { type: "varchar", length: 50, default: "'global'" },
+  };
 
-  private key({ user, scope }: PermissionsInput) {
-    if (typeof user !== "string")
-      throw new HTTPUserInputError("User ID must be a string");
-    if (!user) throw new HTTPUserInputError("User ID should be provided");
-
-    let key = this.collection;
-    key += "::";
-
-    if (scope && typeof scope !== "string")
-      throw new HTTPUserInputError("Scope must be a string");
-    key += scope || "global";
-    key += "::";
-
-    key += user;
-    return key;
-  }
+  readonly primaryKey = ["user_id", "scope"] as Array<keyof UserPermissions>;
 
   /**
    * Check if user with provided id
@@ -75,8 +52,8 @@ export default class Permissions extends DataSource {
    * if scope is not specified
    * @param params
    */
-  check({ permissions, ...params }: UserRoleInput) {
-    return this.get(params).then((role) => {
+  check({ permissions, user_id, scope }: UserPermissions) {
+    return this.getPermissions({ user_id, scope }).then((role) => {
       return Boolean(role & permissions);
     });
   }
@@ -88,21 +65,16 @@ export default class Permissions extends DataSource {
    * if scope is not specified
    * @param param0
    */
-  get({ user, scope }: { user: string; scope?: string }) {
-    if (!scope)
-      return this.context.redis
-        .get(this.key({ user }))
-        .then((p) => (p ? parseInt(p) : 0));
-    return this.context.redis
-      .multi()
-      .get(this.key({ user }))
-      .get(this.key({ user, scope }))
-      .exec()
-      .then(([[_, g], [__, s]]) => {
-        const globalPermissions = g ? parseInt(g) : 0;
-        const scopedPermissions = s ? parseInt(s) : 0;
-        return globalPermissions | scopedPermissions;
-      });
+  getPermissions({ user_id, scope }: { user_id: number; scope?: string }) {
+    return super
+      .findOne({
+        where: [
+          { user_id, scope: "global" },
+          scope && { user_id, scope },
+        ].filter(Boolean),
+        orderBy: { permissions: "DESC" },
+      })
+      .then((row) => row?.permissions ?? 0);
   }
 
   /**
@@ -114,8 +86,20 @@ export default class Permissions extends DataSource {
    * permissions to all scopes
    * @param param
    */
-  set({ user, permissions, scope }: UserRoleInput) {
-    return this.context.redis.set(this.key({ user, scope }), permissions);
+  set(input: UserPermissions) {
+    return this.context.db
+      .query(
+        ...insertInto(this.collection, input, {
+          onConflict: {
+            constraint: this.primaryKey,
+            update: {
+              set: input,
+            },
+          },
+          returning: "*",
+        })
+      )
+      .then(({ rows }) => rows[0]);
   }
 
   /**
@@ -124,47 +108,24 @@ export default class Permissions extends DataSource {
    * or global permissions if return is not specified
    * @param params
    */
-  delete(params: PermissionsInput) {
-    return this.context.redis.del(this.key(params));
+  deleteAll(params: PermissionsInput) {
+    return this.context.db
+      .query(...deleteFrom(this.collection, { where: params }))
+      .then(({ rowCount }) => ({
+        deleted: rowCount,
+      }));
   }
 
-  private re = new RegExp("permissions::(.+)::(.+)");
   /**
    * Returns a map of scope-permission pairs
    * @param params
    */
-  map(user: string, scope?: string): Promise<Map<string | "global", number>> {
-    return this.context.redis["scanpermissions"](
-      this.key({ user, scope: scope || "*" })
-    ).then((permissions) => {
-      const map = new Map<string, number>();
-      for (let permission of permissions) {
-        const scope = permission[0].replace(this.re, "$1");
-        const value = parseInt(permission[1]);
-        map.set(scope, value);
-      }
-      return map;
-    });
-  }
-
-  /**
-   * List users, that have permissions
-   * in certain or global scope
-   * @param params
-   */
-  users(scope?: string) {
-    return this.context.redis["scanpermissions"](
-      this.key({ user: "*", scope: scope || "*" })
-    ).then((permissions) => {
-      const result = [];
-
-      for (let permission of permissions) {
-        const scope = permission[0].replace(this.re, "$1");
-        const user = permission[0].replace(this.re, "$2");
-        const value = parseInt(permission[1]);
-        result.push({ scope, user, value });
-      }
-      return result;
-    });
+  map(user_id: number): Promise<Map<string | "global", number>> {
+    return this.find({ where: { user_id } }).then((rows) =>
+      rows.reduce((a, c) => {
+        a.set(c.scope || "global", c.permissions);
+        return a;
+      }, new Map())
+    );
   }
 }

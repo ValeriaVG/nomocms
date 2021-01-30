@@ -1,24 +1,23 @@
 import { SimpleType } from "core/types";
-import { join } from "ramda";
 import { sql } from "./sql";
 
-type QueryAndValues = [query: string, values: any[]];
-type WhereQuery = Query | Query[] | string;
-
+export type QueryAndValues = [query: string, values: any[]];
+export type WhereQuery = Query | Query[] | string;
+export type SelectOptions = {
+  where?: WhereQuery;
+  limit?: number;
+  offset?: number;
+  orderBy?: Record<string, "ASC" | "DESC">;
+  columns?: string | string[];
+  join?: {
+    table: string;
+    on: WhereQuery;
+    type?: "INNER" | "LEFT" | "RIGHT" | "FULL" | "CROSS";
+  };
+};
 export const selectFrom = (
   table: string,
-  options: {
-    where?: WhereQuery;
-    limit?: number;
-    offset?: number;
-    orderBy?: Record<string, "ASC" | "DESC">;
-    columns?: string | string[];
-    join?: {
-      table: string;
-      on: WhereQuery;
-      type?: "INNER" | "LEFT" | "RIGHT" | "FULL" | "CROSS";
-    };
-  } = {}
+  options: SelectOptions = {}
 ): QueryAndValues => {
   const columns =
     typeof options.columns === "string"
@@ -62,7 +61,7 @@ export const insertInto = (
   data: Record<string, SimpleType>,
   options: {
     returning?: string | string[];
-    onConflict?: { constraint?: string } & (
+    onConflict?: { constraint?: string | string[] } & (
       | {
           update: { set: Record<string, SimpleType> };
         }
@@ -76,7 +75,11 @@ export const insertInto = (
   )}) VALUES (${columns.map((_, i) => `$${i + 1}`).join(",")})`;
   const values = Object.values(data);
   if (options.onConflict) {
-    query += ` ON CONFLICT(${options.onConflict.constraint ?? "id"})`;
+    query += ` ON CONFLICT(${
+      Array.isArray(options.onConflict.constraint)
+        ? options.onConflict.constraint.join(",")
+        : options.onConflict.constraint ?? "id"
+    })`;
     if ("do" in options.onConflict) {
       query += `DO ${options.onConflict.do}`;
     } else {

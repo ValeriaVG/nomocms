@@ -22,11 +22,11 @@ export type UserInput = {
   permissions?: number;
 };
 export type User = {
-  id: string;
+  id: number;
   name: string;
   email: string;
-  createdAt?: number;
-  updatedAt?: number;
+  created?: Date;
+  updated?: Date;
 };
 export default class Users extends RedisDataSource<User, UserInput> {
   collection = "users";
@@ -200,7 +200,7 @@ export default class Users extends RedisDataSource<User, UserInput> {
         if (!user) return null;
         if (typeof permissions !== undefined && "permissions" in this.context) {
           await (this.context["permissions"] as Permissions).set({
-            user: user.id,
+            user_id: user.id,
             permissions,
           });
         }
