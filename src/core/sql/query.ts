@@ -3,7 +3,7 @@ import { sql } from "./sql";
 
 type QueryAndValues = [query: string, values: any[]];
 
-export const select = (
+export const selectFrom = (
   table: string,
   options: {
     where?: Query | Query[];
@@ -41,15 +41,34 @@ export const select = (
   return [query, values];
 };
 
-export const insert = (
+export const insertInto = (
   table: string,
   data: Record<string, any>
-): QueryAndValues => [sql`INSERT INTO ${table} () VALUES`, []];
+): QueryAndValues => {
+  const columns = Object.keys(data);
+  const query = sql`INSERT INTO ${table} (${columns.join(",")}) VALUES (${Array(
+    columns.length
+  )
+    .fill("?")
+    .join(",")})`;
+  return [query, Object.values(data)];
+};
 
-export const del = (table: string, options: {}): QueryAndValues => [
-  sql`DELETE FROM ${table} WHERE`,
-  [],
-];
+export const deleteFrom = (
+  table: string,
+  options: { where?: Query | Query[] } = {}
+): QueryAndValues => {
+  let query = sql`DELETE FROM ${table}`;
+  const values = [];
+
+  if (options.where) {
+    const [q, v] = where(options.where);
+    query += ` WHERE ${q}`;
+    values.push(...v);
+  }
+
+  return [query, values];
+};
 const operators = [
   "=",
   ">",
