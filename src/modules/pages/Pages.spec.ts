@@ -1,25 +1,8 @@
 import { describe, it } from "mocha";
-import { newDb } from "pg-mem";
 import { expect } from "chai";
 import Pages from "./Pages";
-import { Client } from "pg";
 import { createTable } from "core/sql";
-
-const mockDatabase = () => {
-  const db = newDb();
-  return {
-    query: async (query: string, values: any[]) =>
-      db.public.query(
-        query.replace(/\$(\d+)/gi, (s) => {
-          const idx = parseInt(s.slice(1));
-          const value = values[idx - 1];
-          return typeof value === "string"
-            ? `'${value}'`
-            : JSON.stringify(value);
-        })
-      ),
-  } as Client;
-};
+import { mockDatabase } from "mocks";
 
 describe("Pages", () => {
   it("can create a page", async () => {
