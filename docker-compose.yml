@@ -6,5 +6,5 @@ services:
     - 5432:5432
     environment:
       POSTGRES_DB: amp-cms
-      POSTGRES_USERNAME: amp-cms
+      POSTGRES_USER: amp-cms
       POSTGRES_PASSWORD: amp-cms

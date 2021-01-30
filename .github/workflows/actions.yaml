@@ -19,7 +19,7 @@ jobs:
         - 5432:5432
         env:
           POSTGRES_DB: amp-cms
-          POSTGRES_USERNAME: amp-cms
+          POSTGRES_USER: amp-cms
           POSTGRES_PASSWORD: amp-cms
         options: >-
           --health-cmd pg_isready
