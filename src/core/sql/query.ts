@@ -3,10 +3,43 @@ import { sql } from "./sql";
 
 type QueryAndValues = [query: string, values: any[]];
 
-export const select = (table: string, options: {}): QueryAndValues => [
-  sql`SELECT FROM ${table}`,
-  [],
-];
+export const select = (
+  table: string,
+  options: {
+    where?: Query | Query[];
+    limit?: number;
+    offset?: number;
+    orderBy?: Record<string, "ASC" | "DESC">;
+    columns?: string | string[];
+  } = {}
+): QueryAndValues => {
+  const columns =
+    typeof options.columns === "string"
+      ? options.columns
+      : (options.columns || ["*"]).join(",");
+  let query = sql`SELECT ${columns} FROM ${table}`;
+  const values = [];
+  if (options.where) {
+    const [q, v] = where(options.where);
+    query += ` WHERE ${q}`;
+    values.push(...v);
+  }
+  if (options.orderBy) {
+    query += " ORDER BY ";
+    query += Object.entries(options.orderBy)
+      .map(([col, dir]) => `${col} ${dir}`)
+      .join(",");
+  }
+  if (options.limit) {
+    query += " LIMIT ?";
+    values.push(options.limit);
+  }
+  if (options.offset) {
+    query += " OFFSET ?";
+    values.push(options.offset);
+  }
+  return [query, values];
+};
 
 export const insert = (
   table: string,
