@@ -10,8 +10,8 @@
     "build": "yarn && ts-node -r tsconfig-paths/register src/build",
     "start": "node .server/index",
     "dev": "ts-node-dev -r tsconfig-paths/register src/dev",
-    "test": "export NODE_ENV=test && find ./src -name '*.spec.ts' | xargs mocha -r ts-node/register -r tsconfig-paths/register",
-    "coverage": "export NODE_ENV=test && find ./src -name '*.spec.ts' | xargs nyc --reporter=lcov --reporter=text-summary mocha -r ts-node/register -r tsconfig-paths/register"
+    "test": "ts-node -r tsconfig-paths/register scripts/test",
+    "coverage": "nyc --reporter=lcov --reporter=text-summary ts-node -r tsconfig-paths/register scripts/test"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.34",
