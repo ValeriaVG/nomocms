@@ -93,6 +93,30 @@ describe("SQLQuery", () => {
         selectFrom("users", { orderBy: { surname: "DESC", name: "DESC" } })
       ).to.deep.eq(["SELECT * FROM users ORDER BY surname DESC,name DESC", []]);
     });
+    it("can create select query with join clause", () => {
+      expect(
+        selectFrom("users", {
+          join: {
+            table: "profile",
+            on: { "users.id": { $: "profile.user_id" } },
+          },
+        })
+      ).to.deep.eq([
+        "SELECT * FROM users JOIN profile ON users.id = profile.user_id",
+        [],
+      ]);
+      expect(
+        selectFrom("users", {
+          join: {
+            table: "profile",
+            on: "users.id=profile.user_id",
+          },
+        })
+      ).to.deep.eq([
+        "SELECT * FROM users JOIN profile ON users.id=profile.user_id",
+        [],
+      ]);
+    });
   });
 
   describe("delete", () => {

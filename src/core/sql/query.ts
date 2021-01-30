@@ -1,16 +1,23 @@
 import { SimpleType } from "core/types";
+import { join } from "ramda";
 import { sql } from "./sql";
 
 type QueryAndValues = [query: string, values: any[]];
+type WhereQuery = Query | Query[] | string;
 
 export const selectFrom = (
   table: string,
   options: {
-    where?: Query | Query[];
+    where?: WhereQuery;
     limit?: number;
     offset?: number;
     orderBy?: Record<string, "ASC" | "DESC">;
     columns?: string | string[];
+    join?: {
+      table: string;
+      on: WhereQuery;
+      type?: "INNER" | "LEFT" | "RIGHT" | "FULL" | "CROSS";
+    };
   } = {}
 ): QueryAndValues => {
   const columns =
@@ -19,8 +26,17 @@ export const selectFrom = (
       : (options.columns || ["*"]).join(",");
   let query = sql`SELECT ${columns} FROM ${table}`;
   const values = [];
+
+  if (options.join) {
+    const [q, v] = where(options.join.on);
+    query += sql` ${options.join.type && options.join.type + " "}JOIN ${
+      options.join.table
+    } ON ${q}`;
+    values.push(...v);
+  }
+
   if (options.where) {
-    const [q, v] = where(options.where);
+    const [q, v] = where(options.where, values.length);
     query += ` WHERE ${q}`;
     values.push(...v);
   }
@@ -64,7 +80,7 @@ export const insertInto = (
 
 export const deleteFrom = (
   table: string,
-  options: { where?: Query | Query[] } = {}
+  options: { where?: WhereQuery } = {}
 ): QueryAndValues => {
   let query = sql`DELETE FROM ${table}`;
   const values = [];
@@ -82,7 +98,7 @@ export const update = (
   table: string,
   options: {
     set: Record<string, SimpleType>;
-    where?: Query | Query[];
+    where?: WhereQuery;
     returning?: string | string[];
   }
 ): QueryAndValues => {
@@ -118,6 +134,7 @@ const operators = [
   "in",
   "between",
   "is",
+  "$", // column
 ] as const;
 type QueryOperator = typeof operators[number];
 type Query = Record<
@@ -130,9 +147,10 @@ type Query = Record<
 >;
 
 export const where = (
-  query: Query | Query[],
+  query: WhereQuery,
   lastIndex: number = 0
 ): QueryAndValues => {
+  if (typeof query === "string") return [query, []];
   if (Array.isArray(query)) {
     return query.reduce(
       (a, c, idx) => {
@@ -157,6 +175,10 @@ export const where = (
       if (Object.keys(value).length === 1) {
         const operator = Object.keys(value)[0];
         const operand = value[operator];
+        if (operator === "$") {
+          a[0] += `${key} = ${operand}`;
+          return a;
+        }
 
         if (operator === "in") {
           if (typeof operand === "string") {
