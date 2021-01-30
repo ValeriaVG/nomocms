@@ -31,26 +31,24 @@ export const selectFrom = (
       .join(",");
   }
   if (options.limit) {
-    query += " LIMIT ?";
-    values.push(options.limit);
+    const n = values.push(options.limit);
+    query += ` LIMIT $${n}`;
   }
   if (options.offset) {
-    query += " OFFSET ?";
-    values.push(options.offset);
+    const n = values.push(options.offset);
+    query += ` OFFSET $${n}`;
   }
   return [query, values];
 };
 
 export const insertInto = (
   table: string,
-  data: Record<string, any>
+  data: Record<string, SimpleType>
 ): QueryAndValues => {
   const columns = Object.keys(data);
-  const query = sql`INSERT INTO ${table} (${columns.join(",")}) VALUES (${Array(
-    columns.length
-  )
-    .fill("?")
-    .join(",")})`;
+  const query = sql`INSERT INTO ${table} (${columns.join(
+    ","
+  )}) VALUES (${columns.map((_, i) => `$${i + 1}`).join(",")})`;
   return [query, Object.values(data)];
 };
 
@@ -90,12 +88,15 @@ type Query = Record<
   | { is: "NULL" | "NOT NULL" }
 >;
 
-export const where = (query: Query | Query[]): QueryAndValues => {
+export const where = (
+  query: Query | Query[],
+  lastIndex: number = 0
+): QueryAndValues => {
   if (Array.isArray(query)) {
     return query.reduce(
       (a, c, idx) => {
         if (idx > 0) a[0] += " OR ";
-        const [q, v] = where(c);
+        const [q, v] = where(c, a[1].length);
         a[0] += q;
         a[1].push(...v);
         return a;
@@ -106,9 +107,10 @@ export const where = (query: Query | Query[]): QueryAndValues => {
   return Object.entries(query).reduce(
     (a, [key, value], idx) => {
       if (idx > 0) a[0] += " AND ";
+      const n = a[1].length + lastIndex + 1;
       if (typeof value !== "object") {
-        a[0] += `${key} = ?`;
         a[1].push(value);
+        a[0] += `${key} = $${n}`;
         return a;
       }
       if (Object.keys(value).length === 1) {
@@ -122,23 +124,26 @@ export const where = (query: Query | Query[]): QueryAndValues => {
           }
 
           const arr = operand as SimpleType[];
-          a[0] += `${key} IN (${arr.map((_) => "?").join(",")})`;
+          a[0] += `${key} IN (${arr.map((_, i) => `$${n + i}`).join(",")})`;
           a[1].push(...arr);
           return a;
         }
 
         if (operator === "between") {
-          a[0] += `${key} BETWEEN ? AND ?`;
-          a[1].push(operand[0], operand[1]);
+          a[1].push(operand[0]);
+          const from = n;
+          a[1].push(operand[1]);
+          const to = n + 1;
+          a[0] += `${key} BETWEEN $${from} AND $${to}`;
           return a;
         }
         if (operator === "is") {
           a[0] += `${key} IS ${operand}`;
           return a;
         }
-
-        a[0] += `${key} ${operator.toUpperCase()} ?`;
         a[1].push(operand);
+
+        a[0] += `${key} ${operator.toUpperCase()} $${n}`;
 
         return a;
       }

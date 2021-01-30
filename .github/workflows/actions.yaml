@@ -13,6 +13,14 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      postgres:
+        image: postgres:12
+        ports:
+        - 5432:5432
+        environment:
+          POSTGRES_DB: amp-cms
+          POSTGRES_USERNAME: amp-cms
+          POSTGRES_PASSWORD: amp-cms    
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js v14.5.0
