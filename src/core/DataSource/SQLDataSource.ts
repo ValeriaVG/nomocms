@@ -53,10 +53,18 @@ export default abstract class SQLDataSource<
    * Retreive item by id
    * @param id
    */
-  get(id: string) {
+  get(id: string, field?: keyof T) {
     return this.context.db
-      .query(...selectFrom(this.collection, { where: { id } }))
-      .then(({ rows }) => rows[0]);
+      .query(
+        ...selectFrom(this.collection, {
+          where: { id },
+          columns: [(field as string) ?? "*"],
+        })
+      )
+      .then(({ rows }) => {
+        if (field) return rows[0][field];
+        return rows[0];
+      });
   }
 
   /**
@@ -90,25 +98,25 @@ export default abstract class SQLDataSource<
   //  * Upsert  item
   //  * @param item
   //  */
-  // upsert({ id, ...item }: I & { id: string }) {
-  //   if (!id) throw new HTTPUserInputError("id", "ID is required");
-  //   return this.context.db
-  //     .query(
-  //       ...insertInto(
-  //         this.collection,
-  //         { id, ...item },
-  //         {
-  //           onConflict: {
-  //             update: {
-  //               set: item,
-  //             },
-  //           },
-  //           returning: "*",
-  //         }
-  //       )
-  //     )
-  //     .then(({ rows }) => rows[0]);
-  // }
+  upsert({ id, ...item }: I & { id: string }) {
+    if (!id) throw new HTTPUserInputError("id", "ID is required");
+    return this.context.db
+      .query(
+        ...insertInto(
+          this.collection,
+          { id, ...item },
+          {
+            onConflict: {
+              update: {
+                set: item,
+              },
+            },
+            returning: "*",
+          }
+        )
+      )
+      .then(({ rows }) => rows[0]);
+  }
 
   /**
    * Delete item by id
@@ -130,12 +138,14 @@ export default abstract class SQLDataSource<
   ): Promise<{ items: T[]; nextOffset: number | null; count: number }> {
     const limit = params.limit ?? 20;
     const offset = params.offset ?? 0;
+    const [countQuery] = selectFrom(this.collection, {
+      columns: "COUNT(*) as count",
+    });
     return this.context.db
       .query(
-        ...selectFrom(this.collection, {
+        ...selectFrom(`${this.collection} as t,(${countQuery}) as c`, {
           offset,
           limit,
-          columns: ["COUNT(*) as count", "*"],
         })
       )
       .then((result) => {

@@ -33,13 +33,13 @@ export abstract class CRUDLDataSource<
   create(input: I): Result<T> {
     throw new NotImplementedError(this.constructor.name, "create");
   }
-  update(id: string, input: P): Result<T> {
+  update(id: string | number, input: P): Result<T> {
     throw new NotImplementedError(this.constructor.name, "update");
   }
-  delete(id: string): Result<{ deleted: boolean }> {
+  delete(id: string | number): Result<{ deleted: boolean }> {
     throw new NotImplementedError(this.constructor.name, "delete");
   }
-  get(id: string): Result<T> {
+  get(id: string | number): Result<T> {
     throw new NotImplementedError(this.constructor.name, "get");
   }
   list(params: ListParams): Result<ItemsList<T>> {

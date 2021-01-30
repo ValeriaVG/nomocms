@@ -1,33 +1,25 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import Redis from "ioredis";
 import Templates from "./Templates";
-import { TemplateData } from "./types";
 import Styles from "../styles/Styles";
+import { mockDatabase } from "mocks";
+import { createTable, insertInto } from "core/sql";
 
-const redis = new Redis({ db: 9 });
-const styles = new Styles({ redis });
-const templates = new Templates({ redis, styles } as any);
+const db = mockDatabase();
+const styles = new Styles({ db });
+const templates = new Templates({ db, styles } as any);
 
 describe("Templates Integration test", () => {
   before(async () => {
-    redis
-      .multi()
-      .hset(
-        "templates::name",
-        "id",
-        "name",
-        "body",
-        `<% name | default: '____' | capitalize %>`,
-        "head",
-        "Hello, <% name | capitalize %>"
-      )
-      .zadd("templates", "0", "name")
-      .exec();
-  });
-  after(async () => {
-    await redis.flushdb();
-    redis.disconnect();
+    await db.query(createTable(templates.collection, templates.schema));
+    await db.query(createTable(styles.collection, styles.schema));
+    await db.query(
+      ...insertInto(templates.collection, {
+        id: "name",
+        body: `<% name | default: ____ | capitalize %>`,
+        head: "Hello, <% name | capitalize %>",
+      })
+    );
   });
 
   it("can render simple  template by id", async () => {
@@ -39,7 +31,7 @@ describe("Templates Integration test", () => {
     expect(tpl).to.have.property("head", "Hello, Clark");
   });
 
-  it("can compile ans save template", async () => {
+  it("can compile and save template", async () => {
     const tpl = await templates.update("name", {
       head:
         '<title><% title %></title>\n<script async custom-template="amp-mustache" src="https://cdn.ampproject.org/v0/amp-mustache-0.2.js"></script>',
@@ -48,6 +40,7 @@ describe("Templates Integration test", () => {
 </template>`,
       style: `body,html{margin:0;}`,
     });
+
     expect(tpl).to.deep.eq({
       id: "name",
       head:

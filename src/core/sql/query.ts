@@ -62,26 +62,20 @@ export const insertInto = (
   data: Record<string, SimpleType>,
   options: {
     returning?: string | string[];
-    onConflict?:
+    onConflict?: { constraint?: string } & (
       | {
           update: { set: Record<string, SimpleType> };
         }
-      | { do: "NOTHING" | string };
+      | { do: "NOTHING" | string }
+    );
   } = {}
 ): QueryAndValues => {
   const columns = Object.keys(data);
   let query = sql`INSERT INTO ${table} (${columns.join(
     ","
   )}) VALUES (${columns.map((_, i) => `$${i + 1}`).join(",")})`;
-  if (options.returning) {
-    query += ` RETURNING ${
-      typeof options.returning === "string"
-        ? options.returning
-        : options.returning.join(",")
-    }`;
-  }
   if (options.onConflict) {
-    query += ` ON CONFLICT`;
+    query += ` ON CONFLICT(${options.onConflict.constraint ?? "id"})`;
     if ("do" in options.onConflict) {
       query += `DO ${options.onConflict.do}`;
     } else {
@@ -90,6 +84,13 @@ export const insertInto = (
         .map((column, i) => `${column}=$${i + 1}`)
         .join(",")}`;
     }
+  }
+  if (options.returning) {
+    query += ` RETURNING ${
+      typeof options.returning === "string"
+        ? options.returning
+        : options.returning.join(",")
+    }`;
   }
   return [query, Object.values(data)];
 };

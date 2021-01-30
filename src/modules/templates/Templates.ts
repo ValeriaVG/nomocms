@@ -1,11 +1,20 @@
-import { RedisDataSource } from "core/DataSource";
+import { SQLDataSource } from "core/DataSource";
 import { TemplateData } from "./types";
 import { Liquid } from "liquidjs";
 import { HTTPUserInputError } from "core/errors";
 import Styles from "modules/styles/Styles";
+import { ColumnDefinition } from "core/sql";
 
-export default class Templates extends RedisDataSource<TemplateData> {
-  collection = "templates";
+export default class Templates extends SQLDataSource<TemplateData> {
+  readonly collection = "templates";
+
+  readonly schema: Record<keyof TemplateData, ColumnDefinition> = {
+    id: { type: "varchar", length: 50, primaryKey: true },
+    body: { type: "text", nullable: true },
+    style: { type: "text", nullable: true },
+    head: { type: "text", nullable: true },
+    compiled: { type: "text", nullable: true },
+  };
 
   private engine = new Liquid({
     outputDelimiterLeft: "<%",
@@ -19,10 +28,10 @@ export default class Templates extends RedisDataSource<TemplateData> {
 
       readFile: async (file) => {
         const [id, ext] = file.split(".");
-        return this.context.redis.hget(this.cid(id), ext ?? "body");
+        return this.get(id, (ext || "body") as any);
       },
       exists: async (file) => {
-        return this.exists(file.split(".").shift());
+        return this.exists({ id: file.split(".").shift() });
       },
       resolve(root, file, ext) {
         if (ext === "style") return null;
@@ -47,34 +56,19 @@ export default class Templates extends RedisDataSource<TemplateData> {
     return this.engine.parseAndRender(text, variables);
   }
 
-  async create({ id, ...data }: TemplateData) {
+  async create(input: TemplateData) {
     const errors = [];
-    if (!id) errors.push({ name: "id", message: "ID is required" });
-
-    const exists = await this.exists(id);
-    if (exists)
-      errors.push({
-        name: "id",
-        message: "Template with this ID already exists",
-      });
-    if (errors.length) return { errors, code: 400 };
-
-    return this.update(id, data);
-  }
-
-  async update(
-    id: string,
-    input: Partial<Record<"body" | "head" | "style", string>>
-  ) {
+    if (!input.id) errors.push({ name: "id", message: "ID is required" });
     const { style } = await this.preview(input);
-    return this.upsert({ id, ...input, compiled: style });
+    return super.create({ ...input, compiled: style });
   }
 
-  async get(id: string) {
-    const template = await super.get(id);
-    if (!template) return template;
-    return template;
+  async update(id: string, input: Omit<Partial<TemplateData>, "id">) {
+    const { style } = await this.preview(input);
+    delete input["id"];
+    return super.update(id, { ...input, compiled: style });
   }
+
   preview = async (
     { head, body, style }: Partial<Record<"body" | "head" | "style", string>>,
     params?: { content: string; [key: string]: any }

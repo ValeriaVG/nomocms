@@ -1,7 +1,6 @@
-import { RedisDataSource } from "core/DataSource";
+import { SQLDataSource } from "core/DataSource";
+import { ColumnDefinition } from "core/sql";
 import { ErrorResponse } from "core/types";
-
-import { Redis } from "ioredis";
 import sass from "sass";
 
 export type StyleData = {
@@ -10,12 +9,14 @@ export type StyleData = {
   compiled?: string;
 };
 
-export default class Styles extends RedisDataSource<StyleData> {
+export default class Styles extends SQLDataSource<StyleData> {
   readonly collection = "styles";
 
-  constructor(protected context: { redis: Redis }) {
-    super(context);
-  }
+  readonly schema: Record<keyof StyleData, ColumnDefinition> = {
+    id: { type: "varchar", length: 50, primaryKey: true },
+    source: { type: "text" },
+    compiled: { type: "text", nullable: true },
+  };
 
   /**
    * Compile and save
@@ -38,7 +39,7 @@ export default class Styles extends RedisDataSource<StyleData> {
   async create({ id, source }: StyleData) {
     const errors = [];
     if (!source) errors.push({ name: "source", message: "Code is required" });
-    const exists = await this.exists(id);
+    const exists = await this.exists({ id });
     if (exists)
       errors.push({ name: "id", message: "Style with this ID already exists" });
     if (errors.length) return { errors, code: 400 };
@@ -60,14 +61,13 @@ export default class Styles extends RedisDataSource<StyleData> {
           outputStyle: "compressed",
           importer: (url, _, done) => {
             const getSource = () =>
-              this.context.redis
-                .hget(this.cid(url), "source")
+              this.get(url, "source")
                 .then((contents) => done({ contents }))
                 .catch(done);
             // If imported 'template.style'
             if (url.endsWith(".style")) {
-              this.context.redis
-                .hget("templates::" + url, "style")
+              this.context["templates"]
+                .get(url, "style")
                 .then((contents) => {
                   if (contents) return done({ contents });
                   getSource();
