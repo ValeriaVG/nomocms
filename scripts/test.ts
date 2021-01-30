@@ -35,7 +35,10 @@ export const runTests = async (options: MochaOptions = {}) => {
   mocha
     .loadFilesAsync()
     .then(() => mocha.run((failures) => (process.exitCode = failures ? 1 : 0)))
-    .catch(() => (process.exitCode = 1));
+    .catch((error) => {
+      console.error(error);
+      process.exit(1);
+    });
 };
 
 const options: MochaOptions = {

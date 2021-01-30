@@ -26,7 +26,7 @@ export type APIContext = typeof context & {
   ip_num?: number;
 };
 
-export type SimpleTypes = string | number | boolean | null;
+export type SimpleType = string | number | boolean | null;
 
 export type GenericResponse = {
   code?: number;
@@ -44,7 +44,7 @@ export type AMPResponse = GenericResponse & {
   body?: string;
   head?: string;
 };
-export type JSONObject = Record<string, SimpleTypes | object | Array<any>>;
+export type JSONObject = Record<string, SimpleType | object | Array<any>>;
 export type JSONResponse<T = JSONObject> = GenericResponse & T;
 export type DataResponse = GenericResponse & {
   type: string;
