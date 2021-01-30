@@ -1,11 +1,13 @@
 export type ContentPage = {
-  id: string;
+  id: number;
   path: string;
   template: string;
   title: string;
   description?: string;
   content: string;
-  createdAt?: number;
-  updatedAt?: number;
-  publishedAt?: number;
+  created?: number;
+  updated?: number;
+  published?: number;
+  // generated
+  html: string;
 };

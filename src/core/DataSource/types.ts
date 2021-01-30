@@ -26,7 +26,7 @@ export type ItemsList<T> = {
   nextOffset?: number;
 };
 export abstract class CRUDLDataSource<
-  T extends ExcludeReserved<T>,
+  T,
   I = Omit<T, "id">,
   P = I
 > extends DataSource {

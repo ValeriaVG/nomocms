@@ -62,6 +62,11 @@ export const insertInto = (
   data: Record<string, SimpleType>,
   options: {
     returning?: string | string[];
+    onConflict?:
+      | {
+          update: { set: Record<string, SimpleType> };
+        }
+      | { do: "NOTHING" | string };
   } = {}
 ): QueryAndValues => {
   const columns = Object.keys(data);
@@ -74,6 +79,17 @@ export const insertInto = (
         ? options.returning
         : options.returning.join(",")
     }`;
+  }
+  if (options.onConflict) {
+    query += ` ON CONFLICT`;
+    if ("do" in options.onConflict) {
+      query += `DO ${options.onConflict.do}`;
+    } else {
+      const columns = Object.keys(options.onConflict.update.set);
+      query += sql` DO UPDATE SET ${columns
+        .map((column, i) => `${column}=$${i + 1}`)
+        .join(",")}`;
+    }
   }
   return [query, Object.values(data)];
 };
@@ -137,7 +153,7 @@ const operators = [
   "$", // column
 ] as const;
 type QueryOperator = typeof operators[number];
-type Query = Record<
+export type Query = Record<
   string,
   | SimpleType
   | Partial<Record<QueryOperator, SimpleType>>
