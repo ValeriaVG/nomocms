@@ -1,7 +1,7 @@
-import { flatten } from "core/DataSource";
 import { APIContext } from "core/types";
 import { requiresPermission } from "modules/authorization/lib";
 import { Permission } from "modules/authorization/Permissions";
+import { flatten } from "ramda";
 import pageviews from "./pageviews";
 
 export const routes = {
@@ -25,7 +25,9 @@ export const routes = {
         info.user_email = user?.email;
         info.user_name = user?.name;
       }
-      redis.xadd("analytics", "*", flatten(info)).then(() => {});
+      redis
+        .xadd("analytics", "*", flatten(Object.entries(info)))
+        .then(() => {});
       return { message: "OK" };
     },
   },

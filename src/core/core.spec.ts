@@ -38,7 +38,10 @@ const routes = {
   },
 };
 
-const api = middleware({ routes }, ctx);
+let api;
+before(async () => {
+  api = await middleware({ routes }, ctx);
+});
 
 describe("API Middleware Integration test", () => {
   it("GET /api/item", (done) => {

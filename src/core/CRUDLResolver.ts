@@ -5,7 +5,7 @@ import { HTTPNotFound } from "./errors";
 import { APIContext } from "./types";
 
 export default function CRUDLResolver<
-  T extends CRUDLDataSource<{ id: string }>
+  T extends CRUDLDataSource<{ id: string | number }>
 >(name: string, dataSource?: string, path?: string) {
   const endpoint = "/_api" + (path ?? "/" + name);
   const ctxKey = dataSource ?? name;

@@ -10,7 +10,10 @@ export default function responseFactory(
   res: ServerResponse
 ) {
   return async (response: RouteResponse) => {
-    const code = "code" in response ? response.code : 200;
+    const code =
+      "code" in response && typeof response.code === "number"
+        ? response.code
+        : 200;
     const sendError = () => {
       res.statusCode = 500;
       return res.end();

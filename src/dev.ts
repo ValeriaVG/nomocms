@@ -16,11 +16,13 @@ fuse
   .then((result) => {
     // TODO: fix this abomination
     result.onComplete((r) => {
-      const server = require("./server");
+      const setupServer = require("./server").default;
       const port = 8080;
-      server.default.listen(port, () => {
-        console.log(`http://localhost:${port}/`);
-      });
+      setupServer().then((server) =>
+        server.listen(port, () => {
+          console.log(`http://localhost:${port}/`);
+        })
+      );
     });
   })
   .catch(console.error);

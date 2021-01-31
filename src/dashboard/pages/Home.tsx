@@ -28,7 +28,6 @@ const months = [
 export default function Home(): any {
   const { result } = useQuery("/_api/analytics/pageviews");
   const data = result?.items ?? [];
-  console.log(data);
   return (
     <>
       <section style="padding:2rem 2rem 2rem 0;">
