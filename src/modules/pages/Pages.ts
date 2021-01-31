@@ -92,25 +92,10 @@ export default class Pages extends SQLDataSource<ContentPage> {
   async update(id: number, input: Partial<ContentPage> & { content: string }) {
     return super.update(id, this.parse(input));
   }
-
+  // TODO: add caching
   async retrieve(path: string) {
     return this.findOne({
       where: { path },
-      columns: [
-        "pages.*",
-        "templates.compiled as style",
-        "templates.head as head",
-        "templates.body as body",
-      ],
-      join: {
-        table: (this.context["templates"].collection ??
-          "templates") as "templates",
-        on: "templates.id=pages.template",
-      },
-    }).then((page) => {
-      if (!page) return;
-      const { style, head, body, ...rest } = page as any;
-      return { ...rest, template: { style, head, body } };
-    });
+    }).then((page) => page && this.render(page));
   }
 }
