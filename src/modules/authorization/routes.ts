@@ -1,7 +1,8 @@
 import { APIContext } from "core/types";
 import Users from "./Users";
 import { superuser } from "config";
-import { HTTPNotFound, HTTPUserInputError } from "core/errors";
+import { v4 as uuid } from "uuid";
+import { HTTPNotFound } from "core/errors";
 import Permissions, { Permission } from "./Permissions";
 import Tokens from "./Tokens";
 import CRUDLResolver from "core/CRUDLResolver";
@@ -19,7 +20,7 @@ const routes = {
         ...ctx
       }: APIContext & { users: Users; tokens: Tokens; permissions: Permissions }
     ) => {
-      if (!token) throw new HTTPUserInputError("token", "Must be provided");
+      if (!token) token = `amp-cms-${uuid()}`;
       //Check if its a superuser defined by env variables
       if (
         superuser.email &&
@@ -27,8 +28,9 @@ const routes = {
         email === superuser.email &&
         password === superuser.password
       ) {
-        if (token) tokens.save({ user_id: ctx.superuser.id, token });
-        return { user: ctx.superuser, canAccessDashboard: true };
+        if (token)
+          tokens.save({ user_id: ctx.superuser.id, token, ip: ctx.ip });
+        return { user: ctx.superuser, canAccessDashboard: true, token };
       }
       const user = await users.login({ email, password });
       if (!user) return { user };
@@ -37,7 +39,7 @@ const routes = {
         user_id: user.id,
         permissions: Permission.read,
       });
-      return { user, canAccessDashboard };
+      return { user, canAccessDashboard, token };
     },
   },
   "/_api/logout": {

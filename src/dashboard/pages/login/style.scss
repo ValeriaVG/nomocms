@@ -1,9 +1,17 @@
 .login-wrapper {
   padding: 2rem;
   box-sizing: border-box;
-  max-width: 340px;
-  width: 100%;
-  margin: auto;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+
+  & > div {
+    max-width: 340px;
+    width: 100%;
+    margin: auto;
+  }
 
   fieldset {
     background: white;
@@ -12,6 +20,10 @@
     border-radius: 8px;
     border: none;
     box-shadow: 0 3px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    align-items: flex-start;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
   }
   label {
     display: flex;
@@ -20,10 +32,18 @@
     font-weight: bold;
     font-size: 0.8rem;
     line-height: 1.5rem;
+    align-items: flex-start;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0;
   }
   input {
     padding: 0.5rem;
     border: 1px solid rgba(0, 0, 0, 0.12);
+    margin-left: 0;
+    width: 100%;
+    box-sizing: border-box;
   }
   button,
   .button,

@@ -10,4 +10,8 @@ export default function cors(req: IncomingMessage, res: ServerResponse) {
   );
   res.setHeader("Access-Control-Allow-Headers", ["Content-Type"].join(","));
   res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "POST,GET,PUT,DELETE,HEAD,OPTIONS"
+  );
 }
