@@ -14,6 +14,7 @@ import { useContext, useState } from "preact/hooks";
 import { NotificationContext } from "./utils/notifications";
 import NotificationElement from "./components/NotificationElement";
 import { version } from "config";
+
 export default function Layout({
   children,
 }: {

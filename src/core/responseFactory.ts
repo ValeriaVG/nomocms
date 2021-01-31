@@ -38,9 +38,9 @@ export default function responseFactory(
         return sendError();
       }
 
-      res.setHeader("Content-Length", response.length.toString());
       if (["HEAD", "OPTIONS"].includes(req.method.toUpperCase()))
         return res.end();
+      res.setHeader("Content-Length", response.length.toString());
       if (typeof response.data === "string") {
         const stream = Readable.from(response.data);
         const unpipe = () => stream.unpipe();

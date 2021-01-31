@@ -1,9 +1,25 @@
-import { html } from "amp/lib";
-import { dashboard, recaptcha } from "config";
+import api from "dashboard/utils/api";
+import * as Preact from "preact";
+import { useState } from "preact/hooks";
+import "./style.scss";
 
-export const body = html`
-  <main class="wrapper">
-    <amp-layout layout="intrinsic" width="320" height="320" style="margin:auto">
+export default function Login() {
+  const [result, setResult] = useState(null);
+  const onSubmit = (e) => {
+    e.preventDefault();
+    const data = Array.from(new FormData(e.target).entries()).reduce(
+      (a, c) => ({
+        ...a,
+        [c[0]]: c[1],
+      }),
+      {}
+    );
+    return api.post("/_api/login", data).then(setResult);
+  };
+  //FIXME
+  if (result?.canAccessDashboard) return <div>Reload</div>;
+  return (
+    <main className="login-wrapper">
       <svg
         width="87"
         height="22"
@@ -45,162 +61,29 @@ export const body = html`
           </linearGradient>
         </defs>
       </svg>
-
-      <amp-layout amp-access="NOT canAccessDashboard" amp-access-hide>
-        <form method="post" action-xhr="/_api/login" target="_top">
-          <fieldset>
-            <label>
-              <span>Email:</span>
-              <input type="email" name="email" required autocomplete="email" />
-            </label>
-            <br />
-            <label>
-              <span>Password:</span>
-              <input
-                type="password"
-                name="password"
-                required
-                autocomplete="current-password"
-              />
-            </label>
-            ${recaptcha.siteKey &&
-            html`<amp-recaptcha-input
-              layout="nodisplay"
-              name="reCAPTCHA_body_key"
-              data-sitekey="${recaptcha.siteKey}"
-              data-action="reCAPTCHA_admin_login"
-            >
-            </amp-recaptcha-input>`}
-            <br />
-            <input type="submit" value="Login" />
-          </fieldset>
-          <div class="result">
-            <div submit-success class="success">
-              <template type="amp-mustache">
-                {{#canAccessDashboard}}
-                <div>
-                  <a
-                    href="${dashboard.path}"
-                    class="button"
-                    style="border-radius:4px;"
-                    >Access dashboard</a
-                  >
-                </div>
-                {{/canAccessDashboard}} {{^canAccessDashboard}} You shall not
-                pass! 🧐 {{/canAccessDashboard}}
-              </template>
-            </div>
-            <div submit-error class="error">
-              <template type="amp-mustache">
-                Incorrect email or password
-              </template>
-            </div>
-          </div>
-        </form>
-      </amp-layout>
-    </amp-layout>
-  </main>
-`;
-export const head = html`
-  <title>AMP CMS</title>
-  <script
-    async
-    custom-element="amp-form"
-    src="https://cdn.ampproject.org/v0/amp-form-0.1.js"
-  ></script>
-  <script
-    async
-    custom-template="amp-mustache"
-    src="https://cdn.ampproject.org/v0/amp-mustache-0.2.js"
-  ></script>
-  <script
-    async
-    custom-element="amp-access"
-    src="https://cdn.ampproject.org/v0/amp-access-0.1.js"
-  ></script>
-  ${recaptcha.siteKey &&
-  html`<script
-    async
-    custom-element="amp-recaptcha-input"
-    src="https://cdn.ampproject.org/v0/amp-recaptcha-input-0.1.js"
-  ></script>`}
-
-  <script id="amp-access" type="application/json">
-    {
-      "authorization": "/_api/access?rid=READER_ID&url=SOURCE_URL",
-      "pingback": "/_api/ping?rid=READER_ID&url=SOURCE_URL",
-      "login": "/_api/login?rid=READER_ID&url=SOURCE_URL",
-      "authorizationFallbackResponse": { "error": true }
-    }
-  </script>
-  <link rel="preconnect" href="https://fonts.gstatic.com" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap"
-    rel="stylesheet"
-  />
-
-  <style amp-custom>
-    body {
-      font-size: 16px;
-      line-height: 1.2;
-      font-family: "Noto Sans", sans-serif;
-      color: #3e464c;
-      background: #f2f2f2;
-    }
-    .wrapper {
-      width: 100vw;
-      height: 100vh;
-      padding: 2rem;
-      box-sizing: border-box;
-      display: flex;
-    }
-    fieldset {
-      background: white;
-      padding: 1rem;
-      margin-top: 0.5rem;
-      border-radius: 8px;
-      border: none;
-      box-shadow: 0 3px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-    }
-    label {
-      display: flex;
-      flex-direction: column;
-      text-transform: uppercase;
-      font-weight: bold;
-      font-size: 0.8rem;
-      line-height: 1.5rem;
-    }
-    input {
-      padding: 0.5rem;
-      border: 1px solid rgba(0, 0, 0, 0.12);
-    }
-    button,
-    .button,
-    input[type="submit"] {
-      background: #5500d7
-        linear-gradient(99.67deg, #5500d7 -6.01%, #ff52e1 104.46%);
-      color: white;
-      border: none;
-      padding: 1rem 2rem;
-      text-transform: uppercase;
-      font-weight: bold;
-      display: inline-block;
-      text-decoration: none;
-    }
-    input[type="submit"] {
-      width: 100%;
-      box-shadow: 0 3px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-    }
-    .result {
-      margin-top: 1rem;
-      text-align: center;
-    }
-    .error {
-      color: #f44336;
-    }
-
-    form.amp-form-submit-success fieldset {
-      display: none;
-    }
-  </style>
-`;
+      <form method="post" onSubmit={onSubmit}>
+        <fieldset>
+          <label>
+            <span>Email:</span>
+            <input type="email" name="email" required autoComplete="email" />
+          </label>
+          <br />
+          <label>
+            <span>Password:</span>
+            <input
+              type="password"
+              name="password"
+              required
+              autoComplete="current-password"
+            />
+          </label>
+          <br />
+          <input type="submit" value="Login" />
+        </fieldset>
+        <div className="result">
+          <div className="error">Incorrect email or password</div>
+        </div>
+      </form>
+    </main>
+  );
+}

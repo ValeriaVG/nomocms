@@ -1,7 +1,8 @@
 import { HTTPMethod, JSONObject } from "core/types";
+import { apiURL } from "dashboard/config";
 
 export class Api {
-  constructor(public host: string = "") {}
+  constructor(public host: string) {}
 
   fetch = typeof window !== "undefined" && window.fetch.bind(window);
 
@@ -59,4 +60,4 @@ export class Api {
   patch = (path: string, input: JSONObject) => this.call(path, "PATCH", input);
   delete = (path: string) => this.call(path, "DELETE");
 }
-export default new Api();
+export default new Api(apiURL);

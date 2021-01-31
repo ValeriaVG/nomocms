@@ -1,8 +1,6 @@
 import { APIContext } from "core/types";
 import Users from "./Users";
-
-import * as loginPage from "./pages/login";
-import { dashboard, superuser } from "config";
+import { superuser } from "config";
 import { HTTPNotFound, HTTPUserInputError } from "core/errors";
 import Permissions, { Permission } from "./Permissions";
 import Tokens from "./Tokens";
@@ -10,7 +8,6 @@ import CRUDLResolver from "core/CRUDLResolver";
 import { requiresPermission } from "./lib";
 
 const routes = {
-  [dashboard.pathname]: { GET: () => ({ ...loginPage, type: "amp" }) },
   "/_api/login": {
     POST: async (
       { input: { email, password } },
@@ -54,12 +51,23 @@ const routes = {
     },
   },
   "/_api/access": {
-    GET: async (_, { user, canAccessDashboard }: APIContext) => {
+    GET: async (
+      _,
+      { user, permissions }: APIContext & { permissions: Permissions }
+    ) => {
+      const canAccessDashboard =
+        user?.email === superuser.email
+          ? true
+          : user?.id &&
+            (await permissions.check({
+              permissions: Permission.read,
+              user_id: user.id,
+            }));
       return { canAccessDashboard, user };
     },
   },
   "/_api/ping": {
-    POST: (params) => {
+    POST: () => {
       return { message: "OK" };
     },
   },
