@@ -19,6 +19,7 @@ const routes = {
         token,
         tokens,
         permissions,
+        ...ctx
       }: APIContext & { users: Users; tokens: Tokens; permissions: Permissions }
     ) => {
       if (!token) throw new HTTPUserInputError("token", "Must be provided");
@@ -29,14 +30,14 @@ const routes = {
         email === superuser.email &&
         password === superuser.password
       ) {
-        if (token) tokens.save({ id: "superuser", token });
-        return { user: superuser, canAccessDashboard: true };
+        if (token) tokens.save({ user_id: ctx.superuser.id, token });
+        return { user: ctx.superuser, canAccessDashboard: true };
       }
       const user = await users.login({ email, password });
       if (!user) return { user };
-      if (token) tokens.save({ id: user.id, token });
+      if (token) tokens.save({ user_id: user.id, token });
       const canAccessDashboard = await permissions.check({
-        user: user.id,
+        user_id: user.id,
         permissions: Permission.read,
       });
       return { user, canAccessDashboard };
@@ -48,7 +49,7 @@ const routes = {
       { token, user, tokens }: APIContext & { tokens: Tokens }
     ) => {
       if (!token || !user?.id) return { result: false };
-      const result = await tokens.delete({ token, id: user.id });
+      const result = await tokens.deleteOne({ token, user_id: user.id });
       return { result: Boolean(result) };
     },
   },
@@ -73,8 +74,8 @@ routes["/_api/users/:id"].GET = requiresPermission(
   ) => {
     const user = await users.get(id);
     if (!user) throw new HTTPNotFound();
-    const userPermissions = await (permissions as Permissions).get({
-      user: user.id,
+    const userPermissions = await (permissions as Permissions).getPermissions({
+      user_id: user.id,
     });
     return { ...user, permissions: userPermissions };
   }

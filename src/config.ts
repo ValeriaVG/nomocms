@@ -1,4 +1,5 @@
 import path from "path";
+import { PoolConfig } from "pg";
 
 if (typeof process !== undefined) {
   require("dotenv").config();
@@ -7,6 +8,19 @@ if (typeof process !== undefined) {
 }
 
 export const redis = process.env.REDIS_URL;
+
+export const db: PoolConfig = {
+  host: process.env.DATABASE_HOST,
+  port: process.env.DATABASE_PORT as any,
+  user: process.env.DATABASE_USER ?? "amp-cms",
+  password: process.env.DATABASE_PASSWORD ?? "amp-cms",
+  ssl: process.env.DATABASE_CA
+    ? {
+        ca: process.env.DATABASE_CA,
+      }
+    : false,
+};
+
 export const dashboard = {
   pathname: "/admin",
   dist: path.resolve(process.cwd(), ".dashboard"),

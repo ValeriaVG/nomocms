@@ -52,7 +52,7 @@ export default class Pages extends SQLDataSource<ContentPage> {
     created: { type: "timestamp", default: "NOW()" },
     updated: { type: "timestamp", nullable: true },
     published: { type: "timestamp", nullable: true },
-    code: { type: "int", nullable: true },
+    code: { type: "int", nullable: false, default: "200" },
   };
 
   async render(input: Partial<ContentPage> & { html: string }) {
@@ -91,5 +91,26 @@ export default class Pages extends SQLDataSource<ContentPage> {
   }
   async update(id: number, input: Partial<ContentPage> & { content: string }) {
     return super.update(id, this.parse(input));
+  }
+
+  async retrieve(path: string) {
+    return this.findOne({
+      where: { path },
+      columns: [
+        "pages.*",
+        "templates.compiled as style",
+        "templates.head as head",
+        "templates.body as body",
+      ],
+      join: {
+        table: (this.context["templates"].collection ??
+          "templates") as "templates",
+        on: "templates.id=pages.template",
+      },
+    }).then((page) => {
+      if (!page) return;
+      const { style, head, body, ...rest } = page as any;
+      return { ...rest, template: { style, head, body } };
+    });
   }
 }

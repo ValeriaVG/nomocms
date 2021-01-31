@@ -1,6 +1,8 @@
-import server from "./server";
+import setupServer from "./server";
 
 const port = 8080;
-server.listen(port, () => {
-  console.log(`http://localhost:${port}/`);
-});
+setupServer().then((server) =>
+  server.listen(port, () => {
+    console.log(`http://localhost:${port}/`);
+  })
+);

@@ -41,6 +41,13 @@ export default abstract class SQLDataSource<
     super(context);
   }
 
+  prepare(input: any): I {
+    return Object.entries(input).reduce((a, [key, value]) => {
+      if (key in this.schema) a[key] = value;
+      return a;
+    }, {} as any);
+  }
+
   /**
    * Check if item with provided id exists
    * @param id
@@ -55,13 +62,13 @@ export default abstract class SQLDataSource<
    * Retrieve item by id
    * @param id
    */
-  get(id: string, field?: keyof T) {
+  get(id: number | string, field?: keyof T): Promise<T | any> {
     return this.findOne({
       where: { id },
       columns: [(field as string) ?? "*"],
     }).then((result) => {
-      if (field) return result[field];
-      return result;
+      if (field) return result[field] as T;
+      return result as any;
     });
   }
 
@@ -95,7 +102,9 @@ export default abstract class SQLDataSource<
    */
   create(input: I) {
     return this.context.db
-      .query(...insertInto(this.collection, input, { returning: "*" }))
+      .query(
+        ...insertInto(this.collection, this.prepare(input), { returning: "*" })
+      )
       .then(({ rows }) => rows[0]);
   }
 
@@ -108,7 +117,7 @@ export default abstract class SQLDataSource<
     return this.context.db
       .query(
         ...update(this.collection, {
-          set: patch,
+          set: this.prepare(patch),
           where: { id },
           returning: "*",
         })
@@ -120,22 +129,18 @@ export default abstract class SQLDataSource<
   //  * Upsert  item
   //  * @param item
   //  */
-  upsert({ id, ...item }: I & { id: string }) {
+  upsert({ id, ...item }: I & { id: string | number }) {
     if (!id) throw new HTTPUserInputError("id", "ID is required");
     return this.context.db
       .query(
-        ...insertInto(
-          this.collection,
-          { id, ...item },
-          {
-            onConflict: {
-              update: {
-                set: item,
-              },
+        ...insertInto(this.collection, this.prepare({ id, ...item }), {
+          onConflict: {
+            update: {
+              set: this.prepare(item),
             },
-            returning: "*",
-          }
-        )
+          },
+          returning: "*",
+        })
       )
       .then(({ rows }) => rows[0]);
   }
@@ -171,9 +176,9 @@ export default abstract class SQLDataSource<
         })
       )
       .then((result) => {
-        const count = result.rows[0]["count"];
+        const count = result.rows[0]?.count ?? 0;
         const items = result.rows.map((item) => {
-          delete item.total;
+          delete item.count;
           return item;
         });
         const next = Number(limit) + Number(offset);

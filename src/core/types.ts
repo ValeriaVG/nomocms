@@ -24,6 +24,7 @@ export type APIContext = typeof context & {
   url?: NormalizedURL;
   ip?: string;
   ip_num?: number;
+  superuser?: User;
 };
 
 export type SimpleType = string | number | boolean | null;

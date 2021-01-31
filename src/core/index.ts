@@ -4,7 +4,7 @@ import { APIContext, Routes, HTTPMethod } from "./types";
 import { dashboard, superuser } from "config";
 import requestParams from "./requestParams";
 import routeRequest from "./routeRequest";
-import { DataSource } from "./DataSource";
+import { DataSource, SQLDataSource } from "./DataSource";
 import responseFactory from "./responseFactory";
 import { HTTPNotFound } from "./errors";
 import NormalizedURL from "./NormalizedURL";
@@ -12,18 +12,54 @@ import renderDashboard from "./renderDashboard";
 import Permissions, { Permission } from "modules/authorization/Permissions";
 import Users from "modules/authorization/Users";
 import { ip2num } from "modules/analytics/lib";
+import { createTable, insertInto } from "./sql";
+import Pages from "modules/pages/Pages";
 
-export default function core(
+export default async function core(
   modules: {
     routes?: Routes;
     dataSources?: Record<string, typeof DataSource>;
   },
   ctx: APIContext
-): any {
-  if (modules.dataSources) {
-    for (let source in modules.dataSources) {
-      ctx[source] = new (modules.dataSources[source] as any)(ctx);
+) {
+  try {
+    if (modules.dataSources) {
+      for (let source in modules.dataSources) {
+        const Source = modules.dataSources[source] as any;
+        ctx[source] = new Source(ctx);
+        if ("collection" in ctx[source]) {
+          const src = ctx[source] as SQLDataSource<any>;
+          await ctx.db.query(
+            createTable(src.collection, src.schema, {
+              ifNotExists: true,
+              primaryKey: src.primaryKey as string[],
+            })
+          );
+        }
+      }
     }
+    ctx.superuser = await ctx.db
+      ?.query(
+        ...insertInto(
+          ctx["users"].collection,
+          {
+            name: "superuser",
+            email: superuser.email,
+            pwhash: "",
+          },
+          {
+            onConflict: {
+              constraint: "email",
+              update: { set: { name: "superuser" } },
+            },
+            returning: "*",
+          }
+        )
+      )
+      .then(({ rows }) => rows[0]);
+  } catch (error) {
+    console.error(error);
+    process.exit(1);
   }
 
   return async (
@@ -53,8 +89,8 @@ export default function core(
       const method = req.method?.toUpperCase();
 
       context.headers = req.headers;
-      context.ip = req.connection.remoteAddress;
-      context.ip_num = ip2num(req.connection.remoteAddress);
+      context.ip = req.socket.remoteAddress;
+      context.ip_num = ip2num(req.socket.remoteAddress);
       // TODO: check accept header
       // Look for existing page
       context.url = new NormalizedURL(req.url);
@@ -75,11 +111,14 @@ export default function core(
         return renderDashboard(req, res, next);
       }
       if (!acceptsJSON) {
-        const page = await context.redis?.hgetall(
-          "pages::url::" + context.url.normalizedPath
+        const page = await (context.pages as Pages)?.retrieve(
+          context.url.normalizedPath
         );
-        if (page?.id) {
-          return sendResponse({ type: "amp", ...page });
+        if (page) {
+          return sendResponse({
+            type: "amp",
+            ...page,
+          });
         }
       }
 
@@ -91,7 +130,7 @@ export default function core(
 
       if (!resolver) {
         if (next) return next();
-        const notFoundPage = await ctx.redis?.hgetall("pages::url::wildcard");
+        const notFoundPage = await ctx["pages"]?.retrieve("/*");
         if (notFoundPage)
           return sendResponse({ type: "amp", ...notFoundPage, code: 404 });
         throw new HTTPNotFound();
@@ -108,7 +147,7 @@ export default function core(
     } catch (error) {
       const code = "code" in error ? error.code : 500;
       const message = code >= 500 ? "Internal Server Error" : error.message;
-      if (code >= 500) context.log?.error(error);
+      if (code >= 500) console.error(error);
       return sendResponse({
         errors: [{ name: error["field"] ?? error.name, message }],
         code,

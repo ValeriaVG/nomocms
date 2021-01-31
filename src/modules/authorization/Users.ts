@@ -48,7 +48,7 @@ export default class Users extends SQLDataSource<User, UserInput> {
       where: { "tokens.id": token },
       join: {
         table: (this.context["tokens"].collection ?? "tokens") + " as tokens",
-        on: `tokens.id=${this.collection} AND token.expires < NOW()`,
+        on: `tokens.user_id=${this.collection}.id AND tokens.expires > NOW()`,
       },
       columns: [`${this.collection}.*`],
     });

@@ -1,18 +1,12 @@
 import { describe, it, before, after } from "mocha";
 import { expect } from "chai";
-import { Client } from "pg";
 import { createTable, dropTable } from "./table";
 import { deleteFrom, insertInto, selectFrom, update } from "./query";
+import { mockDatabase } from "mocks";
 
-const client = new Client({ user: "amp-cms", password: "amp-cms" });
+const client = mockDatabase();
 
 describe("SQL query builder PostgreSQL integration", () => {
-  before(async () => {
-    await client.connect();
-  });
-  after(async () => {
-    await client.end();
-  });
   describe("table", () => {
     it("can create table", async () => {
       const result = await client.query(

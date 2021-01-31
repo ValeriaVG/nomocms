@@ -21,7 +21,6 @@ export default class Editor extends Preact.Component<
       });
     };
     window.onmessage = (e) => {
-      console.log(e.data);
       this.props.onChange && this.props.onChange(e.data);
     };
   }

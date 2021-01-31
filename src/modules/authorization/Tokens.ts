@@ -39,7 +39,7 @@ export default class Tokens extends SQLDataSource<UserToken> {
       id: token,
       user_id,
       ip,
-      expires: new Date(Date.now() + this.ttl),
+      expires: new Date(Date.now() + this.ttl * 1000),
       created: new Date(Date.now()),
     });
   }
