@@ -7,16 +7,17 @@
   "author": "ValeriaVG <valeria.viana.gusmao@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "build": "yarn && ts-node -r tsconfig-paths/register src/build",
-    "start": "node .server/index",
-    "dev": "ts-node-dev -r tsconfig-paths/register src/dev",
+    "build:api": "ts-node -r tsconfig-paths/register scripts/build/api",
+    "build:dashboard": "ts-node -r tsconfig-paths/register scripts/build/dashboard",
+    "start:api": "node .server/index",
+    "dev:dashboard": "ts-node -r tsconfig-paths/register scripts/dev",
+    "dev:api": "ts-node-dev -r tsconfig-paths/register src/index",
     "test": "ts-node -r tsconfig-paths/register scripts/test",
     "coverage": "nyc --reporter=lcov --reporter=text-summary ts-node -r tsconfig-paths/register scripts/test"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.34",
     "@fortawesome/free-solid-svg-icons": "^5.15.2",
-    "amp-toolbox-cors": "^1.2.0-alpha.2",
     "bcryptjs": "^2.4.3",
     "cookie": "^0.4.1",
     "dotenv": "^8.2.0",
@@ -31,7 +32,8 @@
     "ramda": "^0.27.1",
     "react-router-dom": "^5.2.0",
     "recharts": "^2.0.4",
-    "sass": "^1.32.5"
+    "sass": "^1.32.5",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.1",

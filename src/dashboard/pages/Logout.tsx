@@ -1,11 +1,16 @@
 import api from "dashboard/utils/api";
 import * as Preact from "preact";
+import { useContext } from "preact/hooks";
 import { useHistory } from "react-router-dom";
+import { AccessContext } from "../context";
 
 export default function Logout() {
+  const { setAccess } = useContext(AccessContext);
   const onSubmit = (e) => {
     e.preventDefault();
-    api.put("/_api/logout").then(() => (document.location.href = "/admin"));
+    api.put("/_api/logout").then(() => {
+      setAccess({ canAccessDashboard: false });
+    });
   };
   const history = useHistory();
   return (

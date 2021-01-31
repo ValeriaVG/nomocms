@@ -1,16 +1,14 @@
 import { APIContext } from "core/types";
 import Users from "./Users";
-
-import * as loginPage from "./pages/login";
-import { dashboard, superuser } from "config";
-import { HTTPNotFound, HTTPUserInputError } from "core/errors";
+import { superuser } from "config";
+import { v4 as uuid } from "uuid";
+import { HTTPNotFound } from "core/errors";
 import Permissions, { Permission } from "./Permissions";
 import Tokens from "./Tokens";
 import CRUDLResolver from "core/CRUDLResolver";
 import { requiresPermission } from "./lib";
 
 const routes = {
-  [dashboard.pathname]: { GET: () => ({ ...loginPage, type: "amp" }) },
   "/_api/login": {
     POST: async (
       { input: { email, password } },
@@ -22,7 +20,7 @@ const routes = {
         ...ctx
       }: APIContext & { users: Users; tokens: Tokens; permissions: Permissions }
     ) => {
-      if (!token) throw new HTTPUserInputError("token", "Must be provided");
+      if (!token) token = `amp-cms-${uuid()}`;
       //Check if its a superuser defined by env variables
       if (
         superuser.email &&
@@ -30,8 +28,9 @@ const routes = {
         email === superuser.email &&
         password === superuser.password
       ) {
-        if (token) tokens.save({ user_id: ctx.superuser.id, token });
-        return { user: ctx.superuser, canAccessDashboard: true };
+        if (token)
+          tokens.save({ user_id: ctx.superuser.id, token, ip: ctx.ip });
+        return { user: ctx.superuser, canAccessDashboard: true, token };
       }
       const user = await users.login({ email, password });
       if (!user) return { user };
@@ -40,7 +39,7 @@ const routes = {
         user_id: user.id,
         permissions: Permission.read,
       });
-      return { user, canAccessDashboard };
+      return { user, canAccessDashboard, token };
     },
   },
   "/_api/logout": {
@@ -54,12 +53,23 @@ const routes = {
     },
   },
   "/_api/access": {
-    GET: async (_, { user, canAccessDashboard }: APIContext) => {
+    GET: async (
+      _,
+      { user, permissions }: APIContext & { permissions: Permissions }
+    ) => {
+      const canAccessDashboard =
+        user?.email === superuser.email
+          ? true
+          : user?.id &&
+            (await permissions.check({
+              permissions: Permission.read,
+              user_id: user.id,
+            }));
       return { canAccessDashboard, user };
     },
   },
   "/_api/ping": {
-    POST: (params) => {
+    POST: () => {
       return { message: "OK" };
     },
   },

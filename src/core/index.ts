@@ -1,19 +1,18 @@
 import { IncomingMessage, ServerResponse } from "http";
 import cookie from "cookie";
 import { APIContext, Routes, HTTPMethod } from "./types";
-import { dashboard, superuser } from "config";
+import { superuser } from "config";
 import requestParams from "./requestParams";
 import routeRequest from "./routeRequest";
 import { DataSource, SQLDataSource } from "./DataSource";
 import responseFactory from "./responseFactory";
 import { HTTPNotFound } from "./errors";
 import NormalizedURL from "./NormalizedURL";
-import renderDashboard from "./renderDashboard";
-import Permissions, { Permission } from "modules/authorization/Permissions";
 import Users from "modules/authorization/Users";
 import { ip2num } from "modules/analytics/lib";
 import { createTable, insertInto } from "./sql";
 import Pages from "modules/pages/Pages";
+import cors from "./cors";
 
 export default async function core(
   modules: {
@@ -74,16 +73,9 @@ export default async function core(
     const initializeAccess = async () => {
       if (!context.token) return;
       context.user = await (context.users as Users).byToken(context.token);
-
-      context.canAccessDashboard =
-        context.user?.email === superuser.email
-          ? true
-          : context.user?.id &&
-            (await (context.permissions as Permissions).check({
-              permissions: Permission.read,
-              user_id: context.user.id,
-            }));
     };
+
+    cors(req, res);
 
     try {
       const method = req.method?.toUpperCase();
@@ -103,13 +95,6 @@ export default async function core(
       const params = await requestParams(req);
       context.token = context.cookies["amp-access"] ?? params.rid;
       await initializeAccess().catch(console.error);
-      if (
-        context.canAccessDashboard &&
-        !acceptsJSON &&
-        context.url.normalizedPath.startsWith(dashboard.pathname)
-      ) {
-        return renderDashboard(req, res, next);
-      }
       if (!acceptsJSON) {
         const page = await (context.pages as Pages)?.retrieve(
           context.url.normalizedPath

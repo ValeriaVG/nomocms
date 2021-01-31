@@ -21,14 +21,6 @@ export const db: PoolConfig = {
     : false,
 };
 
-export const dashboard = {
-  pathname: "/admin",
-  dist: path.resolve(process.cwd(), ".dashboard"),
-  get path(): string {
-    return this.pathname + "/";
-  },
-};
-
 export const recaptcha = {} as any; /*{
   siteKey: process.env.RECAPTCHA_SITE_KEY,
   secretKey: process.env.RECAPTCHA_SECRET_KEY,

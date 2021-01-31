@@ -19,7 +19,6 @@ export type APIContext = typeof context & {
   cookies?: Record<string, string>;
   token?: string;
   user?: User;
-  canAccessDashboard?: boolean;
   headers?: IncomingHttpHeaders;
   url?: NormalizedURL;
   ip?: string;

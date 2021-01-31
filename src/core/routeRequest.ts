@@ -1,12 +1,12 @@
 import { ResolverFn, Routes, HTTPMethod } from "./types";
-import { HTTPMethodNotAllowed, HTTPNotFound } from "./errors";
+import { HTTPMethodNotAllowed } from "./errors";
 import NormalizedURL from "./NormalizedURL";
 
 const cache = new Map<string, RegExp>();
 
 export default function routeRequest(
   url: NormalizedURL,
-  method: HTTPMethod,
+  method: HTTPMethod | "OPTIONS",
   routes: Routes
 ): { resolver: ResolverFn; params: Record<string, string> } {
   let params;
@@ -29,6 +29,9 @@ export default function routeRequest(
   if (!resolver) return { params, resolver: null };
   if (typeof resolver === "function") {
     return { params, resolver };
+  }
+  if (method === "OPTIONS") {
+    return { params, resolver: () => ({ code: 200 }) };
   }
   if (!(method in resolver))
     throw new HTTPMethodNotAllowed(Object.keys(resolver) as any);
