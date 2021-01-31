@@ -13,7 +13,7 @@ import FontAwesomeIcon from "./utils/FontAwesomeIcon";
 import { useContext, useState } from "preact/hooks";
 import { NotificationContext } from "./utils/notifications";
 import NotificationElement from "./components/NotificationElement";
-
+import { version } from "config";
 export default function Layout({
   children,
 }: {
@@ -83,7 +83,7 @@ export default function Layout({
         </div>
         {children}
       </main>
-      <footer>AMP CMS v0.0.1</footer>
+      <footer>AMP CMS {version}</footer>
     </>
   );
 }

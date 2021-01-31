@@ -40,3 +40,5 @@ export const superuser = {
 };
 
 export const appUrl = process.env.APP_URL;
+
+export const version = require("../package.json").version;
