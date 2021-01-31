@@ -1,4 +1,5 @@
 import * as Preact from "preact";
+import * as monaco from "monaco-editor";
 
 export default class Editor extends Preact.Component<
   {
@@ -9,37 +10,36 @@ export default class Editor extends Preact.Component<
   } & Preact.JSX.HTMLAttributes<HTMLDivElement>
 > {
   ref = Preact.createRef();
-  editor;
+  editor: monaco.editor.IStandaloneCodeEditor;
   componentDidMount() {
-    this.ref.current.onload = () => {
-      this.ref.current.contentWindow.postMessage({
-        value: this.props.value,
-        language: this.props.language ?? "markdown",
-        lineNumbers: "off",
-        theme: this.props.theme,
-        minimap: { enabled: false },
-      });
-    };
-    window.onmessage = (e) => {
-      this.props.onChange && this.props.onChange(e.data);
-    };
+    this.editor = monaco.editor.create(this.ref.current, {
+      value: this.props.value,
+      language: this.props.language ?? "markdown",
+      lineNumbers: "off",
+      theme: this.props.theme,
+      minimap: { enabled: false },
+    });
+    this.editor.onDidChangeModelContent(() => {
+      if (!this.props.onChange) return;
+      this.props.onChange(this.editor.getValue());
+    });
   }
 
   render() {
     const { value, onChange, style, ...props } = this.props;
     return (
-      <iframe
-        src="/admin/static/vs/editor.html"
+      <div
         ref={this.ref}
-        frameBorder="0"
-        crossOrigin="true"
-        sandbox="allow-scripts allow-same-origin"
-        style={Object.assign(
-          { width: "100%", minHeight: 300, background: "#1e1e1e" },
-          style
-        )}
+        style={Object.assign({}, defaultStyle, style)}
         {...props}
       />
     );
   }
 }
+
+const defaultStyle = {
+  width: "100%",
+  minHeight: 350,
+  height: "100%",
+  flex: 1,
+};
