@@ -1,8 +1,8 @@
-import { ExcludeReserved, Result } from "../types";
+import { Result } from "../types";
 
 /**
  * DataSource can be anything from an item
- * stored in Redis to third party service
+ * stored in database to third party service
  */
 export abstract class DataSource {
   constructor(protected context: any) {}
