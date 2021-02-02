@@ -1,11 +1,5 @@
-import path from "path";
 import { PoolConfig } from "pg";
-
-if (typeof process !== undefined) {
-  require("dotenv").config();
-} else {
-  let process = { env: {} };
-}
+require("dotenv").config();
 
 export const redis = process.env.REDIS_URL;
 

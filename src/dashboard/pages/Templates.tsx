@@ -1,14 +1,11 @@
 import { faEye } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Editor from "dashboard/components/Editor";
 import Tabs from "dashboard/components/Tabs";
 import ItemRoutes from "dashboard/ItemRoutes";
-import api from "dashboard/utils/api";
-import FontAwesomeIcon from "dashboard/utils/FontAwesomeIcon";
-import useNotification from "dashboard/utils/notifications";
 import usePreview from "dashboard/utils/usePreview";
 import { TemplateData } from "modules/templates/types";
-import * as Preact from "preact";
-import { useEffect, useRef, useState } from "preact/hooks";
+import React, { useState } from "react";
 
 // IDEA: add components
 
@@ -75,7 +72,7 @@ const TemplateForm = ({ values, setValue, onValueChange, update }) => {
           />
         </label>
 
-        <div class="button button-dark" onClick={togglePreview}>
+        <div className="button button-dark" onClick={togglePreview}>
           <FontAwesomeIcon icon={faEye} />
           Preview
         </div>

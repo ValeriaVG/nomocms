@@ -1,15 +1,15 @@
-import * as Preact from "preact";
 import * as monaco from "monaco-editor";
+import { Component, createRef, HTMLProps } from "react";
 
-export default class Editor extends Preact.Component<
+export default class Editor extends Component<
   {
     value?: string;
     onChange?: (value: string) => any;
     language?: string;
     theme?: string;
-  } & Preact.JSX.HTMLAttributes<HTMLDivElement>
+  } & HTMLProps<HTMLDivElement>
 > {
-  ref = Preact.createRef();
+  ref = createRef<HTMLDivElement>();
   editor: monaco.editor.IStandaloneCodeEditor;
   componentDidMount() {
     this.editor = monaco.editor.create(this.ref.current, {

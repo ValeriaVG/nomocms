@@ -1,6 +1,5 @@
 import api from "dashboard/utils/api";
-import * as Preact from "preact";
-import { useContext, useState } from "preact/hooks";
+import { useContext, useState } from "react";
 import { AccessContext, AccessInfo } from "../../context";
 import "./style.scss";
 
@@ -50,8 +49,8 @@ export default function Login() {
             fill="url(#paint0_linear)"
           />
           <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
+            fillRule="evenodd"
+            clipRule="evenodd"
             d="M0 110C0 170.751 49.2494 220 110 220C170.754 220 220 170.751 220 110C220 49.2494 170.754 0 110 0C49.2494 0 0 49.2494 0 110Z"
             fill="white"
           />
@@ -60,8 +59,8 @@ export default function Login() {
             fill="#005AF0"
           />
           <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
+            fillRule="evenodd"
+            clipRule="evenodd"
             d="M358.937 144.305H323.957L318.149 161.333H294.389L328.577 68.6693H354.581L388.769 161.333H364.745L358.937 144.305ZM353.129 127.145L341.513 92.8253L329.765 127.145H353.129ZM502.421 68.6693V161.333H479.849V103.385L459.785 161.333H440.249L420.053 103.253V161.333H397.481V68.6693H425.069L450.281 133.217L474.965 68.6693H502.421ZM540.569 128.597V161.333H517.997V68.0093H554.561C565.65 68.0093 574.097 70.7593 579.905 76.2593C585.713 81.7594 588.617 89.1733 588.617 98.5013C588.617 104.309 587.319 109.479 584.723 114.011C582.127 118.543 578.277 122.107 573.173 124.703C568.069 127.299 561.865 128.597 554.561 128.597H540.569ZM552.053 110.513C561.117 110.513 565.649 106.509 565.649 98.5013C565.649 90.3173 561.117 86.2253 552.053 86.2253H540.569V110.513H552.053Z"
             fill="#005AF0"
           />
@@ -74,8 +73,8 @@ export default function Login() {
               y2="180"
               gradientUnits="userSpaceOnUse"
             >
-              <stop stop-color="#FF52E1" />
-              <stop offset="1" stop-color="#5500D7" />
+              <stop stopColor="#FF52E1" />
+              <stop offset="1" stopColor="#5500D7" />
             </linearGradient>
           </defs>
         </svg>

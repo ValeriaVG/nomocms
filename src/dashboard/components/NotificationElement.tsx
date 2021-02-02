@@ -1,7 +1,6 @@
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import FontAwesomeIcon from "dashboard/utils/FontAwesomeIcon";
-import * as Preact from "preact";
-import { useEffect, useState } from "preact/hooks";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useEffect, useState } from "react";
 import useNotification, { Notification } from "../utils/notifications";
 import "./notifications.scss";
 
@@ -27,24 +26,31 @@ export default function NotificationElement({
 
   return (
     <div
-      class={`notification notification-${variant}`}
+      className={`notification notification-${variant}`}
       onClick={() => remove(id)}
     >
-      <span style="position:absolute;top:0.25rem;right:0.5rem;opacity:0.5">
+      <span
+        style={{
+          position: "absolute",
+          top: "0.25rem",
+          right: "0.5rem",
+          opacity: 0.5,
+        }}
+      >
         <FontAwesomeIcon icon={faTimes} size="xs" aria-label="Close" />
       </span>
       {Boolean(ttl) && (
         <>
-          <meta name="ttl-seconds" value={timeLeft?.toFixed(0)} />
-          <div class="notification--progress">
+          <meta name="ttl-seconds" content={timeLeft?.toFixed(0)} />
+          <div className="notification--progress">
             <div
-              class="notification--progress--value"
+              className="notification--progress--value"
               style={{ width: `${(timeLeft / ttl) * 100}%` }}
             />
           </div>
         </>
       )}
-      <div class="notification--content">{content}</div>
+      <div className="notification--content">{content}</div>
     </div>
   );
 }

@@ -1,5 +1,3 @@
-import * as Preact from "preact";
-
 export default function NotFound() {
   return (
     <section style={{ padding: "1rem", height: "80%" }}>

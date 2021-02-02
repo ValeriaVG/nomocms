@@ -1,12 +1,11 @@
 import { faEye } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Editor from "dashboard/components/Editor";
 import ItemRoutes from "dashboard/ItemRoutes";
-import FontAwesomeIcon from "dashboard/utils/FontAwesomeIcon";
 import usePreview from "dashboard/utils/usePreview";
 import useQuery from "dashboard/utils/useQuery";
 import { ContentPage } from "modules/pages/types";
-
-import * as Preact from "preact";
+import React from "react";
 
 export default function Pages() {
   const { result } = useQuery("/_api/templates");
@@ -45,7 +44,7 @@ Content here`,
                 style={{ background: "white" }}
               />
             </fieldset>
-            <fieldset class="buttons" style="margin-left:auto;">
+            <fieldset className="buttons" style={{ marginLeft: "auto" }}>
               <label>
                 Template:
                 <select
@@ -55,13 +54,13 @@ Content here`,
                   onChange={onValueChange("template")}
                 >
                   {options.map(({ id }) => (
-                    <option value={id} default>
+                    <option value={id} key={id}>
                       {id}
                     </option>
                   ))}
                 </select>
               </label>
-              <div class="button button-dark" onClick={togglePreview}>
+              <div className="button button-dark" onClick={togglePreview}>
                 <FontAwesomeIcon icon={faEye} />
                 Preview
               </div>

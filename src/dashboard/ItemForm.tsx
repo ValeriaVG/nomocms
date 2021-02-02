@@ -4,11 +4,11 @@ import {
   faSave,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import BreadCrumbs from "dashboard/components/BreadCrumbs";
 import api from "dashboard/utils/api";
-import FontAwesomeIcon from "dashboard/utils/FontAwesomeIcon";
 import useForm, { FormValues } from "dashboard/utils/useForm";
-import * as Preact from "preact";
+import React from "react";
 import { Link, useHistory, useRouteMatch } from "react-router-dom";
 import NotFound from "./pages/NotFound";
 import useNotification from "./utils/notifications";
@@ -21,9 +21,7 @@ export type ItemFormProps<T> = {
   path: string;
   apipath: string;
   defaultValue?: Partial<T>;
-  children: (
-    form: FormValues<Partial<T>> & { update: boolean }
-  ) => Preact.JSX.Element;
+  children: (form: FormValues<Partial<T>> & { update: boolean }) => JSX.Element;
 };
 
 export function ItemCreate<T extends Record<string, any>>({
@@ -72,11 +70,11 @@ export function ItemCreate<T extends Record<string, any>>({
           />
           <h1>{label}</h1>
         </div>
-        <div class="buttons">
+        <div className="buttons">
           <Link to={path} className="button-alt" type="cancel">
             Cancel
           </Link>
-          <button class="button-primary" type="submit">
+          <button className="button-primary" type="submit">
             <FontAwesomeIcon icon={faSave} />
             Create
           </button>
@@ -142,7 +140,7 @@ export function ItemUpdate<T extends Record<string, any>>({
     <>
       <form
         onSubmit={preventDefault(onSubmit)}
-        style="display:flex;flex-direction:column;"
+        style={{ display: "flex", flexDirection: "column" }}
       >
         <header>
           <div>
@@ -159,7 +157,7 @@ export function ItemUpdate<T extends Record<string, any>>({
             />
             <h1>{label}</h1>
           </div>
-          <div class="buttons">
+          <div className="buttons">
             <Link
               to={path}
               className="button-alt"
@@ -168,7 +166,7 @@ export function ItemUpdate<T extends Record<string, any>>({
             >
               Cancel
             </Link>
-            <button class="button-primary" type="submit">
+            <button className="button-primary" type="submit">
               <FontAwesomeIcon icon={faSave} />
               Save
             </button>
@@ -178,9 +176,9 @@ export function ItemUpdate<T extends Record<string, any>>({
       </form>
       <footer>
         <button
-          class="button button-danger"
+          className="button button-danger"
           onClick={askAndDelete}
-          style="margin-left:auto;"
+          style={{ marginLeft: "auto" }}
         >
           <FontAwesomeIcon icon={faTrash} />
           Delete

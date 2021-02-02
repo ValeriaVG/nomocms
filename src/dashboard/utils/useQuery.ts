@@ -1,5 +1,5 @@
 import { ErrorResponse, JSONResponse, SimpleType } from "core/types";
-import { useState, useEffect } from "preact/hooks";
+import { useState, useEffect } from "react";
 import api from "./api";
 export default function useQuery<T>(
   path: string,

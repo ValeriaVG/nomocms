@@ -1,5 +1,4 @@
 import useQuery from "dashboard/utils/useQuery";
-import * as Preact from "preact";
 import {
   LineChart,
   XAxis,
@@ -30,9 +29,8 @@ export default function Home(): any {
   const data = result?.items ?? [];
   return (
     <>
-      <section style="padding:2rem 2rem 2rem 0;">
+      <section style={{ padding: "2rem 2rem 2rem 0" }}>
         <ResponsiveContainer width={"100%"} minHeight={260}>
-          {/* @ts-ignore */}
           <LineChart data={data}>
             <XAxis
               dataKey="date"

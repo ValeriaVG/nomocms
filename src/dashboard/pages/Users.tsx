@@ -5,12 +5,10 @@ import {
   faPlus,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-import Table from "dashboard/components/Table";
 import ItemRoutes from "dashboard/ItemRoutes";
-import FontAwesomeIcon from "dashboard/utils/FontAwesomeIcon";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Permission } from "modules/authorization/Permissions";
-import { User, UserInput } from "modules/authorization/Users";
-import * as Preact from "preact";
+import { UserInput } from "modules/authorization/Users";
 
 export default function Users() {
   return (
@@ -37,10 +35,10 @@ export default function Users() {
           return setValue("permissions", values.permissions & ~permission);
         };
         return (
-          <div class="buttons">
+          <div className="buttons">
             <fieldset>
               <label>
-                <span style="width:114px;">Name:</span>
+                <span style={{ width: 114 }}>Name:</span>
                 <input
                   type="name"
                   value={values.name}
@@ -48,7 +46,7 @@ export default function Users() {
                 />
               </label>
               <label>
-                <span style="width:114px;">Email:</span>
+                <span style={{ width: 114 }}>Email:</span>
                 <input
                   type="email"
                   value={values.email}
@@ -58,7 +56,7 @@ export default function Users() {
                 />
               </label>
               <label>
-                <span style="width:114px;">Password:</span>
+                <span style={{ width: 114 }}>Password:</span>
                 <input
                   type="password"
                   value={values.password}
@@ -67,8 +65,15 @@ export default function Users() {
                 />
               </label>
             </fieldset>
-            <fieldset style="display:flex;height:min-content;margin-top:0;padding:1rem 1rem 1rem 0">
-              <label style="width:114px;">Permissions:</label>
+            <fieldset
+              style={{
+                display: "flex",
+                height: "min-content",
+                marginTop: 0,
+                padding: "1rem 1rem 1rem 0",
+              }}
+            >
+              <label style={{ width: 114 }}>Permissions:</label>
               <table>
                 <thead>
                   <tr>

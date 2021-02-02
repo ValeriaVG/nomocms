@@ -1,4 +1,4 @@
-import { useEffect } from "preact/hooks";
+import { useEffect } from "react";
 import useNotification from "./notifications";
 
 export default function Errors({

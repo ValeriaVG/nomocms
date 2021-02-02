@@ -8,9 +8,7 @@
     "esModuleInterop": true,
     "baseUrl": "src",
     "outDir": ".server",
-    "jsx": "preserve",
-    "jsxFactory": "Preact.h",
-    "jsxFragmentFactory": "Preact.Fragment",
+    "jsx": "react-jsx",
     "noEmitOnError": true,
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true

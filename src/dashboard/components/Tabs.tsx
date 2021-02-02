@@ -1,8 +1,8 @@
 import preventDefault from "dashboard/utils/preventDefault";
-import * as Preact from "preact";
+import { HTMLProps } from "react";
 import "./tabs.scss";
 export default function Tabs<
-  T extends Record<string, string | Preact.JSX.Element>
+  T extends Record<string, string | React.ReactElement>
 >({
   active,
   labels,
@@ -12,16 +12,16 @@ export default function Tabs<
   active?: keyof T;
   labels: T;
   onChangeTab?: (item: keyof T) => any;
-} & Preact.JSX.HTMLAttributes<HTMLDivElement>) {
+} & HTMLProps<HTMLDivElement>) {
   return (
     <nav {...props}>
-      <ul class="tabs">
+      <ul className="tabs">
         {Object.keys(labels).map((key, i, arr) => {
           const isActive = key === active;
           return (
             <li
               key={key}
-              class={isActive && "active"}
+              className={isActive && "active"}
               style={{ zIndex: isActive ? arr.length + 1 : arr.length - i }}
             >
               <button

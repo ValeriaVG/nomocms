@@ -1,6 +1,5 @@
-import * as Preact from "preact";
 import { Route, BrowserRouter, Switch } from "react-router-dom";
-import { useEffect, useState } from "preact/hooks";
+import { useEffect, useState } from "react";
 import { Notification, NotificationContext } from "./utils/notifications";
 import { publicPath } from "./config";
 import useQuery from "./utils/useQuery";

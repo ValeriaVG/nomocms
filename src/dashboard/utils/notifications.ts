@@ -1,5 +1,10 @@
-import { createContext, JSX } from "preact";
-import { useContext, StateUpdater } from "preact/hooks";
+import {
+  createContext,
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useState,
+} from "react";
 
 export type Notification = {
   id: string;
@@ -10,7 +15,7 @@ export type Notification = {
 
 export const NotificationContext = createContext<{
   notifications: Notification[];
-  setNotifications: StateUpdater<Array<Notification>>;
+  setNotifications: Dispatch<SetStateAction<Array<Notification> | undefined>>;
 }>({ notifications: [], setNotifications: () => {} });
 
 export default function useNotification() {

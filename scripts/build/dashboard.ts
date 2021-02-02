@@ -1,11 +1,16 @@
-import { fusebox } from "fuse-box";
-import path from "path";
-import config from "../fuse.config";
+import webpack from "webpack";
+import config from "../webpack.config";
 
-const fuse = fusebox(config);
+const webpackConfig = config("production") as any;
 
-fuse.runProd({
-  bundles: {
-    distRoot: path.resolve(__dirname, "../../.dashboard"),
-  },
+const compiler = webpack(webpackConfig);
+
+compiler.run((err, stats) => {
+  if (err) return console.error(err);
+  console.log(
+    stats.toString({
+      colors: true,
+      chunks: false,
+    })
+  );
 });

@@ -1,13 +1,13 @@
 import { faCircleNotch } from "@fortawesome/free-solid-svg-icons";
-import FontAwesomeIcon from "dashboard/utils/FontAwesomeIcon";
-import * as Preact from "preact";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { HTMLProps } from "react";
 import "./table.scss";
 
 export type TableColumns<T> = {
   [key: string]: {
-    label?: string | Preact.JSX.Element;
+    label?: string | React.ReactElement;
     field?: keyof T;
-    render?: (data: T) => string | Preact.JSX.Element;
+    render?: (data: T) => string | React.ReactElement;
   };
 };
 
@@ -17,7 +17,7 @@ export default function Table<T>({
   keyField,
   isLoading,
   ...props
-}: Preact.JSX.HTMLAttributes<HTMLTableElement> & {
+}: HTMLProps<HTMLTableElement> & {
   isLoading?: boolean;
   items: T[];
   columns: TableColumns<T>;
@@ -33,7 +33,7 @@ export default function Table<T>({
     [[], []]
   );
   return (
-    <table class="table" {...props}>
+    <table className="table" {...props}>
       <thead>
         <tr>
           {head.map(({ key, label }) => (

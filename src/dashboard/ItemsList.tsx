@@ -1,13 +1,13 @@
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ErrorResponse } from "core/types";
 import Table, { TableColumns } from "dashboard/components/Table";
-import FontAwesomeIcon from "dashboard/utils/FontAwesomeIcon";
 import useQuery from "dashboard/utils/useQuery";
-import * as Preact from "preact";
+import React from "react";
 import { Link } from "react-router-dom";
 import Errors from "./utils/Errors";
 
-export default function ItemsList<T extends { id: string }>({
+export default function ItemsList<T extends { id: string | number }>({
   singular,
   plural,
   path,
@@ -19,7 +19,7 @@ export default function ItemsList<T extends { id: string }>({
   columns: TableColumns<T>;
   path: string;
   plural: string;
-  legend?: string | Preact.JSX.Element;
+  legend?: string | JSX.Element;
   apipath: string;
 }) {
   const { result, loading } = useQuery<{ items: T[] }>(apipath);
@@ -31,7 +31,7 @@ export default function ItemsList<T extends { id: string }>({
       <header>
         <div>
           <h1>{plural}</h1>
-          {legend && <div class="legend">{legend}</div>}
+          {legend && <div className="legend">{legend}</div>}
         </div>
         <Link to={`${path}/new`} className="button-primary">
           <FontAwesomeIcon icon={faPlus} />

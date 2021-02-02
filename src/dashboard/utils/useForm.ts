@@ -1,7 +1,6 @@
-import { StateUpdater, useState } from "preact/hooks";
+import { Dispatch, EventHandler, SetStateAction, useState } from "react";
 import { curry, mergeDeepRight, assocPath, Path } from "ramda";
 import { F } from "ts-toolbelt";
-import * as Preact from "preact";
 
 export default function useForm<T extends { [key: string]: any }>(
   defaultValues: T = {} as any
@@ -21,16 +20,13 @@ export default function useForm<T extends { [key: string]: any }>(
   const setValue = curry(valueSetter);
   const onValueChange = <K extends keyof T>(
     path: K | Path
-  ): Preact.JSX.GenericEventHandler<any> => ({ target }) =>
-    valueSetter(path, target["value"]);
+  ): EventHandler<any> => ({ target }) => valueSetter(path, target["value"]);
   return { values, setValues, setValue, onValueChange };
 }
 
 export type FormValues<T> = {
   values: T;
-  setValues: StateUpdater<T>;
+  setValues: Dispatch<SetStateAction<T>>;
   setValue: F.Curry<<K extends keyof T>(path: K | Path, value: any) => void>;
-  onValueChange: <K extends keyof T>(
-    path: K | Path
-  ) => Preact.JSX.GenericEventHandler<any>;
+  onValueChange: <K extends keyof T>(path: K | Path) => EventHandler<any>;
 };

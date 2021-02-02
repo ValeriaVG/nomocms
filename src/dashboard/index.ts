@@ -1,4 +1,5 @@
-import { h, render } from "preact";
+import { createElement } from "react";
+import { render } from "react-dom";
 import "./styles.scss";
 import App from "./App";
-render(h(App, null), document.body);
+render(createElement(App, null), document.getElementById("root"));

@@ -1,4 +1,3 @@
-import * as Preact from "preact";
 import {
   faBars,
   faBook,
@@ -9,17 +8,13 @@ import {
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import { NavLink } from "react-router-dom";
-import FontAwesomeIcon from "./utils/FontAwesomeIcon";
-import { useContext, useState } from "preact/hooks";
+
+import React, { useContext, useState, PropsWithChildren } from "react";
 import { NotificationContext } from "./utils/notifications";
 import NotificationElement from "./components/NotificationElement";
-import { version } from "config";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-export default function Layout({
-  children,
-}: {
-  children: Preact.ComponentChildren;
-}) {
+export default function Layout({ children }: PropsWithChildren<{}>) {
   const { notifications } = useContext(NotificationContext);
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const toggleMenu = () => setIsExpanded((t) => !t);
@@ -30,9 +25,9 @@ export default function Layout({
           <FontAwesomeIcon icon={faBars} />
         </button>
       </header>
-      <aside class={isExpanded && "expanded"}>
+      <aside className={isExpanded ? "expanded" : undefined}>
         <nav>
-          <ul class="menu">
+          <ul className="menu">
             <li>
               <NavLink to="/" exact>
                 <FontAwesomeIcon icon={faHome} />
@@ -65,8 +60,8 @@ export default function Layout({
             </li>
           </ul>
         </nav>
-        <nav class="bottom-nav">
-          <ul class="menu">
+        <nav className="bottom-nav">
+          <ul className="menu">
             <li>
               <NavLink to="/logout">
                 <FontAwesomeIcon icon={faSignOutAlt} />
@@ -77,14 +72,14 @@ export default function Layout({
         </nav>
       </aside>
       <main>
-        <div class="notifications">
+        <div className="notifications">
           {notifications.map((notification) => (
             <NotificationElement key={notification.id} {...notification} />
           ))}
         </div>
         {children}
       </main>
-      <footer>AMP CMS {version}</footer>
+      <footer>AMP CMS {process.env.VERSION}</footer>
     </>
   );
 }

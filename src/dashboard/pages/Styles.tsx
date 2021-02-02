@@ -1,7 +1,6 @@
 import Editor from "dashboard/components/Editor";
 import ItemRoutes from "dashboard/ItemRoutes";
 import { StyleData } from "modules/styles/Styles";
-import * as Preact from "preact";
 
 export default function Styles() {
   return (
@@ -20,10 +19,10 @@ export default function Styles() {
           render: ({ id }) => (
             <input
               type="text"
-              class="copy-me"
+              className="copy-me"
               readOnly
               value={`@import "${id}";`}
-              style="width:auto"
+              style={{ width: "auto" }}
             />
           ),
         },
@@ -35,7 +34,7 @@ export default function Styles() {
       }}
       renderForm={({ values, setValue, onValueChange, update }) => (
         <>
-          <fieldset style="max-width:320px;margin-right:auto;">
+          <fieldset style={{ maxWidth: 320, marginRight: "auto" }}>
             <label>
               ID:
               <input

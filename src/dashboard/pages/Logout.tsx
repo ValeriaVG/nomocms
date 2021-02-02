@@ -1,6 +1,5 @@
 import api from "dashboard/utils/api";
-import * as Preact from "preact";
-import { useContext } from "preact/hooks";
+import { useContext } from "react";
 import { useHistory } from "react-router-dom";
 import { AccessContext } from "../context";
 
@@ -19,13 +18,13 @@ export default function Logout() {
         <h1>Logout</h1>
       </header>
       <form onSubmit={onSubmit}>
-        <label style="padding:0;margin:1rem 0">
+        <label style={{ padding: 0, margin: "1rem 0" }}>
           Are you sure you want to logout?
         </label>
-        <div class="buttons">
+        <div className="buttons">
           <button
-            class="button-alt"
-            type="cancel"
+            className="button-alt"
+            type="reset"
             onClick={(e) => {
               e.preventDefault();
               history.goBack();
@@ -33,7 +32,7 @@ export default function Logout() {
           >
             Cancel
           </button>
-          <button class="button-secondary" type="submit">
+          <button className="button-secondary" type="submit">
             Log out
           </button>
         </div>
