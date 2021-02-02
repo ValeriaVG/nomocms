@@ -35,44 +35,70 @@ module.exports = (mode) => {
     module: {
       rules: [
         {
-          test: /\.tsx?$/,
-          use: {
-            loader: "babel-loader",
-            options: {
-              presets: [
-                [
-                  "babel-preset-react-app",
-                  {
-                    runtime: "automatic",
-                  },
-                ],
-              ],
-              plugins: [
-                [
-                  "babel-plugin-named-asset-import",
-                  {
-                    loaderMap: {
-                      svg: {
-                        ReactComponent:
-                          "@svgr/webpack?-svgo,+titleProp,+ref![path]",
+          oneOf: [
+            {
+              test: /\.(j|t)sx?$/,
+              include: path.resolve(__dirname, "../src"),
+              use: {
+                loader: "babel-loader",
+                options: {
+                  presets: [
+                    [
+                      "babel-preset-react-app",
+                      {
+                        runtime: "automatic",
                       },
-                    },
-                  },
-                ],
-                isDevelopment && "react-refresh/babel",
-              ].filter(Boolean),
+                    ],
+                  ],
+                  plugins: [
+                    [
+                      "babel-plugin-named-asset-import",
+                      {
+                        loaderMap: {
+                          svg: {
+                            ReactComponent:
+                              "@svgr/webpack?-svgo,+titleProp,+ref![path]",
+                          },
+                        },
+                      },
+                    ],
+                    isDevelopment && "react-refresh/babel",
+                  ].filter(Boolean),
+                  cacheDirectory: true,
+                  cacheCompression: false,
+                  compact: isProduction,
+                },
+              },
             },
-          },
-
-          exclude: /node_modules/,
-        },
-        {
-          test: /\.(s[ac]|c)ss$/i,
-          use: ["style-loader", "css-loader", "sass-loader"],
-        },
-        {
-          test: /\.ttf$/,
-          use: ["file-loader"],
+            {
+              test: /\.(js|mjs)$/,
+              exclude: /@babel(?:\/|\\{1,2})runtime/,
+              loader: require.resolve("babel-loader"),
+              options: {
+                babelrc: false,
+                configFile: false,
+                compact: false,
+                presets: [
+                  [
+                    require.resolve("babel-preset-react-app/dependencies"),
+                    { helpers: true },
+                  ],
+                ],
+                cacheDirectory: true,
+                cacheCompression: false,
+                sourceMaps: false,
+                inputSourceMap: false,
+              },
+            },
+            {
+              test: /\.(s[ac]|c)ss$/i,
+              use: ["style-loader", "css-loader", "sass-loader"],
+            },
+            {
+              test: /\.ttf$/,
+              use: ["file-loader"],
+            },
+          ],
         },
       ],
     },
@@ -97,20 +123,25 @@ module.exports = (mode) => {
       isDevelopment && new webpack.HotModuleReplacementPlugin(),
       isDevelopment && new ReactRefreshWebpackPlugin(),
     ].filter(Boolean),
-    optimization: isProduction
-      ? {
-          minimizer: [
-            new OptimizeCssAssetsPlugin({
-              cssProcessorOptions: {
-                map: {
-                  inline: false,
-                  annotation: true,
-                },
-              },
-            }),
-            new TerserPlugin({ parallel: true }),
-          ],
-        }
-      : undefined,
+    optimization: {
+      splitChunks: {
+        chunks: "all",
+      },
+      runtimeChunk: {
+        name: (entrypoint) => `runtime-${entrypoint.name}`,
+      },
+      minimize: isProduction,
+      minimizer: [
+        new OptimizeCssAssetsPlugin({
+          cssProcessorOptions: {
+            map: {
+              inline: false,
+              annotation: true,
+            },
+          },
+        }),
+        new TerserPlugin({ parallel: true }),
+      ],
+    },
   };
 };
