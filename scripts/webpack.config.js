@@ -84,6 +84,9 @@ module.exports = (mode) => {
         template: path.resolve(__dirname, "../src/dashboard/public/index.html"),
       }),
       new MonacoWebpackPlugin(),
+      new webpack.DefinePlugin({
+        process: JSON.stringify({ env: {}, platform: "" }),
+      }),
       new webpack.EnvironmentPlugin({
         NODE_ENV: mode,
         PUBLIC_URL: "/",
@@ -92,14 +95,7 @@ module.exports = (mode) => {
         TERM: "",
       }),
       isDevelopment && new webpack.HotModuleReplacementPlugin(),
-      isDevelopment &&
-        new ReactRefreshWebpackPlugin({
-          overlay: {
-            entry: require.resolve("react-dev-utils/webpackHotDevClient"),
-            module: require.resolve("react-dev-utils/refreshOverlayInterop"),
-            sockIntegration: false,
-          },
-        }),
+      isDevelopment && new ReactRefreshWebpackPlugin(),
     ].filter(Boolean),
     optimization: isProduction
       ? {
