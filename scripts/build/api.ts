@@ -1,9 +1,10 @@
 import * as ts from "typescript";
 import path from "path";
 import fs from "fs";
+import baseOptions from "../typescript.config";
 
-const rootDir = path.resolve(__dirname, "..");
-const amd = path.resolve(__dirname, "amd.js");
+const rootDir = path.resolve(__dirname, "..", "..", "src");
+const amd = path.resolve(__dirname, "..", "utils", "amd.node.js");
 
 const outDir = path.resolve(rootDir, "..", ".server");
 const outFile = path.resolve(outDir, "index.js");
@@ -11,28 +12,20 @@ const outFile = path.resolve(outDir, "index.js");
 const fileName = "index.ts";
 
 const options: ts.CompilerOptions = {
+  ...baseOptions,
   target: ts.ScriptTarget.ESNext,
   outFile,
-  module: ts.ModuleKind.AMD,
-  sourceMap: false,
-  allowJs: true,
-  moduleResolution: ts.ModuleResolutionKind.NodeJs,
-  allowSyntheticDefaultImports: true,
-  esModuleInterop: true,
-  noImplicitAny: false,
-  resolveJsonModule: true,
-  rootDir: rootDir,
-  outDir,
-  jsx: ts.JsxEmit.React,
-  baseUrl: rootDir,
-  noEmitOnError: true,
-  skipLibCheck: true,
+  rootDir: undefined,
+  rootDirs: [rootDir, path.resolve(__dirname, "..", "utils")],
 };
-let program = ts.createProgram([amd, path.resolve(rootDir, fileName)], options);
+const program = ts.createProgram(
+  [amd, path.resolve(rootDir, fileName)],
+  options
+);
 
-let emitResult = program.emit();
+const emitResult = program.emit();
 
-let allDiagnostics = ts
+const allDiagnostics = ts
   .getPreEmitDiagnostics(program)
   .concat(emitResult.diagnostics);
 
@@ -50,11 +43,11 @@ allDiagnostics.forEach((diagnostic) => {
   }
 });
 
-let exitCode = emitResult.emitSkipped ? 1 : 0;
+const exitCode = emitResult.emitSkipped ? 1 : 0;
 if (!emitResult.emitSkipped) {
   console.log("Built server");
   // Adding require
-  fs.writeFileSync(outFile, `\ndefine.require("index");`, {
+  fs.writeFileSync(outFile, `\ndefine.require("src/index");`, {
     flag: "a",
   });
   // Copy meta files for docker
