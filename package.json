@@ -24,7 +24,7 @@
     "gray-matter": "^4.0.2",
     "ioredis": "^4.19.4",
     "liquidjs": "^9.22.0",
-    "marked": "^1.2.8",
+    "marked": "^1.2.9",
     "mime-types": "^2.1.28",
     "preact": "^10.5.12",
     "ramda": "^0.27.1",
