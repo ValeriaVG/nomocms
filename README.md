@@ -22,9 +22,46 @@ You can set up a superuser account though the following environment variables:
 
 > WARNING: consider changing the default superuser credentials
 
-## Known bugs
+## Development
 
-- No file management system
-- No way to list pages from <amp/> yet
-- Sometimes errors are showing Unexpected JSON instead of a proper response
-- Dashboard does not work in Safari
+To run on local machine you'll need:
+
+- NodeJS v14.5.0
+- Yarn
+- PostgreSQL (or run `docker-compose up -d`)
+
+To start server in the development mode:
+
+```
+yarn dev:server
+```
+
+To start dashboard in the development mode:
+
+```
+yarn dev:dashboard
+```
+
+To build server:
+
+```
+yarn build:server
+```
+
+To build dashboard:
+
+```
+yarn build:dashboard
+```
+
+To run all tests:
+
+```
+yarn test
+```
+
+To run specific test:
+
+```
+yarn test <fileName or RegExp>
+```
