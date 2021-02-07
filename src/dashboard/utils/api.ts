@@ -1,5 +1,5 @@
 import { HTTPMethod, JSONObject } from "core/types";
-import { apiURL } from "dashboard/config";
+import { apiURL } from "../config";
 
 export class Api {
   constructor(public host: string) {}

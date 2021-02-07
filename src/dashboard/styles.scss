@@ -1,0 +1,25 @@
+@import "theme";
+h1 {
+  font-size: 1.5em;
+}
+h2 {
+  font-size: 1.3em;
+}
+h3,
+h4,
+h5,
+h6 {
+  font-size: 1em;
+  font-weight: bold;
+}
+body,
+html {
+  margin: 0;
+}
+body {
+  font-size: 16px;
+  line-height: 1.2;
+  font-family: $font-family;
+  background-color: $background-color;
+  color: $text-color;
+}
