@@ -1,7 +1,7 @@
 spec:
   name: amp-cms
   services:
-  - name: cms
+  - name: server
     git:
       branch: main
       repo_clone_url: https://github.com/ValeriaVG/amp-cms.git
@@ -11,7 +11,33 @@ spec:
       value: "clark.kent@daily.planet"
     - key: SUPERUSER_PASSWORD
       scope: RUN_TIME
-      value: "clark&lois"  
+      value: "clark&lois"
+    - key: DATABASE
+      scope: RUN_TIME
+      value: ${db.DATABASE}  
+    - key: DATABASE_HOST
+      scope: RUN_TIME
+      value: ${db.DATABASE_HOST}
+    - key: DATABASE_PORT
+      scope: RUN_TIME
+      value: ${db.DATABASE_PORT} 
+    - key: DATABASE_USER
+      scope: RUN_TIME
+      value: ${db.DATABASE_USER}
+    - key: DATABASE_PASSWORD
+      scope: RUN_TIME
+      value: ${db.DATABASE_PASSWORD}
+    - key: DATABASE_CA
+      scope: RUN_TIME
+      value: ${db.DATABASE_CA}                            
     environment_slug: node-js      
     run_command: yarn start
-    build_command: yarn build  
+    build_command: yarn build:server
+  databases:
+    - name: db
+  static-sites:
+    - name: dashboard
+      build_command: yarn build:dashboard
+      output_dir: .dashboard
+      catchall_document: index.html
+
