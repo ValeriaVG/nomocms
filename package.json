@@ -46,7 +46,7 @@
     "@types/react-router-dom": "^5.1.7",
     "@types/sass": "^1.16.0",
     "@types/supertest": "^2.0.10",
-    "chai": "^4.2.0",
+    "chai": "^4.3.0",
     "fuse-box": "^4.0.0",
     "mocha": "^8.2.1",
     "node-fetch": "^2.6.1",
