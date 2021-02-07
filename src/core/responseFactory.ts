@@ -40,7 +40,6 @@ export default function responseFactory(
 
       if (["HEAD", "OPTIONS"].includes(req.method.toUpperCase()))
         return res.end();
-      res.setHeader("Content-Length", response.length.toString());
       res.setHeader("Transfer-Encoding", "chunked");
       if (typeof response.data === "string") {
         return toStream(response.data).pipe(res);
