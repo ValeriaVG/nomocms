@@ -1,7 +1,7 @@
 import { IncomingHttpHeaders } from "http";
 import { User } from "modules/authorization/Users";
 import { Readable } from "stream";
-import * as context from "./context";
+import context from "./context";
 import NormalizedURL from "./NormalizedURL";
 
 export type HTTPMethod = "GET" | "POST" | "PATCH" | "PUT" | "DELETE";

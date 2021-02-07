@@ -26,3 +26,8 @@ db.connect()
   });
 
 export const log = console;
+
+export default {
+  redis,
+  db,
+};

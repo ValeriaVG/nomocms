@@ -2,6 +2,7 @@ import boilerplate from "amp/boilerplate";
 import { appUrl } from "config";
 import { IncomingMessage, ServerResponse } from "http";
 import { Readable } from "stream";
+import { toStream } from "utils/stream";
 import NormalizedURL from "./NormalizedURL";
 import { AMPResponse, RouteResponse } from "./types";
 
@@ -24,7 +25,6 @@ export default function responseFactory(
         console.error("Incorrect response", response);
         return sendError();
       }
-
       res.setHeader("Content-Type", response.type);
       if (typeof response.data === "string") {
         response.length = response.data.length;
@@ -41,9 +41,10 @@ export default function responseFactory(
       if (["HEAD", "OPTIONS"].includes(req.method.toUpperCase()))
         return res.end();
       res.setHeader("Content-Length", response.length.toString());
+      res.setHeader("Transfer-Encoding", "chunked");
       if (typeof response.data === "string") {
-        const stream = Readable.from(response.data);
-        const unpipe = () => stream.unpipe();
+        const stream = toStream(response.data);
+        const unpipe = () => (response.data as Readable).unpipe();
         res.on("close", unpipe);
         res.on("end", unpipe);
         return stream.pipe(res);
