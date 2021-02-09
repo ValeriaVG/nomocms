@@ -1,20 +1,9 @@
-// Lightest color
-$light: #ffffff;
-// Darkest color
-$dark: #3e464c;
-$darker: darken($dark, 7%);
-$darkest: darken($dark, 15%);
-// Accents
-$primary: #ff52e1;
-$secondary: #5500d7;
-$neutral: #9e9e9e;
-// States
-$danger: #f44336;
-$positive: #4caf50;
-$info: #03a9f4;
+$background-color: rgb(16, 8, 24);
+$text-color: rgb(239, 231, 247);
+$primary: rgb(143, 88, 199);
+$danger: rgb(199, 88, 88);
+$success: rgb(88, 199, 88);
+$info: rgb(88, 143, 199);
 
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 $font-family: "Noto Sans", sans-serif;
-
-$background-color: $darkest;
-$text-color: $light;
