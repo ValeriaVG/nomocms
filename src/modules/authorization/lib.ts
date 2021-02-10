@@ -2,6 +2,7 @@ import { HTTPNotAuthorized } from "core/errors";
 import { ResolverFn, RouteResponse } from "core/types";
 import Users, { User } from "./Users";
 import Permissions, { Permission } from "./Permissions";
+import { superuser } from "config";
 
 export function requiresUser<P = any, C = any, R extends RouteResponse = any>(
   next: ResolverFn<P, C, R>
@@ -21,12 +22,12 @@ export function requiresPermission<
   next: ResolverFn<P, C, R>
 ): ResolverFn<P, C & { user: User; permissions: Permissions }, R> {
   return requiresUser(async (params, context) => {
-    if (context.user.id === "superuser") return next(params, context);
+    if (context.user?.email === superuser.email) return next(params, context);
     // TODO: Let users update themselves
     const hasAccess = await context.permissions.check({
       scope,
       permissions,
-      user: context.user.id,
+      user_id: context.user.id,
     });
     if (!hasAccess) throw new HTTPNotAuthorized();
     return next(params, context);

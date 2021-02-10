@@ -1,8 +1,8 @@
-import { ExcludeReserved, Result } from "../types";
+import { Result } from "../types";
 
 /**
  * DataSource can be anything from an item
- * stored in Redis to third party service
+ * stored in database to third party service
  */
 export abstract class DataSource {
   constructor(protected context: any) {}
@@ -26,20 +26,20 @@ export type ItemsList<T> = {
   nextOffset?: number;
 };
 export abstract class CRUDLDataSource<
-  T extends ExcludeReserved<T>,
+  T,
   I = Omit<T, "id">,
   P = I
 > extends DataSource {
   create(input: I): Result<T> {
     throw new NotImplementedError(this.constructor.name, "create");
   }
-  update(id: string, input: P): Result<T> {
+  update(id: string | number, input: P): Result<T> {
     throw new NotImplementedError(this.constructor.name, "update");
   }
-  delete(id: string): Result<{ deleted: boolean }> {
+  delete(id: string | number): Result<{ deleted: boolean }> {
     throw new NotImplementedError(this.constructor.name, "delete");
   }
-  get(id: string): Result<T> {
+  get(id: string | number): Result<T> {
     throw new NotImplementedError(this.constructor.name, "get");
   }
   list(params: ListParams): Result<ItemsList<T>> {

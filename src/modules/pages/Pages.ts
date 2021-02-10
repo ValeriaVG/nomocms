@@ -1,13 +1,12 @@
-import { flatten, RedisDataSource } from "core/DataSource";
+import { SQLDataSource } from "core/DataSource";
 import { ContentPage } from "./types";
 import matter from "gray-matter";
 import marked from "marked";
 import querystring from "querystring";
-import NormalizedURL from "core/NormalizedURL";
 import { html } from "amp/lib";
 import Templates from "modules/templates/Templates";
 import { HTTPUserInputError } from "core/errors";
-import { ErrorResponse } from "core/types";
+import { ColumnDefinition } from "core/sql";
 
 const renderer = {
   image(href: string, caption: string, text: string) {
@@ -37,51 +36,34 @@ function params2props(params: Record<string, string | string[]>) {
     })
     .join(" ");
 }
-
 marked.use({ renderer });
-export default class Pages extends RedisDataSource<ContentPage> {
-  collection = "pages";
-  prefix = "pg";
 
-  async create(input: Partial<ContentPage>) {
-    if (!input.template)
-      throw new HTTPUserInputError("template", "Page needs to have a template");
-    const values = this.parse(input);
-    if ("errors" in values) return values;
-    const pathExists = await this.context.redis.exists(
-      this.pageKey(values.path)
-    );
-    if (pathExists)
-      throw new HTTPUserInputError(
-        "path",
-        "Another page with this path already exists"
-      );
-    await this.validateAndSave(values);
-    return super.create(values);
-  }
+export default class Pages extends SQLDataSource<ContentPage> {
+  readonly collection = "pages";
 
-  async update(id, input: Partial<ContentPage>) {
-    const values = this.parse(input);
-    if ("errors" in values) return values;
-    await this.validateAndSave(values);
-    return super.update(id, values);
-  }
+  readonly schema: Record<string, ColumnDefinition> = {
+    id: { type: "serial", primaryKey: true },
+    path: { type: "varchar", length: 255 },
+    template: { type: "varchar", length: 50 },
+    title: { type: "varchar", length: 255 },
+    description: { type: "text", nullable: true },
+    content: { type: "text" },
+    html: { type: "text" },
+    created: { type: "timestamp", default: "NOW()" },
+    updated: { type: "timestamp", nullable: true },
+    published: { type: "timestamp", nullable: true },
+    code: { type: "int", nullable: false, default: "200" },
+  };
 
-  pageKey(path: string) {
-    if (path === "*" || path === "/*")
-      return this.collection + "::url::wildcard";
-    return this.collection + "::url::" + new NormalizedURL(path).normalizedPath;
-  }
-  async validateAndSave(input: Partial<ContentPage> & { html: string }) {
+  async render(input: Partial<ContentPage> & { html: string }) {
     if (!input.path)
       throw new HTTPUserInputError("path", "Please defined a path");
     const templates = this.context["templates"] as Templates;
-    if (!input.template || !(await templates.exists(input.template)))
+    if (!input.template)
       throw new HTTPUserInputError(
         "template",
         "Please choose a template for this page"
       );
-
     // Render page into url
     const result = await templates.render(input.template, {
       ...input,
@@ -90,28 +72,30 @@ export default class Pages extends RedisDataSource<ContentPage> {
     if (input["code"]) {
       result["code"] = (input["code"] as number).toString();
     }
-    await this.context.redis.hset(this.pageKey(input.path), ...flatten(result));
+    return result;
   }
 
-  parse(
-    input: Partial<ContentPage>
-  ): (Partial<ContentPage> & { html: string }) | ErrorResponse {
+  parse(input: Partial<ContentPage>): Partial<ContentPage> {
     try {
       const { data, content } = matter(input.content.trim());
       const html = marked(content);
       const values = { ...data, ...input, content: input.content, html };
       return values;
     } catch (error) {
-      return {
-        errors: [{ name: "content", message: error.message }],
-        code: 400,
-      };
+      throw new HTTPUserInputError("content", error.message);
     }
   }
 
-  async delete(id: string) {
-    const path = await this.context.redis.hget(this.cid(id), "path");
-    await this.context.redis.del(this.pageKey(path));
-    return super.delete(id);
+  async create(input: Partial<ContentPage> & { content: string }) {
+    return super.create(this.parse(input));
+  }
+  async update(id: number, input: Partial<ContentPage> & { content: string }) {
+    return super.update(id, this.parse(input));
+  }
+  // TODO: add caching
+  async retrieve(path: string) {
+    return this.findOne({
+      where: { path },
+    }).then((page) => page && this.render(page));
   }
 }

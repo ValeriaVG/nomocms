@@ -1,6 +1,6 @@
 # Modules
 
-Modular system in AMP CMS allows us to define custom endpoints for both front- and backend.
+Modular system in TWS CMS allows us to define custom endpoints for both front- and backend.
 Every module is independent of one another and the only requirement for them is to have one or several following properties exported as a module:
 
 - `dataSources` - describing the connection to a database, third party services and etc.

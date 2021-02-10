@@ -15,7 +15,6 @@ describe("responseFactory Integration Test", () => {
       .expect("Content-Type", "application/json")
       .end((err, res) => {
         if (err) return done(err);
-        expect(res.headers).to.have.property("content-length");
         expect(res.body).to.have.property("message", "OK");
         done();
       });
@@ -70,7 +69,6 @@ describe("responseFactory Integration Test", () => {
       .get("/")
       .expect(200)
       .expect("Content-Type", "text/html")
-      .expect("Content-Length", "34")
       .expect("<html><body><h1>Hello!</h1></html>");
   });
   it("can send DataResponse", async () => {
@@ -88,7 +86,6 @@ describe("responseFactory Integration Test", () => {
       .get("/")
       .expect(200)
       .expect("Content-Type", "text/plain")
-      .expect("Content-Length", "6")
       .expect("foobar");
   });
 });

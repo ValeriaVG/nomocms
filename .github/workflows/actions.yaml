@@ -1,4 +1,4 @@
-name: AMP CMS CI
+name: TWS CMS CI
 on: [push]
 jobs:
   test:
@@ -13,6 +13,19 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      postgres:
+        image: postgres:12
+        ports:
+        - 5432:5432
+        env:
+          POSTGRES_DB: tws-cms
+          POSTGRES_USER: tws-cms
+          POSTGRES_PASSWORD: tws-cms
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5      
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js v14.5.0

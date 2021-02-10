@@ -2,6 +2,7 @@ import boilerplate from "amp/boilerplate";
 import { appUrl } from "config";
 import { IncomingMessage, ServerResponse } from "http";
 import { Readable } from "stream";
+import { toStream } from "utils/stream";
 import NormalizedURL from "./NormalizedURL";
 import { AMPResponse, RouteResponse } from "./types";
 
@@ -10,7 +11,10 @@ export default function responseFactory(
   res: ServerResponse
 ) {
   return async (response: RouteResponse) => {
-    const code = "code" in response ? response.code : 200;
+    const code =
+      "code" in response && typeof response.code === "number"
+        ? response.code
+        : 200;
     const sendError = () => {
       res.statusCode = 500;
       return res.end();
@@ -21,7 +25,6 @@ export default function responseFactory(
         console.error("Incorrect response", response);
         return sendError();
       }
-
       res.setHeader("Content-Type", response.type);
       if (typeof response.data === "string") {
         response.length = response.data.length;
@@ -35,23 +38,16 @@ export default function responseFactory(
         return sendError();
       }
 
-      res.setHeader("Content-Length", response.length.toString());
       if (["HEAD", "OPTIONS"].includes(req.method.toUpperCase()))
         return res.end();
+      res.setHeader("Transfer-Encoding", "chunked");
       if (typeof response.data === "string") {
-        const stream = Readable.from(response.data);
-        const unpipe = () => stream.unpipe();
-        res.on("close", unpipe);
-        res.on("end", unpipe);
-        return stream.pipe(res);
+        return toStream(response.data).pipe(res);
       }
       if (!(response.data instanceof Readable)) {
         console.error("Unknown response data", response);
         return sendError();
       }
-      const unpipe = () => (response.data as Readable).unpipe();
-      res.on("close", unpipe);
-      res.on("end", unpipe);
       return response.data.pipe(res);
     };
 

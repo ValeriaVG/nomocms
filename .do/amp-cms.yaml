@@ -4,10 +4,10 @@ databases:
   name: dev
   production: true
   version: "6"
-name: amp-cms
+name: tws-cms
 region: ams
 services:
-- build_command: yarn build
+- build_command: yarn build:server
   environment_slug: node-js
   envs:
   - key: SUPERUSER_EMAIL
@@ -23,7 +23,7 @@ services:
     value: ${dev.REDIS_URL}
   github:
     branch: main
-    repo: ValeriaVG/amp-cms.git
+    repo: ValeriaVG/tws-cms.git
     deploy_on_push: true
   health_check:
     http_path: /_health

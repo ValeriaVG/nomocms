@@ -1,18 +1,18 @@
-import path from "path";
-
-if (typeof process !== undefined) {
-  require("dotenv").config();
-} else {
-  let process = { env: {} };
-}
+import { PoolConfig } from "pg";
+require("dotenv").config();
 
 export const redis = process.env.REDIS_URL;
-export const dashboard = {
-  pathname: "/admin",
-  dist: path.resolve(process.cwd(), ".dashboard"),
-  get path(): string {
-    return this.pathname + "/";
-  },
+
+export const db: PoolConfig = {
+  host: process.env.DATABASE_HOST,
+  port: process.env.DATABASE_PORT as any,
+  user: process.env.DATABASE_USER ?? "tws-cms",
+  password: process.env.DATABASE_PASSWORD ?? "tws-cms",
+  ssl: process.env.DATABASE_CA
+    ? {
+        ca: process.env.DATABASE_CA,
+      }
+    : false,
 };
 
 export const recaptcha = {} as any; /*{
@@ -26,3 +26,5 @@ export const superuser = {
 };
 
 export const appUrl = process.env.APP_URL;
+
+export const version = require("../package.json").version;

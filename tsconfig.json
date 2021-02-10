@@ -8,13 +8,11 @@
     "esModuleInterop": true,
     "baseUrl": "src",
     "outDir": ".server",
-    "jsx": "preserve",
-    "jsxFactory": "Preact.h",
-    "jsxFragmentFactory": "Preact.Fragment",
     "noEmitOnError": true,
     "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "jsx": "react-jsx"
   },
-  "include": ["src"],
+  "include": ["src", "scripts"],
   "exclude": ["node_modules"]
 }

@@ -1,82 +1,74 @@
 import { describe, it, before, after } from "mocha";
 import { expect } from "chai";
-import Redis from "ioredis";
 import Tokens from "./Tokens";
+import { Client } from "pg";
+import { createTable, dropTable, insertInto } from "core/sql";
 
-const redis = new Redis({ db: 9 });
-const tokens = new Tokens({ redis });
-
-const createdAt = Date.now();
-const ipnum = 2835744532;
+const db = new Client({ user: "tws-cms", password: "tws-cms" });
+const tokens = new Tokens({ db });
 
 describe("Tokens Integration Test", () => {
-  before(() =>
-    redis
-      .multi()
-      .flushdb()
-      .set("tokens::amp-example-token", "usr_1")
-      .zadd(
-        "tokens::usr_1",
-        createdAt.toString(),
-        "amp-example-token::2835744532"
-      )
-      .set("tokens::amp-another-token", "usr_2")
-      .zadd(
-        "tokens::usr_2",
-        createdAt.toString(),
-        "amp-another-token::2835744532"
-      )
-      .set("tokens::amp-yet-another-token", "usr_3")
-      .zadd(
-        "tokens::usr_3",
-        createdAt.toString(),
-        "amp-yet-another-token::2835744532"
-      )
-      .exec()
-  );
-  after(async () => {
-    await redis.flushdb();
-    redis.disconnect();
+  before(async () => {
+    await db.connect();
+    try {
+      await db.query("BEGIN");
+      await db.query(dropTable(tokens.collection, { ifExists: true }));
+      await db.query(createTable(tokens.collection, tokens.schema));
+      await db.query(
+        ...insertInto(tokens.collection, {
+          id: "amp-example-token",
+          user_id: 1,
+          ip: "127.0.0.1",
+        })
+      );
+      await db.query(
+        ...insertInto(tokens.collection, {
+          id: "amp-another-token",
+          user_id: 2,
+        })
+      );
+      await db.query(
+        ...insertInto(tokens.collection, {
+          id: "amp-yet-another-token",
+          user_id: 3,
+        })
+      );
+      await db.query("COMMIT");
+    } catch (error) {
+      console.error(error);
+    }
   });
+  after(() => db.end());
+
   it("can get user by token", async () => {
-    const id = await tokens.get("amp-example-token");
-    expect(id).to.eq("usr_1");
-  });
-  it("can get tokens for user", async () => {
-    const list = await tokens.list("usr_1");
-    expect(list).to.have.length(1);
-    expect(list[0]).to.have.property("token", "amp-example-token");
-    expect(list[0]).to.have.property("createdAt", createdAt);
-    expect(list[0]).to.have.property("ip", ipnum);
+    const token = await tokens.get("amp-example-token");
+    expect(token).to.have.property("user_id", 1);
+    expect(token).to.have.property("created");
+    expect(token).to.have.property("expires");
+    expect(token).to.have.property("ip", "127.0.0.1");
   });
 
   it("can delete all tokens for user", async () => {
-    const result = await tokens.deleteAll("usr_2");
-    expect(result).to.eq(1);
-    const list = await tokens.list("usr_2");
-    expect(list).to.have.length(0);
-    expect(await tokens.list("usr_1")).to.have.length(1);
+    const result = await tokens.deleteAll(2);
+    expect(result).to.deep.eq({ deleted: 1 });
   });
 
   it("can delete token for user", async () => {
-    const result = await tokens.delete({
-      id: "usr_3",
+    const result = await tokens.deleteOne({
+      user_id: 3,
       token: "amp-yet-another-token",
     });
-    expect(result).to.eq(1);
-    const list = await tokens.list("usr_3");
-    expect(list).to.have.length(0);
-    expect(await tokens.list("usr_1")).to.have.length(1);
+    expect(result).to.deep.eq({ deleted: true });
   });
 
   it("can save token for user", async () => {
-    const result = await tokens.save({
-      id: "usr_4",
+    const token = await tokens.save({
+      user_id: 4,
       token: "amp-some-token",
     });
-    expect(result).to.eq(1);
-    const list = await tokens.list("usr_4");
-    expect(list).to.have.length(1);
-    expect(await tokens.list("usr_1")).to.have.length(1);
+    expect(token).to.have.property("user_id", 4);
+    expect(token).to.have.property("created");
+    expect(token).to.have.property("expires");
+    expect(token).to.have.property("ip", null);
   });
 });

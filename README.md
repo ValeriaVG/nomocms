@@ -1,21 +1,17 @@
-# ![AMP CMS Logo](logo.svg)
+# TWS CMS
 
-[![Maintainability](https://api.codeclimate.com/v1/badges/6751f127815b5bac4cee/maintainability)](https://codeclimate.com/github/ValeriaVG/amp-cms/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/6751f127815b5bac4cee/test_coverage)](https://codeclimate.com/github/ValeriaVG/amp-cms/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/6751f127815b5bac4cee/maintainability)](https://codeclimate.com/github/ValeriaVG/tws-cms/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/6751f127815b5bac4cee/test_coverage)](https://codeclimate.com/github/ValeriaVG/tws-cms/test_coverage)
 
-Content management system for blazingly fast AMP websites, written in TypeScript and powered by Redis.
+Content management system for blazingly fast websites powered by AMP.
 
-AMP CMS is currently in active development. It's not ready for production use until it reaches v1.0.
+TWS CMS is currently in active development. It's not ready for production use until it reaches v1.0.
 
 Current stage: alpha
 
 ## How to deploy
 
-> Note: Currenty it's not possible to automatically create Redis database for you, please do it manually and then link to the app deployment either by adding existing database in App dashboard components and setting env variable `REDIS_URL` to `${your-db-name.REDIS_URL}`
-
-> Note: App Platform uses public paths and CMS won't run without a database, do not restrict access by api until you know it's IP address
-
-[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/ValeriaVG/amp-cms/tree/main&refcode=6ad1223ed047)
+[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/ValeriaVG/tws-cms/tree/main&refcode=6ad1223ed047)
 
 ## First-time & Emergency access
 
@@ -26,32 +22,51 @@ You can set up a superuser account though the following environment variables:
 
 > WARNING: consider changing the default superuser credentials
 
-This user is never stored or rendered anywhere else, but has all possible permissions.
+## Development
 
-## Roadmap
+To run on local machine you'll need:
 
-- [x] API
-  - [x] Core functionality
-  - [x] Authorization
-  - [x] Permissions
-  - [x] Custom user fields
-  - [x] Render user pages
-  - [x] Analytics
-- [x] Control Panel
-  - [x] Base layout
-  - [x] Templates Editor
-  - [x] Styles Editor
-  - [x] Content/Markup Editor
-  - [x] Show pageviews
-  - [ ] File manager / Image upload
-- [x] Deploy at least one project with AMP CMS
-- [x] Digital Ocean One-Click-Deploy
+- NodeJS v14.5.0
+- Yarn
+- PostgreSQL (or run `docker-compose up -d`)
 
-## Known bugs
+To start server in the development mode:
 
-- Currently updating template doesn't trigger update on existing pages
-- Updates to templates are not propagated to pages unless pages are manually saved
-- No file management system
-- No way to list pages from <amp/> yet
-- Sometimes errors are showing Unexpected JSON instead of a proper response
-- Dashboard does not work in Safari
+```
+yarn dev:server
+```
+
+To start dashboard in the development mode:
+
+```
+yarn dev:dashboard
+```
+
+To build server:
+
+```
+yarn build:server
+```
+
+To build dashboard:
+
+```
+yarn build:dashboard
+```
+
+To run all tests:
+
+```
+yarn test
+```
+
+To run specific test:
+
+```
+yarn test <fileName or RegExp>
+```
+
+## Disclaimer
+
+Node.js is a trademark of Joyent, Inc. and is used with its permission. We are not endorsed by or
+affiliated with Joyent.

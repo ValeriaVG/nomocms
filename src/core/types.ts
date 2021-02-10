@@ -1,7 +1,7 @@
 import { IncomingHttpHeaders } from "http";
 import { User } from "modules/authorization/Users";
 import { Readable } from "stream";
-import * as context from "./context";
+import context from "./context";
 import NormalizedURL from "./NormalizedURL";
 
 export type HTTPMethod = "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
@@ -19,14 +19,14 @@ export type APIContext = typeof context & {
   cookies?: Record<string, string>;
   token?: string;
   user?: User;
-  canAccessDashboard?: boolean;
   headers?: IncomingHttpHeaders;
   url?: NormalizedURL;
   ip?: string;
   ip_num?: number;
+  superuser?: User;
 };
 
-export type SimpleTypes = string | number | boolean | null;
+export type SimpleType = string | number | boolean | null;
 
 export type GenericResponse = {
   code?: number;
@@ -44,7 +44,7 @@ export type AMPResponse = GenericResponse & {
   body?: string;
   head?: string;
 };
-export type JSONObject = Record<string, SimpleTypes | object | Array<any>>;
+export type JSONObject = Record<string, SimpleType | object | Array<any>>;
 export type JSONResponse<T = JSONObject> = GenericResponse & T;
 export type DataResponse = GenericResponse & {
   type: string;
