@@ -1,4 +1,4 @@
-# NoMoCMS
+# ![NoMoCMS](./logo.svg)
 
 [![Maintainability](https://api.codeclimate.com/v1/badges/6751f127815b5bac4cee/maintainability)](https://codeclimate.com/github/ValeriaVG/nomocms/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/6751f127815b5bac4cee/test_coverage)](https://codeclimate.com/github/ValeriaVG/nomocms/test_coverage)
