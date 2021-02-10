@@ -1,4 +1,4 @@
-name: AMP CMS CI
+name: TWS CMS CI
 on: [push]
 jobs:
   test:
