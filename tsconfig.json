@@ -10,8 +10,7 @@
     "outDir": ".server",
     "noEmitOnError": true,
     "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true,
-    "jsx": "react-jsx"
+    "skipLibCheck": true
   },
   "include": ["src", "scripts"],
   "exclude": ["node_modules"]

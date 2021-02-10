@@ -1,8 +1,10 @@
-import "./styles.scss";
 import api from "./utils/api";
 import renderAuthorized from "./pages/authorized";
 import renderCommon from "./pages/common";
+import layout from "./layout";
 
+import "./components";
+import "./styles.scss";
 const state = {
   loading: true,
   hasAccess: false,
@@ -31,7 +33,7 @@ const app = {
     });
   },
   onStateChange() {
-    if (this.state.hasAccess) return renderAuthorized(document.body);
+    if (this.state.hasAccess) return renderAuthorized(layout(document.body));
     return renderCommon(document.body);
   },
 };

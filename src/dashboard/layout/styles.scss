@@ -1,0 +1,33 @@
+@import "../theme.scss";
+
+.wrapper {
+  display: grid;
+  grid-template-areas:
+    "aside header"
+    "aside main"
+    "aside footer";
+  grid-template-rows: 2rem 1fr 2rem;
+  grid-template-columns: 12rem 1fr;
+  width: 100vw;
+  height: 100vh;
+}
+
+.header {
+  grid-area: header;
+}
+.sidebar {
+  grid-area: aside;
+  background-color: $secondary-background;
+  display: flex;
+  flex-direction: column;
+  & > * {
+    flex: 1;
+  }
+}
+.footer {
+  grid-area: footer;
+}
+
+.main {
+  grid-area: main;
+}

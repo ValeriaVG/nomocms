@@ -1,0 +1,46 @@
+.drawer {
+  height: 100%;
+  ul {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+  }
+
+  display: grid;
+  grid-template-areas:
+    "search search"
+    "icons tree";
+  grid-template-rows: 2rem 1fr;
+  grid-template-columns: 2rem 1fr;
+}
+.search {
+  grid-area: search;
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  line-height: 1rem;
+  padding: 0.5rem;
+  color: white;
+  outline: none;
+  border-radius: 0;
+  &:active,
+  &:focus {
+    border-color: rgba(255, 255, 255, 0.25);
+  }
+}
+
+.icons {
+  background: rgba(255, 255, 255, 0.04);
+  li {
+    padding: 0.5rem;
+    opacity: 0.5;
+    &:hover {
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.08);
+    }
+    &.active {
+      opacity: 1;
+    }
+  }
+}
