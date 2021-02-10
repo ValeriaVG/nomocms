@@ -1,9 +1,9 @@
 {
-  "name": "tws-cms",
+  "name": "nomocms",
   "version": "0.0.2",
   "description": "Content management system for blazingly fast websites, powered by AMP",
   "main": "index.js",
-  "repository": "git@github.com:ValeriaVG/tws-cms.git",
+  "repository": "git@github.com:ValeriaVG/nomocms.git",
   "author": "ValeriaVG <valeria.viana.gusmao@gmail.com>",
   "license": "MIT",
   "scripts": {

@@ -1,10 +1,10 @@
 spec:
-  name: tws-cms
+  name: nomocms
   services:
   - name: server
     git:
       branch: main
-      repo_clone_url: https://github.com/ValeriaVG/tws-cms.git
+      repo_clone_url: https://github.com/ValeriaVG/nomocms.git
     envs:
     - key: SUPERUSER_EMAIL
       scope: RUN_TIME

@@ -1,17 +1,17 @@
-# TWS CMS
+# NoMoCMS
 
-[![Maintainability](https://api.codeclimate.com/v1/badges/6751f127815b5bac4cee/maintainability)](https://codeclimate.com/github/ValeriaVG/tws-cms/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/6751f127815b5bac4cee/test_coverage)](https://codeclimate.com/github/ValeriaVG/tws-cms/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/6751f127815b5bac4cee/maintainability)](https://codeclimate.com/github/ValeriaVG/nomocms/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/6751f127815b5bac4cee/test_coverage)](https://codeclimate.com/github/ValeriaVG/nomocms/test_coverage)
 
 Content management system for blazingly fast websites powered by AMP.
 
-TWS CMS is currently in active development. It's not ready for production use until it reaches v1.0.
+NoMoCMS is currently in active development. It's not ready for production use until it reaches v1.0.
 
 Current stage: alpha
 
 ## How to deploy
 
-[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/ValeriaVG/tws-cms/tree/main&refcode=6ad1223ed047)
+[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/ValeriaVG/nomocms/tree/main&refcode=6ad1223ed047)
 
 ## First-time & Emergency access
 

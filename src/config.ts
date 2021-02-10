@@ -6,8 +6,8 @@ export const redis = process.env.REDIS_URL;
 export const db: PoolConfig = {
   host: process.env.DATABASE_HOST,
   port: process.env.DATABASE_PORT as any,
-  user: process.env.DATABASE_USER ?? "tws-cms",
-  password: process.env.DATABASE_PASSWORD ?? "tws-cms",
+  user: process.env.DATABASE_USER ?? "nomocms",
+  password: process.env.DATABASE_PASSWORD ?? "nomocms",
   ssl: process.env.DATABASE_CA
     ? {
         ca: process.env.DATABASE_CA,
