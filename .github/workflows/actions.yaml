@@ -36,7 +36,7 @@ jobs:
       - name: Test & Coverage
         uses: paambaati/codeclimate-action@v2.5.6
         env:
-          CC_TEST_REPORTER_ID: a19c216c26fecf173e0ef64396aac98a482c0d5a1a38bb96b1a78bc3c4e4891b
+          CC_TEST_REPORTER_ID: fd71960f2e58540b3d99e869cc64077fb49da77f9b69d5e048639e4febadafb0
         with:
           coverageCommand: yarn coverage
           coverageLocations: "./coverage/lcov.info:lcov"
