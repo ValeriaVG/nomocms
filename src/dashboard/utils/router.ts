@@ -1,5 +1,10 @@
 import { Mountable } from "../types";
 
+export const redirect = (to: string) => {
+  history.pushState({ to }, "", to);
+  window.dispatchEvent(new CustomEvent("pushstate", { detail: { to } }));
+};
+
 export default function createRouter(
   routes: Record<string, Mountable>,
   container: HTMLElement
@@ -24,7 +29,7 @@ export default function createRouter(
     renderPage();
   };
   window.addEventListener("popstate", onPageChange);
-  // Custom event triggered by <app-link/>
+  // Custom event triggered by `redirect`
   window.addEventListener("pushstate", onPageChange);
 
   renderPage();

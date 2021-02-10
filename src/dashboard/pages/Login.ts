@@ -1,17 +1,19 @@
 import { html } from "amp/lib";
+import app from "dashboard";
 import api from "dashboard/utils/api";
 import styles from "./styles.scss";
 
+const setAMPAccessCookie = (token: string) => {
+  if (!token) return;
+  document.cookie = `amp-access=${token}; expires=${new Date(
+    Date.now() + 30 * 24 * 60 * 60 * 1000
+  ).toUTCString()}; domain=${document.location.host
+    .split(":")
+    .shift()}; path=/`;
+};
+
 export default {
-  setAMPAccessCookie: (token: string) => {
-    if (!token) return;
-    document.cookie = `amp-access=${token}; expires=${new Date(
-      Date.now() + 30 * 24 * 60 * 60 * 1000
-    ).toUTCString()}; domain=${document.location.host
-      .split(":")
-      .shift()}; path=/`;
-  },
-  onSubmit(e) {
+  async onSubmit(e) {
     e.preventDefault();
     const data = Array.from(new FormData(e.target).entries()).reduce(
       (a, c) => ({
@@ -20,7 +22,10 @@ export default {
       }),
       {}
     );
-    return api.post("/_api/login", data).then(this.logUserIn);
+    const result = await api.post("/_api/login", data);
+    if (!result?.canAccessDashboard) return;
+    setAMPAccessCookie(result.token);
+    app.setState({ hasAccess: true });
   },
   render(container: HTMLElement) {
     container.innerHTML = html`<main class="${styles.login}">
@@ -62,5 +67,6 @@ export default {
         <button type="submit">Login</button>
       </form>
     </main>`;
+    container.querySelector("form").onsubmit = this.onSubmit;
   },
 };
