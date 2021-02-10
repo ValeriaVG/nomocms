@@ -1,9 +1,9 @@
 {
-  "name": "amp-cms",
+  "name": "tws-cms",
   "version": "0.0.2",
-  "description": "Content management system for blazingly fast AMP websites, written in TypeScript",
+  "description": "Content management system for blazingly fast websites, powered by AMP",
   "main": "index.js",
-  "repository": "git@github.com:ValeriaVG/amp-cms.git",
+  "repository": "git@github.com:ValeriaVG/tws-cms.git",
   "author": "ValeriaVG <valeria.viana.gusmao@gmail.com>",
   "license": "MIT",
   "scripts": {

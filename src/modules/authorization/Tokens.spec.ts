@@ -4,7 +4,7 @@ import Tokens from "./Tokens";
 import { Client } from "pg";
 import { createTable, dropTable, insertInto } from "core/sql";
 
-const db = new Client({ user: "amp-cms", password: "amp-cms" });
+const db = new Client({ user: "tws-cms", password: "tws-cms" });
 const tokens = new Tokens({ db });
 
 describe("Tokens Integration Test", () => {

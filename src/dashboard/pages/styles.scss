@@ -29,11 +29,17 @@
     button {
       width: 100%;
       color: white;
-      background: $primary;
+      background-color: $primary;
       border: none;
       padding: 0.5rem 1rem;
       font-size: 0.8rem;
       font-weight: bold;
+      cursor: pointer;
+      transition: background-color ease-in 300ms;
+      &:hover {
+        background-color: $primary-hover;
+        transition: background-color ease-out 300ms;
+      }
     }
   }
 }

@@ -1,10 +1,10 @@
 spec:
-  name: amp-cms
+  name: tws-cms
   services:
   - name: server
     git:
       branch: main
-      repo_clone_url: https://github.com/ValeriaVG/amp-cms.git
+      repo_clone_url: https://github.com/ValeriaVG/tws-cms.git
     envs:
     - key: SUPERUSER_EMAIL
       scope: RUN_TIME

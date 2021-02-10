@@ -1,5 +1,4 @@
 import { html } from "amp/lib";
-import logo from "dashboard/components/logo";
 import api from "dashboard/utils/api";
 import styles from "./styles.scss";
 
@@ -26,7 +25,6 @@ export default {
   render(container: HTMLElement) {
     container.innerHTML = html`<main class="${styles.login}">
       <form>
-        ${logo}
         <fieldset>
           <label> Email: </label>
           <input

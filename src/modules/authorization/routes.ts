@@ -20,7 +20,7 @@ const routes = {
         ...ctx
       }: APIContext & { users: Users; tokens: Tokens; permissions: Permissions }
     ) => {
-      if (!token) token = `amp-cms-${uuid()}`;
+      if (!token) token = `tws-cms-${uuid()}`;
       //Check if its a superuser defined by env variables
       if (
         superuser.email &&

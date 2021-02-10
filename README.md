@@ -1,17 +1,17 @@
-# ![AMP CMS Logo](logo.svg)
+# TWS CMS
 
-[![Maintainability](https://api.codeclimate.com/v1/badges/6751f127815b5bac4cee/maintainability)](https://codeclimate.com/github/ValeriaVG/amp-cms/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/6751f127815b5bac4cee/test_coverage)](https://codeclimate.com/github/ValeriaVG/amp-cms/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/6751f127815b5bac4cee/maintainability)](https://codeclimate.com/github/ValeriaVG/tws-cms/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/6751f127815b5bac4cee/test_coverage)](https://codeclimate.com/github/ValeriaVG/tws-cms/test_coverage)
 
-Content management system for blazingly fast AMP websites, written in TypeScript.
+Content management system for blazingly fast websites powered by AMP.
 
-AMP CMS is currently in active development. It's not ready for production use until it reaches v1.0.
+TWS CMS is currently in active development. It's not ready for production use until it reaches v1.0.
 
 Current stage: alpha
 
 ## How to deploy
 
-[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/ValeriaVG/amp-cms/tree/main&refcode=6ad1223ed047)
+[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/ValeriaVG/tws-cms/tree/main&refcode=6ad1223ed047)
 
 ## First-time & Emergency access
 
@@ -65,3 +65,8 @@ To run specific test:
 ```
 yarn test <fileName or RegExp>
 ```
+
+## Disclaimer
+
+Node.js is a trademark of Joyent, Inc. and is used with its permission. We are not endorsed by or
+affiliated with Joyent.
