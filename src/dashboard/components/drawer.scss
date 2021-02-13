@@ -1,5 +1,6 @@
 .drawer {
   height: 100%;
+
   ul {
     padding: 0;
     margin: 0;
@@ -32,9 +33,12 @@
 
 .icons {
   background: rgba(255, 255, 255, 0.04);
+  display: flex;
+  flex-direction: column;
   li {
     padding: 0.5rem;
     opacity: 0.5;
+    text-align: center;
     &:hover {
       cursor: pointer;
       background: rgba(255, 255, 255, 0.08);
@@ -43,4 +47,8 @@
       opacity: 1;
     }
   }
+}
+
+.vertical-logo {
+  margin: auto auto 0.5rem;
 }

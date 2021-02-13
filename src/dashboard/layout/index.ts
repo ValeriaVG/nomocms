@@ -12,5 +12,29 @@ export default (container: HTMLElement) => {
     </div>
   `;
 
+  makeResizable(container.querySelector("aside"));
   return container.querySelector("main");
 };
+
+export function makeResizable(element: HTMLElement) {
+  element.style.position = "relative";
+  const handle = document.createElement("button");
+  handle.setAttribute("class", styles["resize-handle"]);
+  element.appendChild(handle);
+  const state = {
+    isResizing: false,
+  };
+  handle.addEventListener("mousedown", () => {
+    document.body.style.cursor = "ew-resize";
+    state.isResizing = true;
+  });
+  document.addEventListener("mouseup", () => {
+    state.isResizing = false;
+    document.body.style.cursor = null;
+  });
+  document.addEventListener("mousemove", (e) => {
+    if (!state.isResizing) return;
+    const width = e.pageX - element.offsetLeft;
+    element.parentElement.style.gridTemplateColumns = `${width}px 1fr`;
+  });
+}
