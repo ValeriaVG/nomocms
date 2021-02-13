@@ -7,12 +7,11 @@ import {
   faCopy,
   faExclamationCircle,
   faFile,
-  faFileAlt,
   faHome,
 } from "@fortawesome/free-solid-svg-icons";
-import styles from "./drawer.scss";
+import styles from "./styles.scss";
 
-export default class Drawer extends HTMLElement {
+export default class AppDrawer extends HTMLElement {
   constructor() {
     super();
     this.innerHTML = html`

@@ -39,7 +39,6 @@ export default html`
   <code-editor
     style="width:100%;height:100%;display:block;"
     value=${attr`${markdown}`}
-    language="markdown"
   >
   </code-editor>
 `;

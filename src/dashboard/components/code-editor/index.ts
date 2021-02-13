@@ -1,6 +1,27 @@
 import * as monaco from "monaco-editor";
+import {
+  language as markdownLanguage,
+  conf as markdownConfig,
+} from "./markdown.config";
 
-export default class Editor extends HTMLElement {
+monaco.editor.defineTheme("vs-nomo", {
+  base: "vs-dark",
+  inherit: true,
+  rules: [],
+  colors: {
+    "editor.foreground": "#ffffff",
+    "editor.background": "#100818",
+  },
+});
+monaco.languages.register({
+  id: "markdown-extended",
+});
+monaco.languages.setLanguageConfiguration("markdown-extended", markdownConfig);
+monaco.languages.setMonarchTokensProvider(
+  "markdown-extended",
+  markdownLanguage
+);
+export default class CodeEditor extends HTMLElement {
   private editor: monaco.editor.IStandaloneCodeEditor;
 
   constructor() {
@@ -13,15 +34,7 @@ export default class Editor extends HTMLElement {
           this.updateEditorOptions(mutation.attributeName);
       });
     });
-    monaco.editor.defineTheme("vs-nomo", {
-      base: "vs-dark",
-      inherit: true,
-      rules: [],
-      colors: {
-        "editor.foreground": "#ffffff",
-        "editor.background": "#100818",
-      },
-    });
+
     this.editor = monaco.editor.create(this, {
       theme: "vs-nomo",
       automaticLayout: true,
@@ -36,7 +49,7 @@ export default class Editor extends HTMLElement {
   }
   getOptions = () => {
     return {
-      language: this.getAttribute("language") || "markdown",
+      language: this.getAttribute("language") || "markdown-extended",
       value: this.getAttribute("value") || "",
     };
   };
