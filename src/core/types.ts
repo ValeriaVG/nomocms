@@ -68,8 +68,10 @@ export type ResolverFn<P = any, C = any, R extends RouteResponse = any> = (
   context: APIContext & C
 ) => MaybePromise<R>;
 
+export type Route = ResolverFn | Partial<Record<HTTPMethod, ResolverFn>>;
+
 export type Routes = {
-  [path: string]: ResolverFn | Partial<Record<HTTPMethod, ResolverFn>>;
+  [path: string]: Route;
 };
 
 export type ExcludeReserved<T> = Exclude<T, GenericResponse>;
