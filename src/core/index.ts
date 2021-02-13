@@ -4,16 +4,37 @@ import { APIContext, Routes, HTTPMethod } from "./types";
 import { superuser } from "config";
 import requestParams from "./requestParams";
 import routeRequest from "./routeRequest";
-import { DataSource, SQLDataSource } from "./DataSource";
+import { DataSource } from "./DataSource";
 import responseFactory from "./responseFactory";
 import { HTTPNotFound } from "./errors";
 import NormalizedURL from "./NormalizedURL";
 import Users from "modules/authorization/Users";
 import { ip2num } from "modules/analytics/lib";
-import { createTable, insertInto } from "./sql";
+import { insertInto } from "./sql";
 import Pages from "modules/pages/Pages";
 import cors from "./cors";
 import createRoutes from "utils/routes";
+
+const initSuperUser = (ctx: APIContext) =>
+  ctx.db
+    ?.query(
+      ...insertInto(
+        ctx["users"].collection,
+        {
+          name: "superuser",
+          email: superuser.email,
+          pwhash: "",
+        },
+        {
+          onConflict: {
+            constraint: "email",
+            update: { set: { name: "superuser" } },
+          },
+          returning: "*",
+        }
+      )
+    )
+    .then(({ rows }) => rows[0]);
 
 export default async function core(
   modules: {
@@ -27,36 +48,10 @@ export default async function core(
       for (let source in modules.dataSources) {
         const Source = modules.dataSources[source] as any;
         ctx[source] = new Source(ctx);
-        if ("collection" in ctx[source]) {
-          const src = ctx[source] as SQLDataSource<any>;
-          await ctx.db.query(
-            createTable(src.collection, src.schema, {
-              ifNotExists: true,
-              primaryKey: src.primaryKey as string[],
-            })
-          );
-        }
+        if ("init" in ctx[source]) await ctx[source].init();
       }
     }
-    ctx.superuser = await ctx.db
-      ?.query(
-        ...insertInto(
-          ctx["users"].collection,
-          {
-            name: "superuser",
-            email: superuser.email,
-            pwhash: "",
-          },
-          {
-            onConflict: {
-              constraint: "email",
-              update: { set: { name: "superuser" } },
-            },
-            returning: "*",
-          }
-        )
-      )
-      .then(({ rows }) => rows[0]);
+    ctx.superuser = await initSuperUser(ctx);
   } catch (error) {
     console.error(error);
     process.exit(1);
