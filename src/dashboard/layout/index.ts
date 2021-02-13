@@ -3,16 +3,15 @@ import styles from "./styles.scss";
 export default (container: HTMLElement) => {
   container.innerHTML = html`
     <div class="${styles.wrapper}">
-      <header class="${styles.header}"></header>
       <aside class="${styles.sidebar}">
         <app-drawer></app-drawer>
       </aside>
       <main class="${styles.main}"></main>
-      <footer class="${styles.footer}"></footer>
+      <aside class="${styles.parameters}"></aside>
     </div>
   `;
 
-  makeResizable(container.querySelector("aside"));
+  makeResizable(container.querySelector("." + styles.sidebar));
   return container.querySelector("main");
 };
 
@@ -34,7 +33,7 @@ export function makeResizable(element: HTMLElement) {
   });
   document.addEventListener("mousemove", (e) => {
     if (!state.isResizing) return;
-    const width = e.pageX - element.offsetLeft;
-    element.parentElement.style.gridTemplateColumns = `${width}px 1fr`;
+    // const width = e.pageX - element.offsetLeft;
+    // element.style.width = `${width}px`;
   });
 }

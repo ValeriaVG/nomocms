@@ -1,22 +1,14 @@
 @import "../theme.scss";
 
 .wrapper {
-  display: grid;
-  grid-template-areas:
-    "aside header"
-    "aside main"
-    "aside footer";
-  grid-template-rows: 2rem 1fr 2rem;
-  grid-template-columns: 12rem 1fr;
+  display: flex;
+  flex-direction: row;
   width: 100vw;
   height: 100vh;
 }
 
-.header {
-  grid-area: header;
-}
 .sidebar {
-  grid-area: aside;
+  width: 12rem;
   background-color: $secondary-background;
   display: flex;
   flex-direction: column;
@@ -24,12 +16,13 @@
     flex: 1;
   }
 }
-.footer {
-  grid-area: footer;
+.parameters {
+  width: 24rem;
+  background-color: rgba(255, 255, 255, 0.02);
 }
 
 .main {
-  grid-area: main;
+  flex: 1;
 }
 .resize-handle {
   position: absolute;
