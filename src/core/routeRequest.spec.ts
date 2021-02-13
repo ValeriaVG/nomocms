@@ -3,6 +3,7 @@ import { expect } from "chai";
 import routeRequest from "./routeRequest";
 import { HTTPMethodNotAllowed } from "./errors";
 import NormalizedURL from "./NormalizedURL";
+import createRoutes from "utils/routes";
 
 const makeUrl = (url: string) => new NormalizedURL(url);
 
@@ -14,7 +15,7 @@ describe("routeRequest", () => {
     const PATCH = () => {};
     const getItems = () => {};
 
-    const routes = {
+    const routes = createRoutes({
       "/api/item": {
         POST,
         GET,
@@ -24,7 +25,7 @@ describe("routeRequest", () => {
       "/api/items": {
         GET: getItems,
       },
-    };
+    });
 
     expect(
       routeRequest(makeUrl("/api/item?id=1"), "GET", routes)
@@ -48,11 +49,11 @@ describe("routeRequest", () => {
     ).to.have.property("resolver", getItems);
   });
   it("handles cases when endpoint or method does not exist", () => {
-    const routes = {
+    const routes = createRoutes({
       "/api/item": {
         GET: () => ({}),
       },
-    };
+    });
     expect(routeRequest(makeUrl("/api/items"), "GET", routes)).to.have.property(
       "resolver",
       null
@@ -63,9 +64,9 @@ describe("routeRequest", () => {
   });
 
   it("can resolve route with parameters", () => {
-    const routes = {
+    const routes = createRoutes({
       "/item/:id": ({ id }) => ({ item: id }),
-    };
+    });
     const { resolver, params } = routeRequest(
       makeUrl("/item/itm_1"),
       "GET",

@@ -1,1 +1,7 @@
-export type Mountable = string | { render: (container: HTMLElement) => void };
+export type Mountable<
+  T extends Record<string, string> = Record<string, string>
+> =
+  | string
+  | {
+      render: (container: HTMLElement, params?: T) => void;
+    };

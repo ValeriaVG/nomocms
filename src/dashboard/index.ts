@@ -1,10 +1,11 @@
 import api from "./utils/api";
-import renderAuthorized from "./pages/authorized";
-import renderCommon from "./pages/common";
+import authorized from "./pages/authorized";
+import common from "./pages/common";
 import layout from "./layout";
 
 import "./components";
 import "./styles.scss";
+
 const state = {
   loading: true,
   hasAccess: false,
@@ -33,8 +34,11 @@ const app = {
     });
   },
   onStateChange() {
-    if (this.state.hasAccess) return renderAuthorized(layout(document.body));
-    return renderCommon(document.body);
+    const router = this.state.hasAccess ? authorized : common;
+    const container = this.state.hasAccess
+      ? layout(document.body)
+      : document.body;
+    return router.mount(container);
   },
 };
 

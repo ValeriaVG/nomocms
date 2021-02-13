@@ -13,6 +13,7 @@ import { ip2num } from "modules/analytics/lib";
 import { createTable, insertInto } from "./sql";
 import Pages from "modules/pages/Pages";
 import cors from "./cors";
+import createRoutes from "utils/routes";
 
 export default async function core(
   modules: {
@@ -110,7 +111,7 @@ export default async function core(
       const { resolver, params: routeParams } = routeRequest(
         context.url,
         method as HTTPMethod,
-        modules.routes
+        createRoutes(modules.routes)
       );
 
       if (!resolver) {
