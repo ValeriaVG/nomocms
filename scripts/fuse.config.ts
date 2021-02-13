@@ -1,5 +1,6 @@
 import path from "path";
 import { pluginSass } from "fuse-box";
+import pluginMonacoEditorWorkers from "./utils/pluginMonacoEditorWorkers";
 export const dashboard = {
   entry: path.resolve(__dirname, "../src/dashboard/index.ts"),
   target: "browser" as const,
@@ -11,6 +12,8 @@ export const dashboard = {
     pluginSass("*.scss", {
       asModule: { scopeBehaviour: "local" },
     }),
+
+    pluginMonacoEditorWorkers(),
   ],
   env: {
     PUBLIC_URL: process.env.PUBLIC_URL,

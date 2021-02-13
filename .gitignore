@@ -9,3 +9,4 @@ dist
 .dashboard
 .server
 .DS_Store
+.workers/manifest-web-worker.json
