@@ -1,13 +1,16 @@
 import * as monaco from "monaco-editor";
 
 export default class Editor extends HTMLElement {
+  private editor: monaco.editor.IStandaloneCodeEditor;
+
   constructor() {
     super();
-    const value = this.getAttribute("value");
+
     this.style.backgroundColor = "#100818";
     const observer = new MutationObserver((mutationList) => {
       mutationList.forEach((mutation) => {
-        if (mutation.type === "attributes") this.updateEditorOptions();
+        if (mutation.type === "attributes")
+          this.updateEditorOptions(mutation.attributeName);
       });
     });
     monaco.editor.defineTheme("vs-nomo", {
@@ -19,7 +22,7 @@ export default class Editor extends HTMLElement {
         "editor.background": "#100818",
       },
     });
-    monaco.editor.create(this, {
+    this.editor = monaco.editor.create(this, {
       theme: "vs-nomo",
       automaticLayout: true,
       minimap: { enabled: false },
@@ -37,8 +40,13 @@ export default class Editor extends HTMLElement {
       value: this.getAttribute("value") || "",
     };
   };
-  updateEditorOptions() {
-    console.log("editor options");
-    console.log(this.getOptions());
+  updateEditorOptions(attribute) {
+    const { value, language } = this.getOptions();
+    if (attribute === "value") {
+      this.editor.setValue(value);
+    }
+    if (attribute === "language") {
+      monaco.editor.setModelLanguage(this.editor.getModel(), language);
+    }
   }
 }
