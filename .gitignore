@@ -8,3 +8,4 @@ dist
 .dist
 .dashboard
 .server
+.DS_Store

@@ -10,7 +10,9 @@ const fuse = fusebox({
 fuse.runProd({
   bundles: {
     distRoot: path.resolve(__dirname, "../../.dashboard"),
-    vendor: "vendor.$name.$hash.js",
     styles: "styles/styles.$hash.css",
+    codeSplitting: {
+      path: "$name.$hash.js",
+    },
   },
 });

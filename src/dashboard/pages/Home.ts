@@ -1,8 +1,6 @@
-import { html } from "amp/lib";
+import { html, attr } from "amp/lib";
 
-export default html`
-  <code-editor style="width:100%;height:100%;display:block;">
-    ${`
+const markdown = `
 ---
 url: /
 title: NoMoCMS
@@ -10,6 +8,19 @@ title: NoMoCMS
 
 # NoMoCMS
 In active development
-`}
+`;
+
+const sass = `
+body{
+  background:teal;
+}
+`;
+
+export default html`
+  <code-editor
+    style="width:100%;height:100%;display:block;"
+    value=${attr`${sass}`}
+    language="css"
+  >
   </code-editor>
 `;

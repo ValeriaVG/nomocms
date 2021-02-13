@@ -5,9 +5,7 @@ export const dashboard = {
   target: "browser" as const,
   webIndex: {
     template: path.resolve(__dirname, "../src/dashboard/index.html"),
-  },
-  webWorkers: {
-    enabled: true,
+    publicPath: process.env.PUBLIC_URL || "/",
   },
   plugins: [
     pluginSass("*.scss", {

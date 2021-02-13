@@ -5,5 +5,4 @@ const fuse = fusebox({
   ...dashboard,
   devServer: true,
 });
-
 fuse.runDev();
