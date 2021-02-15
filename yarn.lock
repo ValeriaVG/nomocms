@@ -2923,10 +2923,10 @@ pg-int8@1.0.1:
   resolved "https://registry.yarnpkg.com/pg-int8/-/pg-int8-1.0.1.tgz#943bd463bf5b71b4170115f80f8efc9a0c0eb78c"
   integrity sha512-WCtabS6t3c8SkpDBUlb1kjOs7l66xsGdKpIPZsg4wR+B3+u9UAum2odSsF9tnvxg80h4ZxLWMy4pRjOsFIqQpw==
 
-pg-mem@^1.7.3:
-  version "1.7.3"
-  resolved "https://registry.yarnpkg.com/pg-mem/-/pg-mem-1.7.3.tgz#87b869577fc198fbf115d216a429fa2711978481"
-  integrity sha512-1h2bxUpuv3NPkNLSn5ptzlInPLRn+uJXLuR1E2CSECi8ZSA+rvfaR/1JOt//SEmpZP0YzSprruG7mrD6fVQU1g==
+pg-mem@^1.7.5:
+  version "1.7.5"
+  resolved "https://registry.yarnpkg.com/pg-mem/-/pg-mem-1.7.5.tgz#031b1f976a9d93cf9a7400091a2dba1c4849a6ec"
+  integrity sha512-PI8XjdmqytYP/4Yr83qSWMo5vlQuSi/P0mKfXOeOmzBWKMS5/mOiv7aoIcw8oi4pDzMoLJUjjHubrekesIRGuA==
   dependencies:
     functional-red-black-tree "^1.0.1"
     immutable "^4.0.0-rc.12"
