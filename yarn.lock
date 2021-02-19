@@ -2923,17 +2923,17 @@ pg-int8@1.0.1:
   resolved "https://registry.yarnpkg.com/pg-int8/-/pg-int8-1.0.1.tgz#943bd463bf5b71b4170115f80f8efc9a0c0eb78c"
   integrity sha512-WCtabS6t3c8SkpDBUlb1kjOs7l66xsGdKpIPZsg4wR+B3+u9UAum2odSsF9tnvxg80h4ZxLWMy4pRjOsFIqQpw==
 
-pg-mem@^1.7.3:
-  version "1.7.3"
-  resolved "https://registry.yarnpkg.com/pg-mem/-/pg-mem-1.7.3.tgz#87b869577fc198fbf115d216a429fa2711978481"
-  integrity sha512-1h2bxUpuv3NPkNLSn5ptzlInPLRn+uJXLuR1E2CSECi8ZSA+rvfaR/1JOt//SEmpZP0YzSprruG7mrD6fVQU1g==
+pg-mem@^1.7.6:
+  version "1.7.6"
+  resolved "https://registry.yarnpkg.com/pg-mem/-/pg-mem-1.7.6.tgz#45d084e57d169850affe25a52f492570f06dc326"
+  integrity sha512-b9m1NtCeTNWSRduCg9BYGnhnVaEvtrKUQGEtl0151lKTUWbtoUiZ3UlWBtUyWokPC6JgbiXvexExt8E/m9DGnw==
   dependencies:
     functional-red-black-tree "^1.0.1"
     immutable "^4.0.0-rc.12"
     lru-cache "^6.0.0"
     moment "^2.27.0"
     object-hash "^2.0.3"
-    pgsql-ast-parser "^4.2.0"
+    pgsql-ast-parser "^5.1.2"
 
 pg-pool@^3.2.2:
   version "3.2.2"
@@ -2976,10 +2976,10 @@ pgpass@1.x:
   dependencies:
     split2 "^3.1.1"
 
-pgsql-ast-parser@^4.2.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/pgsql-ast-parser/-/pgsql-ast-parser-4.2.0.tgz#d6c5021b1ff46a9086410b582bd197b15cd5bd50"
-  integrity sha512-YlN4bLp8sleNhrZwZDPt/B5tZ2Olmr5yIL9Gq+r5AzmfimLRlhJJ5/eV8TT0DRI8Cr7i9SkxQpGK67D5geNgWw==
+pgsql-ast-parser@^5.1.2:
+  version "5.1.2"
+  resolved "https://registry.yarnpkg.com/pgsql-ast-parser/-/pgsql-ast-parser-5.1.2.tgz#1346b479c8ff83a3f2a788ad9f4fa74255631fd9"
+  integrity sha512-Iri92c3GXSR+DtJ0G7Jh6CxPmfx+dx7NiJkO6bTQXRY0jyOdcBwjlbNu6BM7dHiQKn5LHH/LrJoZ/73/JvI8Cg==
   dependencies:
     moo "^0.5.1"
     nearley "^2.19.5"
