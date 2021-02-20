@@ -1,6 +1,6 @@
 import { IncomingMessage, ServerResponse } from "http";
 import cookie from "cookie";
-import { APIContext, Routes, HTTPMethod } from "./types";
+import { APIContext, Routes, HTTPMethod, InitializedContext } from "./types";
 import { superuser } from "config";
 import requestParams from "./requestParams";
 import routeRequest from "./routeRequest";
@@ -14,6 +14,7 @@ import { insertInto } from "./sql";
 import Pages from "modules/pages/Pages";
 import cors from "./cors";
 import createRoutes from "utils/routes";
+import { ContentPage } from "modules/pages/types";
 
 const initSuperUser = (ctx: APIContext) =>
   ctx.db
@@ -36,6 +37,35 @@ const initSuperUser = (ctx: APIContext) =>
     )
     .then(({ rows }) => rows[0]);
 
+const initDataSources = async (
+  ctx: APIContext,
+  dataSources: Record<string, typeof DataSource>
+) => {
+  if (!dataSources) return;
+  for (let source in dataSources) {
+    const Source = dataSources[source] as any;
+    ctx[source] = new Source(ctx);
+    if ("init" in ctx[source]) await ctx[source].init();
+  }
+};
+
+const createSessionContext = (req: IncomingMessage) => {
+  const context: Record<string, any> = {};
+  context.headers = req.headers;
+  context.ip = req.socket.remoteAddress;
+  context.ip_num = ip2num(req.socket.remoteAddress);
+  // TODO: check accept header
+  // Look for existing page
+  context.url = new NormalizedURL(req.url);
+  context.cookies = req.headers.cookie ? cookie.parse(req.headers.cookie) : {};
+  return context;
+};
+
+const initializeAccess = async (context: InitializedContext) => {
+  if (!context.token) return;
+  context.user = await (context.users as Users).byToken(context.token);
+};
+
 export default async function core(
   modules: {
     routes?: Routes;
@@ -43,15 +73,11 @@ export default async function core(
   },
   ctx: APIContext
 ) {
+  let notFoundPage: ContentPage = null;
   try {
-    if (modules.dataSources) {
-      for (let source in modules.dataSources) {
-        const Source = modules.dataSources[source] as any;
-        ctx[source] = new Source(ctx);
-        if ("init" in ctx[source]) await ctx[source].init();
-      }
-    }
+    await initDataSources(ctx, modules.dataSources);
     ctx.superuser = await initSuperUser(ctx);
+    notFoundPage = await ctx["pages"]?.retrieve("/*");
   } catch (error) {
     console.error(error);
     process.exit(1);
@@ -62,36 +88,20 @@ export default async function core(
     res: ServerResponse,
     next?: () => void
   ) => {
-    // Clean context for each request
-    const context: APIContext & Record<string, any> = Object.assign({}, ctx);
     const sendResponse = responseFactory(req, res);
-
-    const initializeAccess = async () => {
-      if (!context.token) return;
-      context.user = await (context.users as Users).byToken(context.token);
-    };
-
-    cors(req, res);
-
     try {
-      const method = req.method?.toUpperCase();
-
-      context.headers = req.headers;
-      context.ip = req.socket.remoteAddress;
-      context.ip_num = ip2num(req.socket.remoteAddress);
-      // TODO: check accept header
-      // Look for existing page
-      context.url = new NormalizedURL(req.url);
-      const acceptsJSON = req.headers.accept?.endsWith("/json");
-
-      context.cookies = req.headers.cookie
-        ? cookie.parse(req.headers.cookie)
-        : {};
-
+      cors(req, res);
+      const context: InitializedContext = Object.assign(
+        createSessionContext(req),
+        ctx
+      );
       const params = await requestParams(req);
       context.token = context.cookies["amp-access"] ?? params.rid;
-      await initializeAccess().catch(console.error);
-      if (!acceptsJSON) {
+      // Clean context for each request
+      const method = req.method?.toUpperCase();
+      const expectsPage = !req.headers.accept?.endsWith("/json");
+      await initializeAccess(context).catch(console.error);
+      if (expectsPage) {
         const page = await (context.pages as Pages)?.retrieve(
           context.url.normalizedPath
         );
@@ -111,7 +121,6 @@ export default async function core(
 
       if (!resolver) {
         if (next) return next();
-        const notFoundPage = await ctx["pages"]?.retrieve("/*");
         if (notFoundPage)
           return sendResponse({ type: "amp", ...notFoundPage, code: 404 });
         throw new HTTPNotFound();

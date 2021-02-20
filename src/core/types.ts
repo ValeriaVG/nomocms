@@ -2,6 +2,7 @@ import { IncomingHttpHeaders } from "http";
 import { User } from "modules/authorization/Users";
 import { Readable } from "stream";
 import context from "./context";
+import { DataSource } from "./DataSource";
 import NormalizedURL from "./NormalizedURL";
 
 export type HTTPMethod = "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
@@ -75,3 +76,5 @@ export type Routes = {
 };
 
 export type ExcludeReserved<T> = Exclude<T, GenericResponse>;
+
+export type InitializedContext = APIContext & Record<string, DataSource>;

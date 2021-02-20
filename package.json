@@ -13,7 +13,7 @@
     "dev:dashboard": "ts-node -r tsconfig-paths/register scripts/dev",
     "dev:server": "ts-node-dev -r tsconfig-paths/register src/index",
     "test": "node scripts/test",
-    "coverage": "nyc --reporter=lcov --reporter=text-summary node scripts/test"
+    "coverage": "nyc node scripts/test"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.34",

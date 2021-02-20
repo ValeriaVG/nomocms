@@ -6,7 +6,9 @@ const dom = new JSDOM("<!DOCTYPE html><html><body></body></html>", {
 });
 globalThis.window = dom.window;
 globalThis.document = dom.window.document;
-globalThis.HTMLElement = window.HTMLElement;
 globalThis.window.fetch = require("node-fetch");
+globalThis.HTMLElement = dom.window.HTMLElement;
 globalThis.Event = dom.window.Event;
 globalThis.CustomEvent = dom.window.CustomEvent;
+globalThis.MutationObserver = dom.window.MutationObserver;
+globalThis.customElements = dom.window.customElements;

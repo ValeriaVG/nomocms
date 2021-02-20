@@ -11,17 +11,16 @@ require("module")._extensions[".mock"] = function (module, file) {
     editor: {
       defineTheme: noop,
       setModelLanguage: noop,
+      create: () => ({
+        layout: noop,
+        setValue: noop,
+        getValue: noop,
+      }),
     },
     languages: {
       register: noop,
       setLanguageConfiguration: noop,
       setMonarchTokensProvider: noop,
     },
-
-    create: () => ({
-      layout: noop,
-      setValue: noop,
-      getValue: noop,
-    }),
   };
 };
