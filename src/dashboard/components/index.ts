@@ -1,4 +1,4 @@
-import Logo from "./logo";
+import Logo from "./app-logo";
 import Drawer from "./app-drawer";
 import CodeEditor from "./code-editor";
 import PagePreview from "./page-preview";

@@ -3,8 +3,6 @@ import app from "dashboard/app";
 import api from "dashboard/utils/api";
 import styles from "./styles.scss";
 
-import "../components/logo";
-
 const setAMPAccessCookie = (token: string) => {
   if (!token) return;
   document.cookie = `amp-access=${token}; expires=${new Date(
