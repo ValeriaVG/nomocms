@@ -7,6 +7,9 @@ const readDir = promisify(fs.readdir);
 const fileStats = promisify(fs.stat);
 
 process.env.NODE_ENV = "test";
+process.env.SUPERUSER_EMAIL =
+  process.env.SUPERUSER_EMAIL || "clark.kent@daily.planet";
+process.env.SUPERUSER_PASSWORD = process.env.SUPERUSER_PASSWORD || "12345";
 
 const rootDir = path.resolve(__dirname, "..", "..", "src");
 
