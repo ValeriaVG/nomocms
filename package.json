@@ -12,8 +12,8 @@
     "start": "node .server/index",
     "dev:dashboard": "ts-node -r tsconfig-paths/register scripts/dev",
     "dev:server": "ts-node-dev -r tsconfig-paths/register src/index",
-    "test": "ts-node -r tsconfig-paths/register scripts/test",
-    "coverage": "nyc --reporter=lcov --reporter=text-summary ts-node -r tsconfig-paths/register scripts/test"
+    "test": "node scripts/test",
+    "coverage": "nyc --reporter=lcov --reporter=text-summary yarn test"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.34",

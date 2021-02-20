@@ -1,6 +1,5 @@
 import { html } from "amp/lib";
 import styles from "./styles.scss";
-
 const GRID_TEMPLATE_COLUMNS = "12rem 1fr 24rem";
 const MIN_COLUMN = 12;
 

@@ -1,5 +1,5 @@
 import { html } from "amp/lib";
-import app from "dashboard";
+import app from "dashboard/app";
 import api from "dashboard/utils/api";
 import styles from "./styles.scss";
 

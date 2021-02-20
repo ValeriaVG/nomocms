@@ -8,7 +8,7 @@ const fileStats = promisify(fs.stat);
 
 process.env.NODE_ENV = "test";
 
-const rootDir = path.resolve(__dirname, "..", "src");
+const rootDir = path.resolve(__dirname, "..", "..", "src");
 
 const filter = process.argv[2];
 const testRegExp = new RegExp(`${filter ?? ""}.(spec|test).tsx?$`, "i");
