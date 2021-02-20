@@ -35,10 +35,4 @@ Aeacide, fortiter aliquid! In tua venit stratosque illa, umerique sedem, ne
 adhuc ferebat pendent cultor fama **iussa** calido ei vulnere!
 `;
 
-export default html`
-  <code-editor
-    style="width:100%;height:100%;display:block;"
-    value=${attr`${markdown}`}
-  >
-  </code-editor>
-`;
+export default html`<code-editor value=${attr`${markdown}`}> </code-editor>`;

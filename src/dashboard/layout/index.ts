@@ -1,39 +1,78 @@
 import { html } from "amp/lib";
 import styles from "./styles.scss";
+
+const GRID_TEMPLATE_COLUMNS = "12rem 1fr 24rem";
+const MIN_COLUMN = 12;
+
 export default (container: HTMLElement) => {
   container.innerHTML = html`
-    <div class="${styles.wrapper}">
+    <div
+      class="${styles.wrapper}"
+      style="grid-template-columns:${GRID_TEMPLATE_COLUMNS}"
+    >
       <aside class="${styles.sidebar}">
         <app-drawer></app-drawer>
+        <div class="${styles.splitter}" style="right:0"></div>
       </aside>
       <main class="${styles.main}"></main>
-      <aside class="${styles.parameters}"></aside>
+      <aside class="${styles.parameters}">
+        <div class="${styles.splitter}" style="left:0"></div>
+        <!-- parameters -->
+      </aside>
     </div>
   `;
 
-  makeResizable(container.querySelector("." + styles.sidebar));
-  return container.querySelector("main");
+  const wrapper = container.querySelector(`.${styles.wrapper}`);
+  const main = container.querySelector("main");
+  container
+    .querySelectorAll(`.${styles.splitter}`)
+    .forEach((element: HTMLElement, i: number) =>
+      setupSplitter(element, wrapper as HTMLElement, i === 0, () =>
+        main.dispatchEvent(new CustomEvent("resize"))
+      )
+    );
+  return main;
 };
 
-export function makeResizable(element: HTMLElement) {
-  element.style.position = "relative";
-  const handle = document.createElement("button");
-  handle.setAttribute("class", styles["resize-handle"]);
-  element.appendChild(handle);
+const setupSplitter = (
+  handler: HTMLElement,
+  element: HTMLElement,
+  left: boolean,
+  onResize: () => void
+) => {
   const state = {
-    isResizing: false,
+    isDragging: false,
   };
-  handle.addEventListener("mousedown", () => {
-    document.body.style.cursor = "ew-resize";
-    state.isResizing = true;
-  });
-  document.addEventListener("mouseup", () => {
-    state.isResizing = false;
-    document.body.style.cursor = null;
-  });
-  document.addEventListener("mousemove", (e) => {
-    if (!state.isResizing) return;
-    // const width = e.pageX - element.offsetLeft;
-    // element.style.width = `${width}px`;
-  });
-}
+
+  const onDrag = (e: MouseEvent | TouchEvent) => {
+    const x = "touches" in e ? e.touches[0].clientX : e.clientX;
+    const sizes = element.style.gridTemplateColumns.split(" ");
+    if (left) sizes[0] = Math.max(x, MIN_COLUMN) + "px";
+    else sizes[2] = Math.max(element.clientWidth - x, MIN_COLUMN) + "px";
+    element.style.gridTemplateColumns = sizes.join(" ");
+    onResize();
+  };
+
+  const onDragStop = () => {
+    state.isDragging = false;
+
+    window.removeEventListener("mouseup", onDragStop);
+    window.removeEventListener("touchend", onDragStop);
+    window.removeEventListener("touchcancel", onDragStop);
+    window.removeEventListener("mousemove", onDrag);
+    window.removeEventListener("touchmove", onDrag);
+  };
+  const onDragStart = (e: MouseEvent) => {
+    state.isDragging = true;
+
+    window.addEventListener("mouseup", onDragStop);
+    window.addEventListener("touchend", onDragStop);
+    window.addEventListener("touchcancel", onDragStop);
+    window.addEventListener("mousemove", onDrag);
+    window.addEventListener("touchmove", onDrag);
+  };
+
+  handler.draggable = false;
+  handler.addEventListener("mousedown", onDragStart);
+  handler.addEventListener("touchstart", onDragStart);
+};

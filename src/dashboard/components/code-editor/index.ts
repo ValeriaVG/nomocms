@@ -26,12 +26,15 @@ export default class CodeEditor extends HTMLElement {
 
   constructor() {
     super();
-
+    this.style.width = "100%";
+    this.style.height = "100%";
+    this.style.display = "block";
+    this.style.overflow = "hidden";
     this.style.backgroundColor = "#100818";
     const observer = new MutationObserver((mutationList) => {
       mutationList.forEach((mutation) => {
         if (mutation.type === "attributes")
-          this.updateEditorOptions(mutation.attributeName);
+          return this.updateEditorOptions(mutation.attributeName);
       });
     });
 
@@ -46,6 +49,10 @@ export default class CodeEditor extends HTMLElement {
       ...this.getOptions(),
     });
     observer.observe(this, { attributes: true });
+
+    document.querySelector("main")?.addEventListener("resize", () => {
+      this.editor.layout();
+    });
   }
   getOptions = () => {
     return {

@@ -1,49 +1,34 @@
 @import "../theme.scss";
 
 .wrapper {
-  display: flex;
-  flex-direction: row;
+  display: grid;
   width: 100vw;
   height: 100vh;
+  user-select: none;
+}
+.main {
+  // to fix code-editor resize
+  min-width: 0;
 }
 
 .sidebar {
-  width: 12rem;
   background-color: $secondary-background;
   display: flex;
   flex-direction: column;
+  position: relative;
   & > * {
     flex: 1;
   }
 }
 .parameters {
-  width: 24rem;
   background-color: rgba(255, 255, 255, 0.02);
+  position: relative;
 }
 
-.main {
-  flex: 1;
-}
-.resize-handle {
+.splitter {
+  height: 100%;
+  width: 3px;
   position: absolute;
   top: 0;
-  right: 0;
-  width: 1px;
-  height: 100%;
-  background: transparent;
-  padding: 0;
-  border: none;
-  cursor: ew-resize;
-  z-index: 2;
-  transition: background-color 200ms ease;
-  &:hover,
-  &:active,
-  &:focus {
-    background-color: rgba(255, 255, 255, 0.08);
-    outline: none;
-    transition: background-color 200ms ease;
-  }
-  &:active {
-    background-color: rgba(255, 255, 255, 0.16);
-  }
+  cursor: col-resize;
 }
