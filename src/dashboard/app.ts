@@ -24,7 +24,6 @@ const app = {
       const result = await api.get("/_api/access");
       return Boolean(result?.canAccessDashboard);
     } catch (error) {
-      console.error(error);
       return false;
     }
   },

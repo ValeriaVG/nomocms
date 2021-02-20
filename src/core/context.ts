@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { Pool, PoolClient } from "pg";
 import Redis from "ioredis";
 import { redis as redisUrl, db as databaseConfig } from "../config";

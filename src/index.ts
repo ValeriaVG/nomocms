@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import createServer from "./server";
 const port = process.env.PORT || 8080;
 

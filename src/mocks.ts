@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { newDb } from "pg-mem";
 import { Client } from "pg";
 
