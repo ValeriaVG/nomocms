@@ -1,33 +1,31 @@
-import { Pool } from "pg";
+import { Pool, PoolClient } from "pg";
 import Redis from "ioredis";
 import { redis as redisUrl, db as databaseConfig } from "../config";
 
-export const redis = new Redis(redisUrl, { lazyConnect: true });
+const redis = new Redis(redisUrl, { lazyConnect: true });
+const pool = new Pool(databaseConfig);
+let db: PoolClient;
+const log = console;
 
-redis
-  .connect()
-  .then(() => {
-    console.log("✅ Redis connection: OK");
-  })
-  .catch((error) => {
-    console.error("🚨 Redis connection: ", error.message);
-    process.exit(1);
-  });
-
-export const db = new Pool(databaseConfig);
-
-db.connect()
-  .then(() => {
+export const setup = async () => {
+  try {
+    db = await pool.connect();
     console.log("✅ PostgreSQL connection: OK");
-  })
-  .catch((error) => {
-    console.error("🚨 PostgreSQL connection: ", error.message);
-    process.exit(1);
-  });
-
-export const log = console;
-
-export default {
-  redis,
-  db,
+  } catch (error) {
+    console.error("🚨 PostgreSQL connection: NOT OK");
+    throw error;
+  }
+  try {
+    await redis.connect();
+    console.log("✅ Redis connection: OK");
+  } catch (error) {
+    console.error("🚨 Redis connection: NOT OK");
+    throw error;
+  }
+  return { db, redis, log };
+};
+export const cleanup = async () => {
+  await redis.disconnect();
+  await db.release();
+  await pool.end();
 };
