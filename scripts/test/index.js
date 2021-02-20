@@ -3,4 +3,5 @@ require("ts-node").register({
 });
 require("./sass-modules");
 require("./jsdom");
+require("./mock-monaco.js");
 require("./index.ts");
