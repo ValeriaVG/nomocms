@@ -1,4 +1,5 @@
 import { html, attr } from "amp/lib";
+import { Containers } from "dashboard/types";
 
 const markdown = `---
 url: /
@@ -35,4 +36,10 @@ Aeacide, fortiter aliquid! In tua venit stratosque illa, umerique sedem, ne
 adhuc ferebat pendent cultor fama **iussa** calido ei vulnere!
 `;
 
-export default html`<code-editor value=${attr`${markdown}`}> </code-editor>`;
+export default {
+  mount: ({ main, parameters }: Containers, params) => {
+    main.innerHTML = html`<code-editor value=${attr`${markdown}`}>
+    </code-editor>`;
+    parameters.innerHTML = html`<page-preview></page-preview>`;
+  },
+};

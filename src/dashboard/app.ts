@@ -28,17 +28,16 @@ const app = {
       return false;
     }
   },
-  init() {
-    this.checkAccess().then((hasAccess) => {
-      this.setState({ hasAccess, loading: false });
-    });
+  async init() {
+    const hasAccess = await this.checkAccess();
+    this.setState({ hasAccess, loading: false });
   },
   onStateChange() {
     const router = this.state.hasAccess ? authorized : common;
-    const container = this.state.hasAccess
+    const containers = this.state.hasAccess
       ? layout(document.body)
       : document.body;
-    return router.mount(container);
+    return router.mount(containers);
   },
 };
 export default app;

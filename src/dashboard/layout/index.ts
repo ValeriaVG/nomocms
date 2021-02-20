@@ -1,9 +1,10 @@
 import { html } from "amp/lib";
+import { Containers } from "dashboard/types";
 import styles from "./styles.scss";
 const GRID_TEMPLATE_COLUMNS = "12rem 1fr 24rem";
 const MIN_COLUMN = 12;
 
-export default (container: HTMLElement) => {
+export default (container: HTMLElement): Containers => {
   container.innerHTML = html`
     <div
       class="${styles.wrapper}"
@@ -16,13 +17,17 @@ export default (container: HTMLElement) => {
       <main class="${styles.main}"></main>
       <aside class="${styles.parameters}">
         <div class="${styles.splitter}" style="left:0"></div>
-        <!-- parameters -->
+        <section></section>
       </aside>
     </div>
   `;
 
   const wrapper = container.querySelector(`.${styles.wrapper}`);
   const main = container.querySelector("main");
+  const sidebar = container.querySelector(`.${styles.sidebar}`) as HTMLElement;
+  const parameters = container.querySelector(
+    `.${styles.parameters}`
+  ) as HTMLElement;
   container
     .querySelectorAll(`.${styles.splitter}`)
     .forEach((element: HTMLElement, i: number) =>
@@ -30,7 +35,7 @@ export default (container: HTMLElement) => {
         main.dispatchEvent(new CustomEvent("resize"))
       )
     );
-  return main;
+  return { main, sidebar, parameters };
 };
 
 const setupSplitter = (
