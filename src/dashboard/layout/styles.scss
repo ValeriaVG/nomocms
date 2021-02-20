@@ -32,3 +32,9 @@
   top: 0;
   cursor: col-resize;
 }
+
+.resizing {
+  * {
+    cursor: col-resize !important;
+  }
+}

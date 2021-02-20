@@ -54,7 +54,7 @@ const setupSplitter = (
 
   const onDragStop = () => {
     state.isDragging = false;
-
+    element.classList.remove(styles.resizing);
     window.removeEventListener("mouseup", onDragStop);
     window.removeEventListener("touchend", onDragStop);
     window.removeEventListener("touchcancel", onDragStop);
@@ -63,7 +63,7 @@ const setupSplitter = (
   };
   const onDragStart = (e: MouseEvent) => {
     state.isDragging = true;
-
+    element.classList.add(styles.resizing);
     window.addEventListener("mouseup", onDragStop);
     window.addEventListener("touchend", onDragStop);
     window.addEventListener("touchcancel", onDragStop);
