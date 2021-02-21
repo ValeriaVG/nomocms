@@ -26,7 +26,7 @@ export default (container: HTMLElement): Containers => {
   const main = container.querySelector("main");
   const sidebar = container.querySelector(`.${styles.sidebar}`) as HTMLElement;
   const parameters = container.querySelector(
-    `.${styles.parameters}`
+    `.${styles.parameters}>section`
   ) as HTMLElement;
   container
     .querySelectorAll(`.${styles.splitter}`)
@@ -57,26 +57,22 @@ const setupSplitter = (
     onResize();
   };
 
-  const onDragStop = () => {
-    state.isDragging = false;
-    element.classList.remove(styles.resizing);
-    window.removeEventListener("mouseup", onDragStop);
-    window.removeEventListener("touchend", onDragStop);
-    window.removeEventListener("touchcancel", onDragStop);
-    window.removeEventListener("mousemove", onDrag);
-    window.removeEventListener("touchmove", onDrag);
+  const onDragEvent = (started: boolean) => () => {
+    state.isDragging = started;
+    element.classList[started ? "add" : "remove"](styles.resizing);
+    const action = started ? "addEventListener" : "removeEventListener";
+    ["mouseup", "touchend", "touchcancel", "mouseleave"].forEach((event) =>
+      window[action](event, onDragStop)
+    );
+    ["mousemove", "touchmove"].forEach((event) =>
+      window[action](event, onDrag, { passive: true })
+    );
   };
-  const onDragStart = (e: MouseEvent) => {
-    state.isDragging = true;
-    element.classList.add(styles.resizing);
-    window.addEventListener("mouseup", onDragStop);
-    window.addEventListener("touchend", onDragStop);
-    window.addEventListener("touchcancel", onDragStop);
-    window.addEventListener("mousemove", onDrag);
-    window.addEventListener("touchmove", onDrag);
-  };
+
+  const onDragStart = onDragEvent(true);
+  const onDragStop = onDragEvent(false);
 
   handler.draggable = false;
   handler.addEventListener("mousedown", onDragStart);
-  handler.addEventListener("touchstart", onDragStart);
+  handler.addEventListener("touchstart", onDragStart, { passive: true });
 };

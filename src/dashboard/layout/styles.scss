@@ -23,6 +23,11 @@
 .parameters {
   background-color: rgba(255, 255, 255, 0.02);
   position: relative;
+  display: flex;
+  flex-direction: column;
+  & > section {
+    flex: 1;
+  }
 }
 
 .splitter {
