@@ -26,7 +26,7 @@ routes["/_api/page/preview"] = {
         ...params,
         content: html,
       });
-      return { ...result, type: "amp" } as any;
+      return { ...result, type: "amp" };
     }
   ),
-} as any;
+};

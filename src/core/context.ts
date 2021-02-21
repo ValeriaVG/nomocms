@@ -4,13 +4,12 @@ import Redis from "ioredis";
 import { redis as redisUrl, db as databaseConfig } from "../config";
 
 const redis = new Redis(redisUrl, { lazyConnect: true });
-const pool = new Pool(databaseConfig);
-let db: PoolClient;
+const db = new Pool(databaseConfig);
 const log = console;
 
 export const setup = async () => {
   try {
-    db = await pool.connect();
+    await db.query("SELECT 1");
     console.log("✅ PostgreSQL connection: OK");
   } catch (error) {
     console.error("🚨 PostgreSQL connection: NOT OK");
@@ -27,6 +26,5 @@ export const setup = async () => {
 };
 export const cleanup = async () => {
   await redis.disconnect();
-  await db.release();
-  await pool.end();
+  await db.end();
 };

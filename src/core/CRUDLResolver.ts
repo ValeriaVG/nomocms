@@ -2,7 +2,7 @@ import { requiresPermission } from "modules/authorization/lib";
 import { Permission } from "modules/authorization/Permissions";
 import { CRUDLDataSource } from "./DataSource";
 import { HTTPNotFound } from "./errors";
-import { APIContext } from "./types";
+import { APIContext, Routes } from "./types";
 
 export default function CRUDLResolver<
   T extends CRUDLDataSource<{ id: string | number }>
@@ -18,7 +18,7 @@ export default function CRUDLResolver<
     requiresPermission(
       { scope: name, permissions: Permission[action] },
       async (params, ctx: CRUDLContext) => {
-        return ctx[ctxKey][action](...args(params));
+        return ctx[ctxKey][action].apply(undefined, args(params));
       }
     );
 
@@ -40,5 +40,5 @@ export default function CRUDLResolver<
       PATCH: resolve("update", ({ id, input }) => [id, input]),
       DELETE: resolve("delete", ({ id }) => id),
     },
-  };
+  } as Routes;
 }
