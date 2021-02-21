@@ -35,3 +35,4 @@ exclude_patterns:
 - "scripts/*"
 - "**/*.spec.ts"
 - "**/*.js"
+- "**/*.d.ts"
