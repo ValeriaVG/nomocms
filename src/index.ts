@@ -5,7 +5,7 @@ const port = process.env.PORT || 8080;
 createServer()
   .then((server) =>
     server.listen(port, () => {
-      console.log(`Server listening on http://localhost:${port}`);
+      console.info(`Server listening on http://localhost:${port}`);
     })
   )
   .catch((error) => {

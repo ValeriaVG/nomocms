@@ -1,7 +1,6 @@
 import { HTTPUserInputError } from "core/errors";
 import {
   ColumnDefinition,
-  createTable,
   deleteFrom,
   insertInto,
   Query,
@@ -22,15 +21,6 @@ export default abstract class SQLDataSource<
   I extends Record<string, any> = Partial<T>,
   P extends Record<string, any> = Partial<I>
 > extends CRUDLDataSource<T, I, P> {
-  init() {
-    return this.context.db.query(
-      createTable(this.collection, this.schema, {
-        ifNotExists: true,
-        primaryKey: this.primaryKey as string[],
-      })
-    );
-  }
-
   /**
    * Table name
    */
@@ -41,7 +31,12 @@ export default abstract class SQLDataSource<
    */
   readonly schema: Record<string, ColumnDefinition>;
 
-  readonly primaryKey?: Array<keyof T>;
+  readonly primaryKey?: Array<keyof T> | keyof T;
+
+  /**
+   * Mutations for that particular source
+   */
+  readonly mutations: Record<string, { up: string; down: string }>;
 
   /**
    * Requires context with db

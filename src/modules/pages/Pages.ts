@@ -6,7 +6,7 @@ import querystring from "querystring";
 import { html } from "amp/lib";
 import Templates from "modules/templates/Templates";
 import { HTTPUserInputError } from "core/errors";
-import { ColumnDefinition } from "core/sql";
+import { ColumnDefinition, createTable, dropTable } from "core/sql";
 
 const renderer = {
   image(href: string, caption: string, text: string) {
@@ -40,21 +40,6 @@ marked.use({ renderer });
 
 export default class Pages extends SQLDataSource<ContentPage> {
   readonly collection = "pages";
-
-  readonly schema: Record<string, ColumnDefinition> = {
-    id: { type: "serial", primaryKey: true },
-    path: { type: "varchar", length: 255 },
-    template: { type: "varchar", length: 50 },
-    title: { type: "varchar", length: 255 },
-    description: { type: "text", nullable: true },
-    content: { type: "text" },
-    html: { type: "text" },
-    created: { type: "timestamp", default: "NOW()" },
-    updated: { type: "timestamp", nullable: true },
-    published: { type: "timestamp", nullable: true },
-    code: { type: "int", nullable: false, default: "200" },
-  };
-
   async render(input: Partial<ContentPage> & { html: string }) {
     if (!input.path)
       throw new HTTPUserInputError("path", "Please defined a path");
@@ -98,4 +83,43 @@ export default class Pages extends SQLDataSource<ContentPage> {
       where: { path },
     }).then((page) => page && this.render(page));
   }
+
+  // Active schema
+  readonly schema: Record<string, ColumnDefinition> = {
+    id: { type: "serial", primaryKey: true },
+    path: { type: "varchar", length: 255 },
+    template: { type: "varchar", length: 50 },
+    title: { type: "varchar", length: 255 },
+    description: { type: "text", nullable: true },
+    content: { type: "text" },
+    html: { type: "text" },
+    created: { type: "timestamp", default: "NOW()" },
+    updated: { type: "timestamp", nullable: true },
+    published: { type: "timestamp", nullable: true },
+    code: { type: "int", nullable: false, default: "200" },
+  };
+
+  // Mutations
+  readonly mutations = {
+    init: {
+      up: createTable(
+        "pages",
+        {
+          id: { type: "serial", primaryKey: true },
+          path: { type: "varchar", length: 255 },
+          template: { type: "varchar", length: 50 },
+          title: { type: "varchar", length: 255 },
+          description: { type: "text", nullable: true },
+          content: { type: "text" },
+          html: { type: "text" },
+          created: { type: "timestamp", default: "NOW()" },
+          updated: { type: "timestamp", nullable: true },
+          published: { type: "timestamp", nullable: true },
+          code: { type: "int", nullable: false, default: "200" },
+        },
+        { ifNotExists: true }
+      ),
+      down: dropTable("pages", { ifExists: true }),
+    },
+  };
 }

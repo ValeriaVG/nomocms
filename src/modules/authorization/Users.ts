@@ -2,7 +2,7 @@ import { SQLDataSource } from "core/DataSource";
 import { HTTPUserInputError } from "core/errors";
 import bcrypt, { genSalt } from "bcryptjs";
 import Permissions from "./Permissions";
-import { ColumnDefinition } from "core/sql";
+import { ColumnDefinition, createTable, dropTable } from "core/sql";
 
 export type UserLoginInput = {
   email: string;
@@ -37,6 +37,24 @@ export default class Users extends SQLDataSource<User, UserInput> {
     created: { type: "timestamp", default: "NOW()" },
     updated: { type: "timestamp", nullable: true },
     pwhash: { type: "text" },
+  };
+
+  readonly mutations = {
+    init: {
+      up: createTable(
+        "users",
+        {
+          id: { type: "serial", primaryKey: true },
+          name: { type: "varchar", length: 255, nullable: true },
+          email: { type: "varchar", length: 255, unique: true },
+          created: { type: "timestamp", default: "NOW()" },
+          updated: { type: "timestamp", nullable: true },
+          pwhash: { type: "text" },
+        },
+        { ifNotExists: true }
+      ),
+      down: dropTable("users", { ifExists: true }),
+    },
   };
 
   byEmail(email: string) {

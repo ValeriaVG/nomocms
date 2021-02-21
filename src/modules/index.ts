@@ -1,4 +1,7 @@
 import { mergeDeepRight, reduce, unapply } from "ramda";
+import { Routes } from "core/types";
+import { DataSource } from "core/DataSource";
+
 import * as health from "./health";
 import * as authorization from "./authorization";
 import * as styles from "./styles";
@@ -15,4 +18,4 @@ export default mergeDeepAll(
   pages,
   templates,
   analytics
-);
+) as { routes: Routes; dataSources: Record<string, typeof DataSource> };

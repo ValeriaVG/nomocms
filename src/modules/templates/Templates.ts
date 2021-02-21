@@ -3,7 +3,7 @@ import { TemplateData } from "./types";
 import { Liquid } from "liquidjs";
 import { HTTPUserInputError } from "core/errors";
 import Styles from "modules/styles/Styles";
-import { ColumnDefinition } from "core/sql";
+import { ColumnDefinition, createTable, dropTable } from "core/sql";
 
 export default class Templates extends SQLDataSource<TemplateData> {
   readonly collection = "templates";
@@ -14,6 +14,23 @@ export default class Templates extends SQLDataSource<TemplateData> {
     style: { type: "text", nullable: true },
     head: { type: "text", nullable: true },
     compiled: { type: "text", nullable: true },
+  };
+
+  readonly mutations = {
+    init: {
+      up: createTable(
+        "templates",
+        {
+          id: { type: "varchar", length: 50, primaryKey: true },
+          body: { type: "text", nullable: true },
+          style: { type: "text", nullable: true },
+          head: { type: "text", nullable: true },
+          compiled: { type: "text", nullable: true },
+        },
+        { ifNotExists: true }
+      ),
+      down: dropTable("templates", { ifExists: true }),
+    },
   };
 
   private engine = new Liquid({

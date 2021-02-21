@@ -15,6 +15,7 @@ import Pages from "modules/pages/Pages";
 import cors from "./cors";
 import createRoutes from "utils/routes";
 import { ContentPage } from "modules/pages/types";
+import { perform } from "./sql/mutation";
 
 const initSuperUser = (ctx: APIContext) =>
   ctx.db
@@ -37,16 +38,23 @@ const initSuperUser = (ctx: APIContext) =>
     )
     .then(({ rows }) => rows[0]);
 
-const initDataSources = async (
+export const initDataSources = async (
   ctx: APIContext,
   dataSources: Record<string, typeof DataSource>
 ) => {
   if (!dataSources) return;
+  const mutations = [];
   for (let source in dataSources) {
     const Source = dataSources[source] as any;
     ctx[source] = new Source(ctx);
-    if ("init" in ctx[source]) await ctx[source].init();
+    if ("mutations" in ctx[source])
+      Object.entries(
+        ctx[source].mutations as Record<string, { up: string }>
+      ).forEach(([name, { up }]) => {
+        if (up) mutations.push({ name, model: source, query: up });
+      });
   }
+  if (mutations.length) await perform(ctx.db, mutations);
 };
 
 const createSessionContext = (req: IncomingMessage) => {

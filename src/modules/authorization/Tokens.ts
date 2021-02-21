@@ -1,5 +1,5 @@
 import { SQLDataSource } from "core/DataSource";
-import { ColumnDefinition, deleteFrom } from "core/sql";
+import { ColumnDefinition, createTable, deleteFrom, dropTable } from "core/sql";
 
 type UserToken = {
   id: string;
@@ -21,6 +21,27 @@ export default class Tokens extends SQLDataSource<UserToken> {
       default: `NOW() + '${this.ttl} seconds'::interval`,
     },
     ip: { type: "inet", nullable: true },
+  };
+
+  readonly mutations = {
+    init: {
+      name: "Initiate Tokens",
+      up: createTable(
+        "tokens",
+        {
+          id: { type: "varchar", length: 255, primaryKey: true },
+          user_id: { type: "int" },
+          created: { type: "timestamp", default: "NOW()" },
+          expires: {
+            type: "timestamp",
+            default: `NOW() + '${30 * 24 * 60 * 60} seconds'::interval`,
+          },
+          ip: { type: "inet", nullable: true },
+        },
+        { ifNotExists: true }
+      ),
+      down: dropTable("tokens", { ifExists: true }),
+    },
   };
   /**
    * Save token for user with `id` and `ip`

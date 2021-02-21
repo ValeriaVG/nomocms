@@ -1,5 +1,5 @@
 import { SQLDataSource } from "core/DataSource";
-import { ColumnDefinition } from "core/sql";
+import { ColumnDefinition, createTable, dropTable } from "core/sql";
 import { ErrorResponse } from "core/types";
 import sass from "sass";
 
@@ -16,6 +16,21 @@ export default class Styles extends SQLDataSource<StyleData> {
     id: { type: "varchar", length: 50, primaryKey: true },
     source: { type: "text" },
     compiled: { type: "text", nullable: true },
+  };
+
+  readonly mutations = {
+    init: {
+      up: createTable(
+        "styles",
+        {
+          id: { type: "varchar", length: 50, primaryKey: true },
+          source: { type: "text" },
+          compiled: { type: "text", nullable: true },
+        },
+        { ifNotExists: true }
+      ),
+      down: dropTable("styles", { ifExists: true }),
+    },
   };
 
   /**

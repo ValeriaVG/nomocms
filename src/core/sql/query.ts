@@ -56,9 +56,20 @@ export const selectFrom = (
   return [query, values];
 };
 
+const makeValues = (
+  columns: Array<string>,
+  data: Record<string, SimpleType>,
+  idx: number = 0
+) => [
+  `(${columns.map((_, i) => `$${i + idx + 1}`).join(",")})`,
+  columns.map((column) =>
+    typeof data[column] === "undefined" ? null : data[column]
+  ),
+];
+
 export const insertInto = (
   table: string,
-  data: Record<string, SimpleType>,
+  data: Record<string, SimpleType> | Array<Record<string, SimpleType>>,
   options: {
     returning?: string | string[];
     onConflict?: { constraint?: string | string[] } & (
@@ -69,11 +80,25 @@ export const insertInto = (
     );
   } = {}
 ): QueryAndValues => {
-  const columns = Object.keys(data);
+  const entries = Array.isArray(data) ? data : [data];
+  const columns = entries.reduce((a, c) => {
+    const keys = Object.keys(c);
+    return a.length < keys.length ? keys : a;
+  }, []);
+  const values = [];
+  const valuesQueries = [];
+  entries.forEach((data, i) => {
+    const [valuesQuery, moreValues] = makeValues(
+      columns,
+      data,
+      i * columns.length
+    );
+    valuesQueries.push(valuesQuery);
+    values.push(...moreValues);
+  });
   let query = sql`INSERT INTO ${table} (${columns.join(
     ","
-  )}) VALUES (${columns.map((_, i) => `$${i + 1}`).join(",")})`;
-  const values = Object.values(data);
+  )}) VALUES ${valuesQueries.join(",")}`;
   if (options.onConflict) {
     query += ` ON CONFLICT(${
       Array.isArray(options.onConflict.constraint)
