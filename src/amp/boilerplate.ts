@@ -91,7 +91,7 @@ export default ({
           {
             "requests": {
               "event": "${appUrl ??
-              ""}/_ping?event=${"$"}{eventId}&path=event=${"$"}{path}"
+              ""}/_ping?event=${"$"}{eventId}&path=${"$"}{path}"
             },
             "triggers": {
               "trackPageview": {
