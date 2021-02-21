@@ -46,11 +46,11 @@ export const initDataSources = async (
   for (let source in dataSources) {
     const Source = dataSources[source] as any;
     ctx[source] = new Source(ctx);
-    if ("mutations" in ctx[source])
-      Object.entries(
-        ctx[source].mutations as Record<string, { up: string }>
-      ).forEach(([name, { up }]) => {
-        if (up) mutations.push({ name, model: source, query: up });
+    const sourceMutations: Record<string, { up: string }> =
+      ctx[source].mutations || ctx[source].defaultMutations;
+    if (sourceMutations)
+      Object.entries(sourceMutations).forEach(([name, { up }]) => {
+        up && mutations.push({ name, model: source, query: up });
       });
   }
   if (mutations.length) await perform(ctx.db, mutations);

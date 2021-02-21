@@ -30,26 +30,6 @@ export default class Analytics extends SQLDataSource<
     created: { type: "timestamp", default: "NOW()" },
   };
 
-  readonly mutations = {
-    init: {
-      up: createTable(
-        "analytics",
-        {
-          id: { type: "serial", primaryKey: true },
-          event: { type: "varchar", length: 255 },
-          path: { type: "varchar", length: 255 },
-          user_id: { type: "int", nullable: true },
-          ip: { type: "inet", nullable: true },
-          headers: { type: "jsonb", nullable: true },
-          payload: { type: "jsonb", nullable: true },
-          created: { type: "timestamp", default: "NOW()" },
-        },
-        { ifNotExists: true }
-      ),
-      down: dropTable("analytics", { ifExists: true }),
-    },
-  };
-
   async viewsPerDay({
     from,
     to,

@@ -18,21 +18,6 @@ export default class Styles extends SQLDataSource<StyleData> {
     compiled: { type: "text", nullable: true },
   };
 
-  readonly mutations = {
-    init: {
-      up: createTable(
-        "styles",
-        {
-          id: { type: "varchar", length: 50, primaryKey: true },
-          source: { type: "text" },
-          compiled: { type: "text", nullable: true },
-        },
-        { ifNotExists: true }
-      ),
-      down: dropTable("styles", { ifExists: true }),
-    },
-  };
-
   /**
    * Compile and save
    * @param name

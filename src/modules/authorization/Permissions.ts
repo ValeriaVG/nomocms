@@ -50,21 +50,6 @@ export default class Permissions extends SQLDataSource<
 
   readonly primaryKey = ["user_id", "scope"] as Array<keyof UserPermissions>;
 
-  readonly mutations = {
-    init: {
-      up: createTable(
-        "permissions",
-        {
-          user_id: { type: "int" },
-          permissions: { type: "smallint" },
-          scope: { type: "varchar", length: 50, default: "'global'" },
-        },
-        { ifNotExists: true, primaryKey: ["user_id", "scope"] }
-      ),
-      down: dropTable("permissions", { ifExists: true }),
-    },
-  };
-
   /**
    * Check if user with provided id
    * has certain permissions

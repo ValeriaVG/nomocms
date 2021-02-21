@@ -16,23 +16,6 @@ export default class Templates extends SQLDataSource<TemplateData> {
     compiled: { type: "text", nullable: true },
   };
 
-  readonly mutations = {
-    init: {
-      up: createTable(
-        "templates",
-        {
-          id: { type: "varchar", length: 50, primaryKey: true },
-          body: { type: "text", nullable: true },
-          style: { type: "text", nullable: true },
-          head: { type: "text", nullable: true },
-          compiled: { type: "text", nullable: true },
-        },
-        { ifNotExists: true }
-      ),
-      down: dropTable("templates", { ifExists: true }),
-    },
-  };
-
   private engine = new Liquid({
     outputDelimiterLeft: "<%",
     outputDelimiterRight: "%>",

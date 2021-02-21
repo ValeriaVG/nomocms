@@ -1,7 +1,9 @@
 import { HTTPUserInputError } from "core/errors";
 import {
   ColumnDefinition,
+  createTable,
   deleteFrom,
+  dropTable,
   insertInto,
   Query,
   selectFrom,
@@ -44,6 +46,15 @@ export default abstract class SQLDataSource<
    */
   constructor(protected context: { db: Client }) {
     super(context);
+  }
+
+  get defaultMutations() {
+    return {
+      init: {
+        up: createTable(this.collection, this.schema, { ifNotExists: true }),
+        down: dropTable("users", { ifExists: true }),
+      },
+    };
   }
 
   prepare(input: any): I {

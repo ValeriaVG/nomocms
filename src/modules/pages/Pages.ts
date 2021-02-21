@@ -98,28 +98,4 @@ export default class Pages extends SQLDataSource<ContentPage> {
     published: { type: "timestamp", nullable: true },
     code: { type: "int", nullable: false, default: "200" },
   };
-
-  // Mutations
-  readonly mutations = {
-    init: {
-      up: createTable(
-        "pages",
-        {
-          id: { type: "serial", primaryKey: true },
-          path: { type: "varchar", length: 255 },
-          template: { type: "varchar", length: 50 },
-          title: { type: "varchar", length: 255 },
-          description: { type: "text", nullable: true },
-          content: { type: "text" },
-          html: { type: "text" },
-          created: { type: "timestamp", default: "NOW()" },
-          updated: { type: "timestamp", nullable: true },
-          published: { type: "timestamp", nullable: true },
-          code: { type: "int", nullable: false, default: "200" },
-        },
-        { ifNotExists: true }
-      ),
-      down: dropTable("pages", { ifExists: true }),
-    },
-  };
 }
