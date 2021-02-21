@@ -10,20 +10,22 @@ export default function CRUDLResolver<
   const endpoint = "/_api" + (path ?? "/" + name);
   const ctxKey = dataSource ?? name;
   type CRUDLContext = APIContext & Record<string, T>;
+
+  const resolve = (
+    action: "create" | "update" | "delete" | "list",
+    args: (params: any) => any = (p) => p
+  ) =>
+    requiresPermission(
+      { scope: name, permissions: Permission[action] },
+      async (params, ctx: CRUDLContext) => {
+        return ctx[ctxKey][action](...args(params));
+      }
+    );
+
   return {
     [endpoint]: {
-      GET: requiresPermission(
-        { scope: name, permissions: Permission.list },
-        async (params, ctx: CRUDLContext) => {
-          return ctx[ctxKey].list(params);
-        }
-      ),
-      POST: requiresPermission(
-        { scope: name, permissions: Permission.create },
-        async ({ input }, ctx: CRUDLContext) => {
-          return ctx[ctxKey].create(input);
-        }
-      ),
+      GET: resolve("list"),
+      POST: resolve("create", ({ input }) => input),
     },
     [`${endpoint}/:id`]: {
       GET: requiresPermission(
@@ -34,24 +36,9 @@ export default function CRUDLResolver<
           return item;
         }
       ),
-      POST: requiresPermission(
-        { scope: path, permissions: Permission.update },
-        async ({ id, input }, ctx: CRUDLContext) => {
-          return ctx[ctxKey].update(id, input);
-        }
-      ),
-      PATCH: requiresPermission(
-        { scope: path, permissions: Permission.update },
-        async ({ id, input }, ctx: CRUDLContext) => {
-          return ctx[ctxKey].update(id, input);
-        }
-      ),
-      DELETE: requiresPermission(
-        { scope: path, permissions: Permission.delete },
-        async ({ id }, ctx: CRUDLContext) => {
-          return ctx[ctxKey].delete(id);
-        }
-      ),
+      POST: resolve("update", ({ id, input }) => [id, input]),
+      PATCH: resolve("update", ({ id, input }) => [id, input]),
+      DELETE: resolve("delete", ({ id }) => id),
     },
   };
 }

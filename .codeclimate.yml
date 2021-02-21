@@ -17,7 +17,7 @@ checks:
       threshold: 20
   method-lines:
     config:
-      threshold: 25
+      threshold: 50
   nested-control-flow:
     config:
       threshold: 4
@@ -31,6 +31,7 @@ checks:
     config:
       threshold: # language-specific defaults. an override will affect all languages.
 exclude_patterns:
+- "node_modules/*"
 - "scripts/*"
 - "**/*.spec.ts"
 - "**/*.js"

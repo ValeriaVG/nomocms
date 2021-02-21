@@ -74,6 +74,7 @@ export default async function core(
   ctx: APIContext
 ) {
   let notFoundPage: ContentPage = null;
+  const routes = createRoutes(modules.routes);
   try {
     await initDataSources(ctx, modules.dataSources);
     ctx.superuser = await initSuperUser(ctx);
@@ -89,6 +90,12 @@ export default async function core(
     next?: () => void
   ) => {
     const sendResponse = responseFactory(req, res);
+    const notFound = () => {
+      if (next) return next();
+      if (notFoundPage)
+        return sendResponse({ type: "amp", ...notFoundPage, code: 404 });
+      throw new HTTPNotFound();
+    };
     try {
       cors(req, res);
       const context: InitializedContext = Object.assign(
@@ -112,27 +119,17 @@ export default async function core(
           });
         }
       }
-
       const { resolver, params: routeParams } = routeRequest(
         context.url,
         method as HTTPMethod,
-        createRoutes(modules.routes)
+        routes
       );
-
-      if (!resolver) {
-        if (next) return next();
-        if (notFoundPage)
-          return sendResponse({ type: "amp", ...notFoundPage, code: 404 });
-        throw new HTTPNotFound();
-      }
-
+      if (!resolver) return notFound();
       const response = await resolver({ ...routeParams, ...params }, context);
-
       if (typeof response !== "object")
         throw new Error(
           `Wrong response returned from ${context.url.normalizedPath}`
         );
-
       return sendResponse(response);
     } catch (error) {
       const code = "code" in error ? error.code : 500;

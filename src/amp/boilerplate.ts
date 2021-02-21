@@ -76,7 +76,7 @@ export default ({
           }
         </style></noscript
       >
-      ${style && ["<style amp-custom>", style, "</style>"].join("")}
+      ${style && ["<" + "style amp-custom>", style, "</style>"].join("")}
       ${head ?? ""}
       <script
         async
