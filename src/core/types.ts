@@ -1,7 +1,6 @@
 import { IncomingHttpHeaders } from "http";
-import { Redis } from "ioredis";
 import { User } from "modules/authorization/Users";
-import { Pool, PoolClient } from "pg";
+import { Pool } from "pg";
 import { Readable } from "stream";
 import { DataSource } from "./DataSource";
 import NormalizedURL from "./NormalizedURL";
@@ -17,7 +16,6 @@ export type LogFunction = (...args: any) => void;
 export type APILogger = Record<"error" | "info" | "log" | "warn", LogFunction>;
 
 export type APIContext = {
-  redis: Redis;
   db: Pool;
   log?: APILogger;
   cookies?: Record<string, string>;
@@ -26,7 +24,6 @@ export type APIContext = {
   headers?: IncomingHttpHeaders;
   url?: NormalizedURL;
   ip?: string;
-  ip_num?: number;
   superuser?: User;
 };
 

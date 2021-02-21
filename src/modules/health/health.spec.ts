@@ -8,10 +8,9 @@ describe("health", () => {
       await routes["/_health"].GET(
         {},
         {
-          redis: { ping: async () => "OK" } as any,
           db: { query: async () => ({ rows: [{ status: "OK" }] }) } as any,
         }
       )
-    ).to.deep.equal({ redis: "OK", db: "OK" });
+    ).to.deep.equal({ db: "OK" });
   });
 });

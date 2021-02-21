@@ -90,14 +90,16 @@ export default ({
         <script type="application/json">
           {
             "requests": {
-              "event": "${appUrl ?? ""}/_ping?event=${"$"}{eventId}"
+              "event": "${appUrl ??
+              ""}/_ping?event=${"$"}{eventId}&path=event=${"$"}{path}"
             },
             "triggers": {
               "trackPageview": {
                 "on": "visible",
                 "request": "event",
                 "vars": {
-                  "eventId": "pageview"
+                  "eventId": "pageview",
+                  "path": "${url}"
                 }
               }
             }

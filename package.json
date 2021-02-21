@@ -1,6 +1,6 @@
 {
   "name": "nomocms",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Content management system for blazingly fast websites, powered by AMP",
   "main": "index.js",
   "repository": "git@github.com:ValeriaVG/nomocms.git",
@@ -25,7 +25,6 @@
     "dotenv": "^8.2.0",
     "formidable": "^1.2.2",
     "gray-matter": "^4.0.2",
-    "ioredis": "^4.19.4",
     "liquidjs": "^9.22.0",
     "marked": "^2.0.0",
     "mime-types": "^2.1.29",
@@ -41,7 +40,6 @@
     "@types/chai": "^4.2.15",
     "@types/cookie": "^0.4.0",
     "@types/formidable": "^1.0.32",
-    "@types/ioredis": "^4.19.3",
     "@types/jsdom": "^16.2.6",
     "@types/mocha": "^8.2.1",
     "@types/node": "^14.14.31",

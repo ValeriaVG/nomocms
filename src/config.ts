@@ -1,8 +1,6 @@
 import { PoolConfig } from "pg";
 require("dotenv").config();
 
-export const redis = process.env.REDIS_URL;
-
 export const db: PoolConfig = {
   host: process.env.DATABASE_HOST,
   port: process.env.DATABASE_PORT as any,

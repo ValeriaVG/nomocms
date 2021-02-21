@@ -1,9 +1,8 @@
 /* istanbul ignore file */
 import { Pool } from "pg";
-import Redis from "ioredis";
-import { redis as redisUrl, db as databaseConfig } from "../config";
+import { db as databaseConfig } from "../config";
 
-const context: Partial<{ db: Pool; redis: Redis.Redis }> = {};
+const context: Partial<{ db: Pool }> = {};
 
 export const setupDB = async () => {
   const db = new Pool(databaseConfig);
@@ -16,26 +15,13 @@ export const setupDB = async () => {
     throw error;
   }
 };
-export const setupRedis = async () => {
-  try {
-    const redis = new Redis(redisUrl, { lazyConnect: true });
-    await redis.connect();
-    console.info("✅ Redis connection: OK");
-    return redis;
-  } catch (error) {
-    console.error("🚨 Redis connection: NOT OK");
-    throw error;
-  }
-};
 
 export const setup = async () => {
   const db = await setupDB();
-  const redis = await setupRedis();
   context.db = db;
-  context.redis = redis;
-  return { db, redis, log: console };
+
+  return { db, log: console };
 };
 export const cleanup = async () => {
-  await context?.redis.disconnect();
   await context?.db.end();
 };

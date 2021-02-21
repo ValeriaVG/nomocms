@@ -9,7 +9,6 @@ import responseFactory from "./responseFactory";
 import { HTTPNotFound } from "./errors";
 import NormalizedURL from "./NormalizedURL";
 import Users from "modules/authorization/Users";
-import { ip2num } from "modules/analytics/lib";
 import { insertInto } from "./sql";
 import Pages from "modules/pages/Pages";
 import cors from "./cors";
@@ -61,7 +60,6 @@ const createSessionContext = (req: IncomingMessage) => {
   const context: Record<string, any> = {};
   context.headers = req.headers;
   context.ip = req.socket.remoteAddress;
-  context.ip_num = ip2num(req.socket.remoteAddress);
   // TODO: check accept header
   // Look for existing page
   context.url = new NormalizedURL(req.url);
