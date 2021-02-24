@@ -57,7 +57,7 @@
     "node-fetch": "^2.6.1",
     "node-sass": "^5.0.0",
     "nyc": "^15.1.0",
-    "pg-mem": "^1.7.6",
+    "pg-mem": "^1.7.8",
     "postcss": "^8.2.6",
     "postcss-modules": "^4.0.0",
     "sinon": "^9.2.4",
