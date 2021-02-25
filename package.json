@@ -14,8 +14,8 @@
     "dev:server": "ts-node-dev -r tsconfig-paths/register src/index",
     "test": "node scripts/test",
     "test:coverage": "nyc node scripts/test",
-    "perform:mutations": "ts-node -r tsconfig-paths/register scripts/mutation/perform",
-    "rollback:mutation": "ts-node -r tsconfig-paths/register scripts/mutation/rollback"
+    "migrate": "ts-node -r tsconfig-paths/register scripts/migration/perform",
+    "rollback": "ts-node -r tsconfig-paths/register scripts/migration/rollback"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.34",

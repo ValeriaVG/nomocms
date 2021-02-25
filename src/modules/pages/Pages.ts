@@ -1,12 +1,12 @@
 import { SQLDataSource } from "core/DataSource";
-import { ContentPage } from "./types";
+import { ContentPage, ContentPageInput } from "./types";
 import matter from "gray-matter";
 import marked from "marked";
 import querystring from "querystring";
 import { html } from "amp/lib";
 import Templates from "modules/templates/Templates";
 import { HTTPUserInputError } from "core/errors";
-import { ColumnDefinition, createTable, dropTable } from "core/sql";
+import { ColumnDefinition, sql } from "core/sql";
 
 const renderer = {
   image(href: string, caption: string, text: string) {
@@ -38,9 +38,14 @@ function params2props(params: Record<string, string | string[]>) {
 }
 marked.use({ renderer });
 
-export default class Pages extends SQLDataSource<ContentPage> {
+export default class Pages extends SQLDataSource<
+  ContentPage,
+  ContentPageInput
+> {
   readonly collection = "pages";
-  async render(input: Partial<ContentPage> & { html: string }) {
+  async render(
+    input: ContentPageInput & { html: string; path: string; title: string }
+  ) {
     if (!input.path)
       throw new HTTPUserInputError("path", "Please defined a path");
     const templates = this.context["templates"] as Templates;
@@ -60,7 +65,7 @@ export default class Pages extends SQLDataSource<ContentPage> {
     return result;
   }
 
-  parse(input: Partial<ContentPage>): Partial<ContentPage> {
+  parse(input: ContentPageInput): ContentPageInput & { html: string } {
     try {
       const { data, content } = matter(input.content.trim());
       const html = marked(content);
@@ -71,10 +76,10 @@ export default class Pages extends SQLDataSource<ContentPage> {
     }
   }
 
-  async create(input: Partial<ContentPage> & { content: string }) {
+  async create(input: ContentPageInput) {
     return super.create(this.parse(input));
   }
-  async update(id: number, input: Partial<ContentPage> & { content: string }) {
+  async update(id: number, input: ContentPageInput) {
     return super.update(id, this.parse(input));
   }
   // TODO: add caching
@@ -82,6 +87,16 @@ export default class Pages extends SQLDataSource<ContentPage> {
     return this.findOne({
       where: { path },
     }).then((page) => page && this.render(page));
+  }
+
+  async getSiteMap() {
+    return this.context.db
+      .query(
+        sql`SELECT DISTINCT pages.id, path, title, level, updated FROM ${this.view} 
+    JOIN ${this.collection} ON pages.id = child_id
+    ORDER BY level ASC `
+      )
+      .then(({ rows }) => ({ items: rows }));
   }
 
   // Active schema
@@ -97,5 +112,61 @@ export default class Pages extends SQLDataSource<ContentPage> {
     updated: { type: "timestamp", nullable: true },
     published: { type: "timestamp", nullable: true },
     code: { type: "int", nullable: false, default: "200" },
+    parent_id: { type: "int", nullable: true },
+  };
+
+  readonly view: string = "mv_pages";
+  readonly migrations = {
+    init: {
+      up: sql`CREATE TABLE IF NOT EXISTS pages (id serial PRIMARY KEY NOT NULL,path varchar (255) NOT NULL,template varchar (50) NOT NULL,title varchar (255) NOT NULL,description text ,content text NOT NULL,html text NOT NULL,created timestamp NOT NULL DEFAULT NOW(),updated timestamp ,published timestamp ,code int NOT NULL DEFAULT 200)`,
+      down: sql`DROP TABLE pages IF EXISTS`,
+    },
+    add_parent: {
+      up: sql`ALTER TABLE pages ADD COLUMN parent_id int`,
+      down: sql`ALTER TABLE pages DROP COLUMN parent_id`,
+    },
+    ref_parent_page: {
+      up: sql`ALTER TABLE pages 
+      ADD CONSTRAINT pages_parent_key 
+      FOREIGN KEY (parent_id) 
+      REFERENCES pages (id);`,
+      down: sql`ALTER TABLE pages 
+      DROP CONSTRAINT pages_parent_key`,
+    },
+    create_view: {
+      up: sql`CREATE MATERIALIZED VIEW IF NOT EXISTS mv_pages_tree AS (
+       WITH RECURSIVE x AS (
+          SELECT id,parent_id, ARRAY[]::integer[] AS anscestors
+          FROM pages
+          WHERE parent_id IS NULL
+          UNION ALL
+          SELECT y.id, y.parent_id, x.anscestors||y.parent_id
+          FROM x, pages AS y
+          WHERE x.id = y.parent_id
+          )
+      SELECT id as child_id, parent_id, 0 as level from pages WHERE parent_id IS NULL
+      UNION ALL          
+      SELECT x.id as child_id,u as parent_id, ARRAY_LENGTH(x.anscestors,1) as level FROM x, UNNEST(x.anscestors) as u
+      )`,
+      down: sql`DROP MATERIALIZED VIEW mv_pages_tree`,
+    },
+    create_view_index: {
+      up: sql`CREATE UNIQUE INDEX IF NOT EXISTS mv_pages_unique ON mv_pages_tree(child_id,parent_id);`,
+      down: sql`DROP INDEX IF EXISTS mv_pages_unique`,
+    },
+    create_trigger_function: {
+      up: sql`CREATE OR REPLACE FUNCTION refresh_pages()
+      RETURNS TRIGGER LANGUAGE plpgsql
+      AS $$
+      BEGIN
+      REFRESH MATERIALIZED VIEW CONCURRENTLY mv_pages_tree;
+      RETURN NULL;
+      END $$;`,
+      down: sql`DROP FUNCTION IF EXISTS refresh_pages()`,
+    },
+    ["create-view-update-trigger"]: {
+      up: sql`CREATE TRIGGER pages_view_update AFTER INSERT OR UPDATE OR DELETE ON pages EXECUTE FUNCTION refresh_pages();`,
+      down: sql`DROP TRIGGER pages_view_update ON pages`,
+    },
   };
 }

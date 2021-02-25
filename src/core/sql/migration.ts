@@ -3,14 +3,14 @@ import { deleteFrom, insertInto, selectFrom } from "./query";
 import { sql } from "./sql";
 import { createTable } from "./table";
 
-const MUTATIONS_TABLE = "db_mutations";
-const TEMP_MUTATIONS_TABLE = "temp_mutations";
+const MUTATIONS_TABLE = "db_migrations";
+const TEMP_MUTATIONS_TABLE = "temp_migrations";
 
 export const perform = async (
   db: Pool,
-  mutations: Array<{ name: string; model: string; query: string }>
+  migrations: Array<{ name: string; model: string; query: string }>
 ) => {
-  console.info("💿 Checking mutations");
+  console.info("💿 Checking migrations");
   const client = await db.connect();
   await client.query(
     createTable(
@@ -31,10 +31,10 @@ export const perform = async (
     await client.query(
       ...insertInto(
         TEMP_MUTATIONS_TABLE,
-        mutations.map(({ name, model }) => ({ name, model }))
+        migrations.map(({ name, model }) => ({ name, model }))
       )
     );
-    const mutationsToRun = await client.query(
+    const migrationsToRun = await client.query(
       ...selectFrom(TEMP_MUTATIONS_TABLE, {
         columns: `${TEMP_MUTATIONS_TABLE}.*`,
         join: {
@@ -45,9 +45,9 @@ export const perform = async (
         where: { [`${MUTATIONS_TABLE}.name`]: { is: "NULL" } },
       })
     );
-    for (const { name, model } of mutationsToRun.rows) {
+    for (const { name, model } of migrationsToRun.rows) {
       console.info(`🔄 Running mutation: ${model}.${name}`);
-      const query = mutations.find(
+      const query = migrations.find(
         (mutation) => mutation.name === name && mutation.model === model
       ).query;
       await client.query(query);
@@ -57,7 +57,7 @@ export const perform = async (
     console.info("✅ Up to date");
   } catch (e) {
     await client.query("ROLLBACK");
-    console.info("🚨 Rolling mutations back");
+    console.info("🚨 Rolling migrations back");
     throw e;
   } finally {
     client.release();
@@ -77,7 +77,7 @@ export const rollback = async (
       })
     );
     if (!rows?.length)
-      throw new Error(`Mutation ${model}.${name} have not been performed`);
+      throw new Error(`Migration ${model}.${name} have not been performed`);
     await client.query(query);
     await client.query(
       ...deleteFrom(MUTATIONS_TABLE, { where: { name, model } })

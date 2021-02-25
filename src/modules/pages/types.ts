@@ -1,13 +1,16 @@
-export type ContentPage = {
-  id: number;
-  path: string;
+export type ContentPageInput = {
   template: string;
-  title: string;
   description?: string;
   content: string;
+  parent_id?: number;
+};
+
+export type ContentPage = ContentPageInput & {
+  id: number;
+  title: string;
+  path: string;
   created?: Date;
   updated?: Date;
-  published?: Date;
   // generated
   html: string;
 };
