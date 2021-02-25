@@ -850,7 +850,7 @@ chokidar@3.4.3:
   optionalDependencies:
     fsevents "~2.1.2"
 
-chokidar@3.5.1, "chokidar@>=2.0.0 <4.0.0", chokidar@^3.4.0:
+chokidar@3.5.1, "chokidar@>=2.0.0 <4.0.0", chokidar@^3.5.1:
   version "3.5.1"
   resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-3.5.1.tgz#ee9ce7bbebd2b79f49f304799d5468e31e14e68a"
   integrity sha512-9+s+Od+W0VJJzawDma/gvBNQqkTiqYTWLuZoyAsivsI4AaWTCzHG06/TMjsf1cYe9Cb97UCEhjz7HvnPk2p/tw==
@@ -2957,10 +2957,10 @@ pg-int8@1.0.1:
   resolved "https://registry.yarnpkg.com/pg-int8/-/pg-int8-1.0.1.tgz#943bd463bf5b71b4170115f80f8efc9a0c0eb78c"
   integrity sha512-WCtabS6t3c8SkpDBUlb1kjOs7l66xsGdKpIPZsg4wR+B3+u9UAum2odSsF9tnvxg80h4ZxLWMy4pRjOsFIqQpw==
 
-pg-mem@^1.7.6:
-  version "1.7.6"
-  resolved "https://registry.yarnpkg.com/pg-mem/-/pg-mem-1.7.6.tgz#45d084e57d169850affe25a52f492570f06dc326"
-  integrity sha512-b9m1NtCeTNWSRduCg9BYGnhnVaEvtrKUQGEtl0151lKTUWbtoUiZ3UlWBtUyWokPC6JgbiXvexExt8E/m9DGnw==
+pg-mem@^1.7.8:
+  version "1.7.8"
+  resolved "https://registry.yarnpkg.com/pg-mem/-/pg-mem-1.7.8.tgz#8e513c73cefdfec4383ed38287671a1c627f08ff"
+  integrity sha512-Fud7CuIKdknOHM+oWd52rOW3HskRDoqnEL3q8b1Gz20egue22pylTDjsH1/nz0qYZVVfwP5nB/CfyULxzwUIhg==
   dependencies:
     functional-red-black-tree "^1.0.1"
     immutable "^4.0.0-rc.12"
@@ -3962,12 +3962,12 @@ trim-newlines@^1.0.0:
   dependencies:
     glob "^7.1.2"
 
-ts-node-dev@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/ts-node-dev/-/ts-node-dev-1.1.1.tgz#b7602929395b1616b4aa99a3be0a4e121742283d"
-  integrity sha512-kAO8LUZgXZSY0+PucMPsQ0Bbdv0x+lgbN7j8gcD4PuTI4uKC6YchekaspmYTBNilkiu+rQYkWJA7cK+Q8/B0tQ==
+ts-node-dev@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/ts-node-dev/-/ts-node-dev-1.1.2.tgz#935e547103616c6e5530c2287b5f71efe7e53e39"
+  integrity sha512-9EOZgYVS1dn/QPGJ5vXz7KxvBYTWpjSfQHRE0ryFsn8EpOLb5tuJakVp9Y4amQWsivTptNdzOu6dEjI0vtS0hA==
   dependencies:
-    chokidar "^3.4.0"
+    chokidar "^3.5.1"
     dateformat "~1.0.4-1.2.3"
     dynamic-dedupe "^0.3.0"
     minimist "^1.2.5"
@@ -4072,10 +4072,10 @@ typedarray-to-buffer@^3.1.5:
   dependencies:
     is-typedarray "^1.0.0"
 
-typescript@^4.1.2, typescript@^4.1.5:
-  version "4.1.5"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.1.5.tgz#123a3b214aaff3be32926f0d8f1f6e704eb89a72"
-  integrity sha512-6OSu9PTIzmn9TCDiovULTnET6BgXtDYL4Gg4szY+cGsc3JP1dQL8qvE8kShTRx1NIw4Q9IBHlwODjkjWEtMUyA==
+typescript@^4.1.2, typescript@^4.2.2:
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.2.2.tgz#1450f020618f872db0ea17317d16d8da8ddb8c4c"
+  integrity sha512-tbb+NVrLfnsJy3M59lsDgrzWIflR4d4TIUjz+heUnHZwdF7YsrMTKoRERiIvI2lvBG95dfpLxB21WZhys1bgaQ==
 
 uniq@^1.0.1:
   version "1.0.1"
