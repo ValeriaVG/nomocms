@@ -57,7 +57,7 @@
     "node-fetch": "^2.6.1",
     "node-sass": "^5.0.0",
     "nyc": "^15.1.0",
-    "pg-mem": "^1.7.6",
+    "pg-mem": "^1.7.8",
     "postcss": "^8.2.6",
     "postcss-modules": "^4.0.0",
     "sinon": "^9.2.4",
@@ -65,7 +65,7 @@
     "ts-node": "^9.1.1",
     "ts-node-dev": "^1.1.2",
     "tsconfig-paths": "^3.9.0",
-    "typescript": "^4.1.5"
+    "typescript": "^4.2.2"
   },
   "engines": {
     "node": "14.5.0"
