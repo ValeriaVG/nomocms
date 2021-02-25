@@ -24,8 +24,8 @@ jobs:
         with:
           node-version: v14.5.0
       - run: yarn
-      - name: Perform mutations
-        run: yarn perform:mutations
+      - name: Migrate Database
+        run: yarn migrate
       - name: Test & Coverage
         uses: paambaati/codeclimate-action@v2.7.5
         env:
