@@ -36,9 +36,9 @@ export default abstract class SQLDataSource<
   readonly primaryKey?: Array<keyof T> | keyof T;
 
   /**
-   * Mutations for that particular source
+   * Migrations for that particular source
    */
-  readonly mutations: Record<string, { up: string; down: string }>;
+  readonly migrations: Record<string, { up: string; down: string }>;
 
   /**
    * Requires context with db
@@ -48,7 +48,7 @@ export default abstract class SQLDataSource<
     super(context);
   }
 
-  get defaultMutations() {
+  get defaultMigrations() {
     return {
       init: {
         up: createTable(this.collection, this.schema, { ifNotExists: true }),
