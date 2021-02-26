@@ -32,6 +32,7 @@ routes["/_api/page/preview"] = {
   ),
 };
 
+// TODO: add hasChildren
 routes["/_api/menu"] = requiresPermission(
   { scope: "pages", permissions: Permission.list },
   async ({ parent }, { pages }: { pages: Pages }) => {

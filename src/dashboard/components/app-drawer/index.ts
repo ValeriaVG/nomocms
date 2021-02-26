@@ -1,16 +1,7 @@
 import { html } from "amp/lib";
 import { icon } from "@fortawesome/fontawesome-svg-core";
-import {
-  faAngleDown,
-  faAngleRight,
-  faCog,
-  faCopy,
-  faExclamationCircle,
-  faFile,
-  faHome,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCog, faCopy } from "@fortawesome/free-solid-svg-icons";
 import styles from "./styles.scss";
-
 export default class AppDrawer extends HTMLElement {
   constructor() {
     super();
@@ -29,37 +20,7 @@ export default class AppDrawer extends HTMLElement {
             placeholder="Search ..."
             class="${styles.search}"
           />
-          <ul>
-            <li>
-              <a><span>${icon(faHome).html}</span> Home Page</a>
-            </li>
-            <li>
-              <a><span>${icon(faAngleRight).html}</span> Folder</a>
-            </li>
-            <li>
-              <a><span>${icon(faAngleDown).html}</span> Open</a>
-              <ul>
-                <li><a>Page 1</a></li>
-                <li><a>Page 2</a></li>
-                <li><a>Page 3</a></li>
-                <li><a>Page 4</a></li>
-                <li><a>Page 5</a></li>
-                <li><a>Show all</a></li>
-              </ul>
-            </li>
-            <li>
-              <a><span>${icon(faFile).html}</span> About</a>
-            </li>
-            <li>
-              <a><span>${icon(faFile).html}</span> Contact</a>
-            </li>
-            <li>
-              <a
-                ><span>${icon(faExclamationCircle).html}</span> Page Not
-                Found</a
-              >
-            </li>
-          </ul>
+          <app-menu></app-menu>
         </nav>
       </div>
     `;
