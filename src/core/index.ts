@@ -1,7 +1,7 @@
 import { IncomingMessage, ServerResponse } from "http";
 import cookie from "cookie";
 import { APIContext, Routes, HTTPMethod, InitializedContext } from "./types";
-import { superuser } from "config";
+import { appUrl, superuser } from "config";
 import requestParams from "./requestParams";
 import routeRequest from "./routeRequest";
 import { DataSource } from "./DataSource";
@@ -61,8 +61,8 @@ const createSessionContext = (req: IncomingMessage) => {
   context.headers = req.headers;
   context.ip = req.socket.remoteAddress;
   // TODO: check accept header
-  // Look for existing page
   context.url = new NormalizedURL(req.url);
+  context.appUrl = (appUrl || "http://" + req.headers.host).replace(/\/+$/, "");
   context.cookies = req.headers.cookie ? cookie.parse(req.headers.cookie) : {};
   return context;
 };

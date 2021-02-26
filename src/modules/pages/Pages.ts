@@ -96,7 +96,7 @@ export default class Pages extends SQLDataSource<
     JOIN ${this.collection} ON pages.id = child_id
     ORDER BY level ASC `
       )
-      .then(({ rows }) => ({ items: rows }));
+      .then(({ rows }) => rows);
   }
 
   // Active schema
@@ -115,7 +115,7 @@ export default class Pages extends SQLDataSource<
     parent_id: { type: "int", nullable: true },
   };
 
-  readonly view: string = "mv_pages";
+  readonly view: string = "mv_pages_tree";
   readonly migrations = {
     init: {
       up: sql`CREATE TABLE IF NOT EXISTS pages (id serial PRIMARY KEY NOT NULL,path varchar (255) NOT NULL,template varchar (50) NOT NULL,title varchar (255) NOT NULL,description text ,content text NOT NULL,html text NOT NULL,created timestamp NOT NULL DEFAULT NOW(),updated timestamp ,published timestamp ,code int NOT NULL DEFAULT 200)`,

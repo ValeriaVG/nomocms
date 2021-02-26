@@ -1,4 +1,6 @@
 import CRUDLResolver from "core/CRUDLResolver";
+import { ResolverFn } from "core/types";
+import { IncomingHttpHeaders, IncomingMessage } from "http";
 import { requiresPermission } from "modules/authorization/lib";
 import { Permission } from "modules/authorization/Permissions";
 import Styles from "modules/styles/Styles";
@@ -28,4 +30,26 @@ routes["/_api/page/preview"] = {
       return { ...result, type: "amp" };
     }
   ),
+};
+// Public sitemap
+routes["sitemap.xml"] = async (
+  {},
+  { pages, appUrl }: { appUrl: string; pages: Pages }
+) => {
+  const sitemap = await pages.getSiteMap();
+  const entries = sitemap
+    .map(
+      // TODO: set to env variable
+      (entry) => "<url>" + `<loc>${appUrl}${entry.path}</loc>` + "</url>"
+    )
+    .join("");
+
+  return {
+    type: "text/xml",
+    data:
+      '<?xml version="1.0" encoding="UTF-8"?>' +
+      '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' +
+      entries +
+      "</urlset>",
+  };
 };

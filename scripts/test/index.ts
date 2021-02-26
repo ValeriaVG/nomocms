@@ -46,5 +46,6 @@ export const runTests = async (options: MochaOptions = {}) => {
 
 const options: MochaOptions = {
   checkLeaks: true,
+  inlineDiffs: true,
 };
 runTests(options);
