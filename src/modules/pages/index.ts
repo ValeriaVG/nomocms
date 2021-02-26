@@ -31,6 +31,18 @@ routes["/_api/page/preview"] = {
     }
   ),
 };
+
+routes["/_api/menu"] = requiresPermission(
+  { scope: "pages", permissions: Permission.list },
+  async ({ parent }, { pages }: { pages: Pages }) => {
+    const items = await pages.find({
+      where: { parent_id: parent || { is: "NULL" } },
+      columns: ["id", "path", "title", "code"],
+    });
+    return { items };
+  }
+);
+
 // Public sitemap
 routes["sitemap.xml"] = async (
   {},
@@ -38,10 +50,7 @@ routes["sitemap.xml"] = async (
 ) => {
   const sitemap = await pages.getSiteMap();
   const entries = sitemap
-    .map(
-      // TODO: set to env variable
-      (entry) => "<url>" + `<loc>${appUrl}${entry.path}</loc>` + "</url>"
-    )
+    .map((entry) => "<url>" + `<loc>${appUrl}${entry.path}</loc>` + "</url>")
     .join("");
 
   return {

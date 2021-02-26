@@ -1,4 +1,4 @@
-import { describe, it, before, after } from "mocha";
+import { describe, it, before } from "mocha";
 import { expect } from "chai";
 import Permissions, { Permission } from "./Permissions";
 import { mockDatabase } from "mocks";

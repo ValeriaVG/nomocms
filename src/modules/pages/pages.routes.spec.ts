@@ -2,6 +2,11 @@ import { describe, it } from "mocha";
 import { expect } from "chai";
 import { routes } from "./index";
 import { ResolverFn } from "core/types";
+import { mockDatabase } from "mocks";
+import Pages from "./Pages";
+import { createTable, insertInto } from "core/sql";
+import { superuser } from "config";
+
 describe("pages.routes", () => {
   it("returns sitemap", async () => {
     const pages = {
@@ -19,5 +24,88 @@ describe("pages.routes", () => {
     expect(sitemap.data).to.eq(
       '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://example.com/</loc></url><url><loc>https://example.com/about</loc></url></urlset>'
     );
+  });
+  it("can list menu", async () => {
+    const db = mockDatabase();
+    const pages = new Pages({ db });
+
+    await db.query(createTable(pages.collection, pages.schema));
+    await db.query(
+      ...insertInto(pages.collection, [
+        {
+          parent_id: null,
+          title: "Home",
+          path: "/",
+          template: "default",
+          content: "Home",
+          html: "",
+        },
+        {
+          parent_id: null,
+          title: "Stories",
+          path: "/stories",
+          template: "default",
+          content: "Stories",
+          html: "",
+        },
+        {
+          parent_id: 2,
+          title: "Story 1",
+          path: "/stories/1",
+          template: "default",
+          content: "Story 1",
+          html: "",
+        },
+        {
+          parent_id: 2,
+          title: "Story 2",
+          path: "/stories/2",
+          template: "default",
+          content: "Story 2",
+          html: "",
+        },
+      ])
+    );
+    const menu = await (routes["/_api/menu"] as ResolverFn)(
+      {},
+      { pages, user: superuser }
+    );
+    expect(menu).to.deep.equal({
+      items: [
+        {
+          id: 1,
+          title: "Home",
+          path: "/",
+          code: 200,
+        },
+        {
+          id: 2,
+          title: "Stories",
+          path: "/stories",
+          code: 200,
+        },
+      ],
+    });
+
+    const submenu = await (routes["/_api/menu"] as ResolverFn)(
+      { parent: 2 },
+      { pages, user: superuser }
+    );
+    expect(submenu).to.deep.equal({
+      items: [
+        {
+          id: 3,
+          title: "Story 1",
+          path: "/stories/1",
+          code: 200,
+        },
+        {
+          id: 4,
+          title: "Story 2",
+          path: "/stories/2",
+          code: 200,
+        },
+      ],
+    });
   });
 });

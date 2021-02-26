@@ -88,7 +88,7 @@ export default class Pages extends SQLDataSource<
       where: { path },
     }).then((page) => page && this.render(page));
   }
-
+  // TODO: make stream for big sites
   async getSiteMap() {
     return this.context.db
       .query(
@@ -103,6 +103,7 @@ export default class Pages extends SQLDataSource<
   readonly schema: Record<string, ColumnDefinition> = {
     id: { type: "serial", primaryKey: true },
     path: { type: "varchar", length: 255 },
+    // TODO: add default template
     template: { type: "varchar", length: 50 },
     title: { type: "varchar", length: 255 },
     description: { type: "text", nullable: true },
