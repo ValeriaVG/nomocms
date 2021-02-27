@@ -89,6 +89,7 @@ export type AppModule = {
   typeDefs?: ITypeDefinitions;
   resolvers?: IResolvers<any, APIContext>;
   directiveResolvers?: IDirectiveResolvers<any, any>;
+  routes?: Record<string, Route>;
 };
 
 /**
@@ -97,13 +98,6 @@ export type AppModule = {
  */
 export abstract class DataSource {
   constructor(protected context: any) {}
-}
-
-export class NotImplementedError extends Error {
-  constructor(className: string, methodName: string) {
-    super(`${className}.${methodName}`);
-    this.name = `NotImplemented`;
-  }
 }
 
 export type ListParams = {

@@ -5,9 +5,13 @@ import { v4 as uuid } from "uuid";
 import { HTTPNotFound } from "core/errors";
 import Permissions, { Permission } from "./Permissions";
 import Tokens from "./Tokens";
+import { createResolvers } from "utils/createResolvers";
+
+const userResolvers = createResolvers("users");
 
 export default {
   Mutation: {
+    ...userResolvers.Mutation,
     login: async (
       _,
       { email, password },
@@ -51,6 +55,7 @@ export default {
     },
   },
   Query: {
+    ...userResolvers.Query,
     access: async (
       _,
       __,

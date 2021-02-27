@@ -4,20 +4,22 @@ import pages from "./pages";
 import templates from "./templates";
 import analytics from "./analytics";
 import date from "./date";
-
+import health from "./health";
 import { AppModule } from "core/types";
 
 const modules = mergeModules([
+  health,
   authorization,
   styles,
-  pages,
   templates,
   date,
   analytics,
+  // Keep pages last
+  pages,
 ]);
 export default modules;
 
-export type AppModules = typeof modules;
+export type AppModules = ReturnType<typeof mergeModules>;
 
 function mergeModules<T extends readonly AppModule[]>(modules: T) {
   return modules.reduce(
@@ -36,6 +38,7 @@ function mergeModules<T extends readonly AppModule[]>(modules: T) {
       resolvers: [],
       typeDefs: [],
       directiveResolvers: [],
+      routes: {},
     }
   );
 }

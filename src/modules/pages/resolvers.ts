@@ -1,7 +1,11 @@
+import { createResolvers } from "utils/createResolvers";
 import Pages from "./Pages";
+const pageResolvers = createResolvers("pages");
 
 export default {
+  Mutation: pageResolvers.Mutation,
   Query: {
+    ...pageResolvers.Query,
     pages: async (
       {
         parent,

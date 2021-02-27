@@ -7,6 +7,7 @@ export default gql`
   }
   type Query {
     pageviews(from: Date, to: Date): [PageViews]
+      @requiresPermission(scope: "analytics", min: view)
   }
   type Mutation {
     ping(event: String!, path: String!): String

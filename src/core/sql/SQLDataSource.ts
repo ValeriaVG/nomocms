@@ -165,7 +165,7 @@ export default abstract class SQLDataSource<
    * Delete item by id
    * @param id
    */
-  delete(id: string) {
+  delete(id: number | string) {
     return this.context.db
       .query(...deleteFrom(this.collection, { where: { id } }))
       .then(({ rowCount }) => ({ deleted: Boolean(rowCount) }));

@@ -11,27 +11,22 @@ export default gql`
   input PageInput {
     content: String!
   }
-  # Publicly available page
-  type RenderedPage {
-    id: ID!
-    path: String!
-    html: String!
-    title: String
-    description: String
-  }
   type PagesList {
     items: [Page]!
-    total: Int!
+    total: Int
     nextOffset: Int
   }
   type Query {
-    page(id: ID!): Page
+    page(id: ID!): Page @requiresPermission(scope: "pages", min: read)
     pages(parent: ID, limit: Int, offset: Int): PagesList
-    preview(template: ID!, content: String!): RenderedPage
+      @requiresPermission(scope: "pages", min: list)
   }
   type Mutation {
     createPage(input: PageInput): Page
+      @requiresPermission(scope: "pages", min: create)
     updatePage(id: ID!, input: PageInput): Page
+      @requiresPermission(scope: "pages", min: update)
     deletePage(id: ID!): Boolean
+      @requiresPermission(scope: "pages", min: delete)
   }
 `;

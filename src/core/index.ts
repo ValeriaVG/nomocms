@@ -16,7 +16,9 @@ import { insertInto } from "./sql";
 import cors from "./cors";
 import { perform } from "./sql/migration";
 import { AppModules } from "modules";
-import routes from "./routes";
+import createRoutes from "utils/routes";
+import { mergeDeepRight } from "ramda";
+import gqlRoute from "./graphql";
 
 const initSuperUser = (ctx: APIContext) =>
   ctx.db
@@ -75,6 +77,7 @@ const initializeAccess = async (context: InitializedContext) => {
 };
 
 export default async function core(modules: AppModules, ctx: APIContext) {
+  const routes = createRoutes(mergeDeepRight(modules.routes, gqlRoute));
   try {
     await initDataSources(ctx, modules.dataSources);
     ctx.superuser = await initSuperUser(ctx);

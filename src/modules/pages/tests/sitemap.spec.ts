@@ -1,8 +1,8 @@
 import { test } from "mocha";
 import { expect } from "chai";
-import handleSitemap from "./sitemap";
+import routes from "../routes";
 
-test("handleSitemap", async () => {
+test("sitemap.xml", async () => {
   const pages = {
     getSiteMap: () =>
       Promise.resolve([
@@ -10,7 +10,10 @@ test("handleSitemap", async () => {
         { id: 2, path: "/about", title: "About" },
       ]),
   } as any;
-  const sitemap = await handleSitemap({ pages, appUrl: "https://example.com" });
+  const sitemap = await routes["/sitemap.xml"]({
+    pages,
+    appUrl: "https://example.com",
+  });
   expect(sitemap).to.have.property("type", "text/xml");
   expect(sitemap.data).to.eq(
     '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://example.com/</loc></url><url><loc>https://example.com/about</loc></url></urlset>'
