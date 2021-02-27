@@ -1,30 +1,39 @@
 # Modules
 
-Modular system in NoMoCMS allows us to define custom endpoints for both front- and backend.
-Every module is independent of one another and the only requirement for them is to have one or several following properties exported as a module:
+Modular system in NoMoCMS allows easily define scoped GraphQL schemes, test it in isolation and merge required modules in one executable scheme.
 
-- `dataSources` - describing the connection to a database, third party services and etc.
-- `routes` - describing routes and related responses.
+Every module is an object with following optional properties
 
-## Routes
+- `dataSources` - objects to be initialized and joined context, providing database, third party services mappings and other data sources.
+- `resolvers` - GraphQL field resolvers
+- `typeDefs` - GraphQL type definitions
+- `directiveResolvers` - GraphQL directive resolvers
 
-Examples:
+Module `resolvers`, `typeDefs` and `directiveResolvers` are the same as `createExecutableSchema` from `@graphql-tools/schema` accepts.
+
+AppModule definition:
 
 ```ts
+export type AppModule = {
+  dataSources?: Record<string, typeof DataSource>;
+  typeDefs?: ITypeDefinitions;
+  resolvers?: IResolvers<any, APIContext>;
+  directiveResolvers?: IDirectiveResolvers<any, any>;
+};
+```
+
+Module example:
+
+```ts
+import Analytics from "./Analytics";
+import resolvers from "./resolvers";
+import typeDefs from "./typeDefs";
+
 export default {
-  "/amp/items/:id": ({ id }) => ({ type: "amp", body: `<h1>${id}</h1>` }), // Renders AMP boilerplate
-  "/html/items/:id": ({ id }) => ({
-    type: "html",
-    data: `<html><head><style>...</style></head><body><div>...</div></body>`,
-  }), // Renders  HTML page
-  "/json/items/:id": ({ id }) => ({ id }), // Renders JSON
-  "/files/:name": ({ name }) => ({
-    type: "image/png",
-    data: fs.createReadStream(`path/to/files/${name}`),
-  }),
-  "/json/items/:id": {
-    GET: ({ id }) => ({ id }),
-    POST: ({ id }) => ({ id }),
+  resolvers,
+  typeDefs,
+  dataSources: {
+    analytics: Analytics,
   },
 };
 ```

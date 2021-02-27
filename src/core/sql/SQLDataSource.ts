@@ -12,7 +12,7 @@ import {
 } from "core/sql";
 import { Client } from "pg";
 
-import { CRUDLDataSource } from "./types";
+import { DataSource } from "../types";
 
 /**
  * Primary CRUD interface for generic entities
@@ -22,7 +22,7 @@ export default abstract class SQLDataSource<
   T extends Record<string, any>,
   I extends Record<string, any> = Partial<T>,
   P extends Record<string, any> = Partial<I>
-> extends CRUDLDataSource<T, I, P> {
+> extends DataSource {
   /**
    * Table name
    */
@@ -52,7 +52,7 @@ export default abstract class SQLDataSource<
     return {
       init: {
         up: createTable(this.collection, this.schema, { ifNotExists: true }),
-        down: dropTable("users", { ifExists: true }),
+        down: dropTable(this.collection, { ifExists: true }),
       },
     };
   }
@@ -141,10 +141,10 @@ export default abstract class SQLDataSource<
       .then(({ rows }) => rows[0]);
   }
 
-  // /**
-  //  * Upsert  item
-  //  * @param item
-  //  */
+  /**
+   * Upsert  item
+   * @param item
+   */
   upsert({ id, ...item }: I & { id: string | number }) {
     if (!id) throw new HTTPUserInputError("id", "ID is required");
     return this.context.db

@@ -1,12 +1,25 @@
 import { APIContext } from "core/types";
-import { requiresPermission } from "modules/authorization/lib";
-import { Permission } from "modules/authorization/Permissions";
 import Analytics, { PageEventInput } from "./Analytics";
 
-export const routes = {
-  "/_ping": {
-    POST: async (
-      { input, files, event, path, ...payload }: any,
+export default {
+  Query: {
+    pageviews: async (
+      _,
+      params: { from?: number; to?: number },
+      { analytics }: APIContext & { analytics: Analytics }
+    ) => {
+      const from = params.from
+        ? new Date(params.from)
+        : new Date(Date.now() - ONE_WEEK_MS);
+      const to = new Date(params.to || Date.now());
+      const views = await analytics.viewsPerDay({ from, to });
+      return views;
+    },
+  },
+  Mutation: {
+    ping: async (
+      _,
+      { event, path, ...payload }: any,
       { user, analytics, headers, ip }: APIContext & { analytics: Analytics }
     ) => {
       const info: PageEventInput = {
@@ -20,21 +33,8 @@ export const routes = {
         info.user_id = user?.id;
       }
       analytics.create(info).catch(console.error);
-      return { message: "OK" };
+      return "OK";
     },
-  },
-
-  "/_api/analytics/pageviews": {
-    GET: requiresPermission(
-      { scope: "analytics", permissions: Permission.list },
-      (params = {}, { analytics }: APIContext & { analytics: Analytics }) => {
-        const from = params.from
-          ? new Date(params.from)
-          : new Date(Date.now() - ONE_WEEK_MS);
-        const to = new Date(params.to || Date.now());
-        return analytics.viewsPerDay({ from, to });
-      }
-    ),
   },
 };
 const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;

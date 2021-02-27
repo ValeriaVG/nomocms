@@ -5,13 +5,12 @@ import { v4 as uuid } from "uuid";
 import { HTTPNotFound } from "core/errors";
 import Permissions, { Permission } from "./Permissions";
 import Tokens from "./Tokens";
-import CRUDLResolver from "core/CRUDLResolver";
-import { requiresPermission } from "./lib";
 
-const routes = {
-  "/_api/login": {
-    POST: async (
-      { input: { email, password } },
+export default {
+  Mutation: {
+    login: async (
+      _,
+      { email, password },
       {
         users,
         token,
@@ -41,20 +40,20 @@ const routes = {
       });
       return { user, canAccessDashboard, token };
     },
-  },
-  "/_api/logout": {
-    PUT: async (
+    logout: async (
       _,
+      __,
       { token, user, tokens }: APIContext & { tokens: Tokens }
     ) => {
       if (!token || !user?.id) return { result: false };
       const result = await tokens.deleteOne({ token, user_id: user.id });
-      return { result: Boolean(result) };
+      return Boolean(result);
     },
   },
-  "/_api/access": {
-    GET: async (
+  Query: {
+    access: async (
       _,
+      __,
       { user, permissions }: APIContext & { permissions: Permissions }
     ) => {
       const canAccessDashboard =
@@ -67,28 +66,19 @@ const routes = {
             }));
       return { canAccessDashboard, user };
     },
-  },
-  "/_api/ping": {
-    POST: () => {
-      return { message: "OK" };
+    user: async (
+      _,
+      { id },
+      { users, permissions }: { users: Users; permissions: Permissions } & any
+    ) => {
+      const user = await users.get(id);
+      if (!user) throw new HTTPNotFound();
+      const userPermissions = await (permissions as Permissions).getPermissions(
+        {
+          user_id: user.id,
+        }
+      );
+      return { ...user, permissions: userPermissions };
     },
   },
-  ...CRUDLResolver<Users>("users"),
 };
-
-routes["/_api/users/:id"].GET = requiresPermission(
-  { scope: "users", permissions: Permission.view },
-  async (
-    { id },
-    { users, permissions }: { users: Users; permissions: Permissions } & any
-  ) => {
-    const user = await users.get(id);
-    if (!user) throw new HTTPNotFound();
-    const userPermissions = await (permissions as Permissions).getPermissions({
-      user_id: user.id,
-    });
-    return { ...user, permissions: userPermissions };
-  }
-);
-
-export default routes;

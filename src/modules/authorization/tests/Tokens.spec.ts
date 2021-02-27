@@ -1,6 +1,6 @@
 import { describe, it, before, after } from "mocha";
 import { expect } from "chai";
-import Tokens from "./Tokens";
+import Tokens from "../Tokens";
 import { Client } from "pg";
 import { createTable, dropTable, insertInto } from "core/sql";
 

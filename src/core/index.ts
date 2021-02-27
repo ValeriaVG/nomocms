@@ -1,10 +1,14 @@
 import { IncomingMessage, ServerResponse } from "http";
 import cookie from "cookie";
-import { APIContext, HTTPMethod, InitializedContext } from "./types";
+import {
+  APIContext,
+  DataSource,
+  HTTPMethod,
+  InitializedContext,
+} from "./types";
 import { appUrl, superuser } from "config";
 import requestParams from "./requestParams";
 import routeRequest from "./routeRequest";
-import { DataSource } from "./DataSource";
 import responseFactory from "./responseFactory";
 import NormalizedURL from "./NormalizedURL";
 import Users from "modules/authorization/Users";

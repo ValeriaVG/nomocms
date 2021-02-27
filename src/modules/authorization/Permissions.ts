@@ -1,9 +1,7 @@
-import { SQLDataSource } from "core/DataSource";
 import {
   ColumnDefinition,
-  createTable,
+  SQLDataSource,
   deleteFrom,
-  dropTable,
   insertInto,
 } from "core/sql";
 

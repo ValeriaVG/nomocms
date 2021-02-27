@@ -1,4 +1,3 @@
-import { SQLDataSource } from "core/DataSource";
 import { ContentPage, ContentPageInput } from "./types";
 import matter from "gray-matter";
 import marked from "marked";
@@ -6,7 +5,7 @@ import querystring from "querystring";
 import { html } from "amp/lib";
 import Templates from "modules/templates/Templates";
 import { HTTPUserInputError } from "core/errors";
-import { ColumnDefinition, sql } from "core/sql";
+import { ColumnDefinition, sql, SQLDataSource } from "core/sql";
 
 const renderer = {
   image(href: string, caption: string, text: string) {

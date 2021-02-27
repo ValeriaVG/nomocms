@@ -1,6 +1,6 @@
 import { describe, it, before } from "mocha";
 import { expect } from "chai";
-import Permissions, { Permission } from "./Permissions";
+import Permissions, { Permission } from "../Permissions";
 import { mockDatabase } from "mocks";
 import { createTable, insertInto } from "core/sql";
 

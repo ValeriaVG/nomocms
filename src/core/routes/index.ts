@@ -7,7 +7,11 @@ import handleSitemap from "./sitemap";
 
 export default createRoutes({
   "/_api": handleGraphQL(schema),
-  "/_health": health,
-  "/sitemap.xml": handleSitemap,
+  "/_health": {
+    GET: health,
+  },
+  "/sitemap.xml": {
+    GET: handleSitemap,
+  },
   "/*": handleContent,
 });

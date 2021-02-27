@@ -1,5 +1,4 @@
-import { SQLDataSource } from "core/DataSource";
-import { ColumnDefinition, createTable, dropTable, sql } from "core/sql";
+import { ColumnDefinition, sql, SQLDataSource } from "core/sql";
 
 export type PageEventInput = {
   event: string;
@@ -36,15 +35,13 @@ export default class Analytics extends SQLDataSource<
   }: {
     from: Date;
     to: Date;
-  }): Promise<{ items: Array<{ date: string; pageviews: number }> }> {
+  }): Promise<Array<{ date: Date; pageviews: number }>> {
     const {
       rows: items,
     } = await this.context.db.query(
-      sql`SELECT "created"::date as date, COUNT(id)::int as pageviews FROM ${this.collection} WHERE "event"='pageview' AND "created" BETWEEN $1 and $2 GROUP BY "created"::date ORDER BY "created"::date ASC`,
+      sql`SELECT "created"::date as date, COUNT(id)::int as count FROM ${this.collection} WHERE "event"='pageview' AND "created" BETWEEN $1 and $2 GROUP BY "created"::date ORDER BY "created"::date ASC`,
       [from, to]
     );
-    return {
-      items,
-    };
+    return items;
   }
 }

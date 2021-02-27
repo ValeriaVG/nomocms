@@ -2,9 +2,12 @@ import { IncomingHttpHeaders } from "http";
 import { User } from "modules/authorization/Users";
 import { Pool } from "pg";
 import { Readable } from "stream";
-import { DataSource } from "./DataSource";
 import NormalizedURL from "./NormalizedURL";
-import { IResolvers, ITypeDefinitions } from "@graphql-tools/utils";
+import {
+  IResolvers,
+  ITypeDefinitions,
+  IDirectiveResolvers,
+} from "@graphql-tools/utils";
 
 export type HTTPMethod = "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
 
@@ -85,4 +88,31 @@ export type AppModule = {
   dataSources?: Record<string, typeof DataSource>;
   typeDefs?: ITypeDefinitions;
   resolvers?: IResolvers<any, APIContext>;
+  directiveResolvers?: IDirectiveResolvers<any, any>;
+};
+
+/**
+ * DataSource can be anything from an item
+ * stored in database to third party service
+ */
+export abstract class DataSource {
+  constructor(protected context: any) {}
+}
+
+export class NotImplementedError extends Error {
+  constructor(className: string, methodName: string) {
+    super(`${className}.${methodName}`);
+    this.name = `NotImplemented`;
+  }
+}
+
+export type ListParams = {
+  offset?: number;
+  limit?: number;
+  search?: string;
+};
+
+export type ItemsList<T> = {
+  items: T[];
+  nextOffset?: number;
 };

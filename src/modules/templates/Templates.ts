@@ -1,9 +1,8 @@
-import { SQLDataSource } from "core/DataSource";
 import { TemplateData } from "./types";
 import { Liquid } from "liquidjs";
 import { HTTPUserInputError } from "core/errors";
 import Styles from "modules/styles/Styles";
-import { ColumnDefinition, createTable, dropTable } from "core/sql";
+import { ColumnDefinition, SQLDataSource } from "core/sql";
 
 export default class Templates extends SQLDataSource<TemplateData> {
   readonly collection = "templates";

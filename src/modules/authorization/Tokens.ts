@@ -1,5 +1,4 @@
-import { SQLDataSource } from "core/DataSource";
-import { ColumnDefinition, createTable, deleteFrom, dropTable } from "core/sql";
+import { SQLDataSource, ColumnDefinition, deleteFrom } from "core/sql";
 
 type UserToken = {
   id: string;

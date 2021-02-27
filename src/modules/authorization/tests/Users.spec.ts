@@ -1,10 +1,10 @@
-import { describe, it, before, after } from "mocha";
+import { describe, it, before } from "mocha";
 import { expect } from "chai";
 import bcrypt from "bcryptjs";
-import Users from "./Users";
-import Permissions from "./Permissions";
+import Users from "../Users";
+import Permissions from "../Permissions";
 import { mockDatabase } from "mocks";
-import Tokens from "./Tokens";
+import Tokens from "../Tokens";
 import { createTable, insertInto } from "core/sql";
 
 const db = mockDatabase();

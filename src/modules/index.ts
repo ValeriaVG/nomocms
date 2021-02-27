@@ -3,6 +3,8 @@ import styles from "./styles";
 import pages from "./pages";
 import templates from "./templates";
 import analytics from "./analytics";
+import date from "./date";
+
 import { AppModule } from "core/types";
 
 const modules = mergeModules([
@@ -10,6 +12,7 @@ const modules = mergeModules([
   styles,
   pages,
   templates,
+  date,
   analytics,
 ]);
 export default modules;
@@ -32,6 +35,7 @@ function mergeModules<T extends readonly AppModule[]>(modules: T) {
       dataSources: {},
       resolvers: [],
       typeDefs: [],
+      directiveResolvers: [],
     }
   );
 }

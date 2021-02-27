@@ -1,4 +1,5 @@
 export { sql } from "./sql";
+export { default as SQLDataSource } from "./SQLDataSource";
 export {
   createTable,
   dropTable,

@@ -1,5 +1,4 @@
-import { SQLDataSource } from "core/DataSource";
-import { ColumnDefinition, createTable, dropTable } from "core/sql";
+import { ColumnDefinition, SQLDataSource } from "core/sql";
 import { ErrorResponse } from "core/types";
 import sass from "sass";
 

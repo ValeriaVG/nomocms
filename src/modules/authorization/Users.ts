@@ -1,8 +1,7 @@
-import { SQLDataSource } from "core/DataSource";
 import { HTTPUserInputError } from "core/errors";
 import bcrypt, { genSalt } from "bcryptjs";
 import Permissions from "./Permissions";
-import { ColumnDefinition, createTable, dropTable } from "core/sql";
+import { ColumnDefinition, SQLDataSource } from "core/sql";
 
 export type UserLoginInput = {
   email: string;
