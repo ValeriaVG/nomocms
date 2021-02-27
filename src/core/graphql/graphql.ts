@@ -7,6 +7,8 @@ export default function GraphQL(schema) {
       ...params.input,
       ...params,
     } as any;
+    if (context.method === "OPTIONS" || context.method === "HEAD")
+      return { code: 200, status: "OK" };
     const response = await graphql({
       schema,
       contextValue: context,

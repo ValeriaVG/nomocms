@@ -30,6 +30,7 @@ export type APIContext = {
   ip?: string;
   superuser?: User;
   params: Record<string, string>;
+  method: string;
 };
 
 export type SimpleType = string | number | boolean | null;

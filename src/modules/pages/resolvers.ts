@@ -7,6 +7,7 @@ export default {
   Query: {
     ...pageResolvers.Query,
     pages: async (
+      _,
       {
         parent,
         limit,

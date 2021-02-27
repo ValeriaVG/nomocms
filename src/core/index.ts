@@ -68,6 +68,7 @@ const createSessionContext = (req: IncomingMessage) => {
   context.url = new NormalizedURL(req.url);
   context.appUrl = (appUrl || "http://" + req.headers.host).replace(/\/+$/, "");
   context.cookies = req.headers.cookie ? cookie.parse(req.headers.cookie) : {};
+  context.method = req.method?.toUpperCase();
   return context;
 };
 

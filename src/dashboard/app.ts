@@ -5,11 +5,20 @@ import layout from "./layout";
 
 import "./components";
 import "./styles.scss";
+import gql from "utils/gql";
 
 const state = {
   loading: true,
   hasAccess: false,
 };
+
+const ACCESS = gql`
+  {
+    access {
+      canAccessDashboard
+    }
+  }
+`;
 
 const app = {
   get state() {
@@ -21,8 +30,8 @@ const app = {
   },
   checkAccess: async () => {
     try {
-      const result = await api.get("/_api/access");
-      return Boolean(result?.canAccessDashboard);
+      const result = await api.query(ACCESS);
+      return Boolean(result?.data?.access.canAccessDashboard);
     } catch (error) {
       return false;
     }

@@ -13,13 +13,15 @@ describe("dashboard", () => {
     sinon.restore();
   });
   it("renders login page if not authorized", async () => {
-    sinon.replace(api, "get", async () => ({ canAccessDashboard: false }));
+    sinon.replace(api, "query", async () => ({
+      data: { access: { canAccessDashboard: false } },
+    }));
     await app.init();
     expect(document.querySelector("input[type=password]")).not.to.be.null;
     expect(document.querySelector("aside")).to.be.null;
   });
   it("renders login page if api is unavailable", async () => {
-    sinon.replace(api, "get", async () => {
+    sinon.replace(api, "query", async () => {
       throw new Error("error");
     });
     await app.init();
@@ -27,7 +29,7 @@ describe("dashboard", () => {
     expect(document.querySelector("aside")).to.be.null;
   });
   it("renders login page if api returned error", async () => {
-    sinon.replace(api, "get", async () => ({
+    sinon.replace(api, "query", async () => ({
       code: 500,
       errors: ["something"],
     }));
@@ -36,8 +38,12 @@ describe("dashboard", () => {
     expect(document.querySelector("aside")).to.be.null;
   });
   it("renders dashboard if authorized", async () => {
-    sinon.replace(api, "get", async () => ({
-      canAccessDashboard: true,
+    sinon.replace(api, "query", async () => ({
+      data: {
+        access: {
+          canAccessDashboard: true,
+        },
+      },
     }));
     await app.init();
     expect(document.querySelector("input[type=password]")).to.be.null;

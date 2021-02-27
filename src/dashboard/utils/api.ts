@@ -1,63 +1,32 @@
-import { HTTPMethod, JSONObject } from "core/types";
+import { GraphQLQuery } from "utils/gql";
 import { apiURL } from "../config";
 
-export class Api {
-  constructor(public host: string) {}
-
-  fetch = typeof window !== "undefined" && window.fetch.bind(window);
-
-  call = (
-    path: string,
-    method: HTTPMethod = "GET",
-    input?: JSONObject | FormData
-  ) => {
-    return this.fetch(this.host + path, {
-      method,
-      mode: "cors",
-      body: input && JSON.stringify(input),
-      headers: input
-        ? {
-            "Content-Type": "application/json",
-          }
-        : {},
-      credentials: "include",
-    })
-      .then(async (res) => {
-        const type = res.headers.get("content-type");
-        if (type.startsWith("text")) return res.text();
-        let response;
-        try {
-          response = await res.json();
-        } catch (error) {
-          response = {
-            code: res.status,
-            errors: [
-              {
-                name: error.name,
-                message: error.message,
-              },
-            ],
-          };
-        }
-        return response;
-      })
-      .catch((error) => {
-        return {
-          code: undefined,
-          errors: [
-            {
-              name: error.name,
-              message: error.message,
-            },
-          ],
-        };
+export function createApi(url: string) {
+  const call = async (query: GraphQLQuery, variables?: Record<string, any>) => {
+    const request: { query: string; variables?: Record<string, any> } = {
+      query: query.text,
+    };
+    if (variables) request.variables = variables;
+    try {
+      const response = await window?.fetch(url, {
+        mode: "cors",
+        credentials: "include",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(request),
       });
+      const json = await response.json();
+      return json;
+    } catch (error) {
+      console.error(error);
+      return {
+        errors: [error],
+      };
+    }
   };
-
-  get = (path: string) => this.call(path);
-  put = (path: string) => this.call(path, "PUT");
-  post = (path: string, input: JSONObject) => this.call(path, "POST", input);
-  patch = (path: string, input: JSONObject) => this.call(path, "PATCH", input);
-  delete = (path: string) => this.call(path, "DELETE");
+  return { query: call, mutate: call, call };
 }
-export default new Api(apiURL);
+const api = createApi(`${apiURL}/_api`);
+export default api;

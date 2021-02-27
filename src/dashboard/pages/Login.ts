@@ -1,7 +1,17 @@
 import { html } from "amp/lib";
 import app from "dashboard/app";
 import api from "dashboard/utils/api";
+import gql from "utils/gql";
 import styles from "./styles.scss";
+
+const LOGIN = gql`
+  mutation($email: String!, $password: String!) {
+    login(email: $email, password: $password) {
+      canAccessDashboard
+      token
+    }
+  }
+`;
 
 const setAMPAccessCookie = (token: string) => {
   if (!token) return;
@@ -22,8 +32,8 @@ export default {
       }),
       {}
     );
-    const result = await api.post("/_api/login", data);
-    if (!result?.canAccessDashboard) return;
+    const result = await api.query(LOGIN, data);
+    if (!result?.data?.login.canAccessDashboard) return;
     setAMPAccessCookie(result.token);
     app.setState({ hasAccess: true });
   },

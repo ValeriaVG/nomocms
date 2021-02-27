@@ -49,7 +49,7 @@ describe("pages.resolvers", () => {
         },
       ])
     );
-    const menu = await resolvers.Query.pages({}, { pages });
+    const menu = await resolvers.Query.pages(null, {}, { pages });
     expect(menu).to.be.like({
       items: [
         {
@@ -67,7 +67,7 @@ describe("pages.resolvers", () => {
       ],
     });
 
-    const submenu = await resolvers.Query.pages({ parent: 2 }, { pages });
+    const submenu = await resolvers.Query.pages(null, { parent: 2 }, { pages });
     expect(submenu).to.be.like({
       items: [
         {
