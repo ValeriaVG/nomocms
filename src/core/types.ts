@@ -4,6 +4,7 @@ import { Pool } from "pg";
 import { Readable } from "stream";
 import { DataSource } from "./DataSource";
 import NormalizedURL from "./NormalizedURL";
+import { IResolvers, ITypeDefinitions } from "@graphql-tools/utils";
 
 export type HTTPMethod = "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
 
@@ -25,6 +26,7 @@ export type APIContext = {
   url?: NormalizedURL;
   ip?: string;
   superuser?: User;
+  params: Record<string, string>;
 };
 
 export type SimpleType = string | number | boolean | null;
@@ -78,3 +80,9 @@ export type Routes = {
 export type ExcludeReserved<T> = Exclude<T, GenericResponse>;
 
 export type InitializedContext = APIContext & Record<string, DataSource>;
+
+export type AppModule = {
+  dataSources?: Record<string, typeof DataSource>;
+  typeDefs?: ITypeDefinitions;
+  resolvers?: IResolvers<any, APIContext>;
+};

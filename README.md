@@ -1,5 +1,7 @@
 # ![NoMoCMS](./logo.svg)
 
+> Important: Master branch is not yet stable as project is undergoing massive refactoring
+
 [![Maintainability](https://api.codeclimate.com/v1/badges/fba64515ad8b4aa8c338/maintainability)](https://codeclimate.com/github/ValeriaVG/nomocms/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/fba64515ad8b4aa8c338/test_coverage)](https://codeclimate.com/github/ValeriaVG/nomocms/test_coverage)
 

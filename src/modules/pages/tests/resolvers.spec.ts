@@ -1,31 +1,14 @@
 import { describe, it } from "mocha";
-import { expect } from "chai";
-import { routes } from "./index";
-import { ResolverFn } from "core/types";
+import chai, { expect } from "chai";
+import resolvers from "../resolvers";
 import { mockDatabase } from "mocks";
-import Pages from "./Pages";
+import Pages from "../Pages";
 import { createTable, insertInto } from "core/sql";
-import { superuser } from "config";
+import like from "chai-like";
+chai.use(like);
 
-describe("pages.routes", () => {
-  it("returns sitemap", async () => {
-    const pages = {
-      getSiteMap: () =>
-        Promise.resolve([
-          { id: 1, path: "/", title: "Home" },
-          { id: 2, path: "/about", title: "About" },
-        ]),
-    };
-    const sitemap = await (routes["sitemap.xml"] as ResolverFn)(
-      {},
-      { pages, appUrl: "https://example.com" }
-    );
-    expect(sitemap).to.have.property("type", "text/xml");
-    expect(sitemap.data).to.eq(
-      '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://example.com/</loc></url><url><loc>https://example.com/about</loc></url></urlset>'
-    );
-  });
-  it("can list menu", async () => {
+describe("pages.resolvers", () => {
+  it("can list pages", async () => {
     const db = mockDatabase();
     const pages = new Pages({ db });
 
@@ -66,11 +49,8 @@ describe("pages.routes", () => {
         },
       ])
     );
-    const menu = await (routes["/_api/menu"] as ResolverFn)(
-      {},
-      { pages, user: superuser }
-    );
-    expect(menu).to.deep.equal({
+    const menu = await resolvers.Query.pages({}, { pages });
+    expect(menu).to.be.like({
       items: [
         {
           id: 1,
@@ -87,11 +67,8 @@ describe("pages.routes", () => {
       ],
     });
 
-    const submenu = await (routes["/_api/menu"] as ResolverFn)(
-      { parent: 2 },
-      { pages, user: superuser }
-    );
-    expect(submenu).to.deep.equal({
+    const submenu = await resolvers.Query.pages({ parent: 2 }, { pages });
+    expect(submenu).to.be.like({
       items: [
         {
           id: 3,

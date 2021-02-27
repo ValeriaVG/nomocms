@@ -1,6 +1,6 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import Pages from "./Pages";
+import Pages from "../Pages";
 import { createTable } from "core/sql";
 import { mockDatabase } from "mocks";
 

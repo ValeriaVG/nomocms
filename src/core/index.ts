@@ -1,20 +1,18 @@
 import { IncomingMessage, ServerResponse } from "http";
 import cookie from "cookie";
-import { APIContext, Routes, HTTPMethod, InitializedContext } from "./types";
+import { APIContext, HTTPMethod, InitializedContext } from "./types";
 import { appUrl, superuser } from "config";
 import requestParams from "./requestParams";
 import routeRequest from "./routeRequest";
 import { DataSource } from "./DataSource";
 import responseFactory from "./responseFactory";
-import { HTTPNotFound } from "./errors";
 import NormalizedURL from "./NormalizedURL";
 import Users from "modules/authorization/Users";
 import { insertInto } from "./sql";
-import Pages from "modules/pages/Pages";
 import cors from "./cors";
-import createRoutes from "utils/routes";
-import { ContentPage } from "modules/pages/types";
 import { perform } from "./sql/migration";
+import { AppModules } from "modules";
+import routes from "./routes";
 
 const initSuperUser = (ctx: APIContext) =>
   ctx.db
@@ -72,36 +70,18 @@ const initializeAccess = async (context: InitializedContext) => {
   context.user = await (context.users as Users).byToken(context.token);
 };
 
-export default async function core(
-  modules: {
-    routes?: Routes;
-    dataSources?: Record<string, typeof DataSource>;
-  },
-  ctx: APIContext
-) {
-  let notFoundPage: ContentPage = null;
-  const routes = createRoutes(modules.routes);
+export default async function core(modules: AppModules, ctx: APIContext) {
   try {
     await initDataSources(ctx, modules.dataSources);
     ctx.superuser = await initSuperUser(ctx);
-    notFoundPage = await ctx["pages"]?.retrieve("/*");
   } catch (error) {
     console.error(error);
     process.exit(1);
   }
 
-  return async (
-    req: IncomingMessage,
-    res: ServerResponse,
-    next?: () => void
-  ) => {
+  return async (req: IncomingMessage, res: ServerResponse) => {
     const sendResponse = responseFactory(req, res);
-    const notFound = () => {
-      if (next) return next();
-      if (notFoundPage)
-        return sendResponse({ type: "amp", ...notFoundPage, code: 404 });
-      throw new HTTPNotFound();
-    };
+
     try {
       cors(req, res);
       const context: InitializedContext = Object.assign(
@@ -112,26 +92,14 @@ export default async function core(
       context.token = context.cookies["amp-access"] ?? params.rid;
       // Clean context for each request
       const method = req.method?.toUpperCase();
-      const expectsPage = !req.headers.accept?.endsWith("/json");
       await initializeAccess(context).catch(console.error);
-      if (expectsPage) {
-        const page = await (context.pages as Pages)?.retrieve(
-          context.url.normalizedPath
-        );
-        if (page) {
-          return sendResponse({
-            type: "amp",
-            ...page,
-          });
-        }
-      }
       const { resolver, params: routeParams } = routeRequest(
         context.url,
         method as HTTPMethod,
         routes
       );
-      if (!resolver) return notFound();
-      const response = await resolver({ ...routeParams, ...params }, context);
+      // TODO: resolver === null
+      const response = await resolver(context, { ...routeParams, ...params });
       if (typeof response !== "object")
         throw new Error(
           `Wrong response returned from ${context.url.normalizedPath}`
