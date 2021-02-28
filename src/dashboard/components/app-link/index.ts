@@ -16,4 +16,11 @@ export default class AppLink extends HTMLElement {
       to && redirect(to);
     };
   }
+
+  static _example = {
+    parameters: {
+      to: "/some/path",
+    },
+    content: "Link anchor",
+  };
 }

@@ -6,6 +6,8 @@ import AppMenu from "./app-menu";
 import AppLink from "./app-link";
 
 const defineElement = (name: string, customElement: typeof HTMLElement) => {
+  // For preview sink
+  if (typeof window["_elements"] === "object") window["_elements"].add(name);
   // For live-reload
   if (customElements.get(name)) return customElements.upgrade(document.body);
   customElements.define(name, customElement);

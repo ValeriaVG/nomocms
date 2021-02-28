@@ -48,6 +48,13 @@ export default class CodeEditor extends HTMLElement {
       },
       ...this.getOptions(),
     });
+    this.editor.onDidChangeModelContent(() => {
+      this.dispatchEvent(
+        new CustomEvent("change", {
+          detail: { value: this.editor.getValue() },
+        })
+      );
+    });
     observer.observe(this, { attributes: true });
 
     document.querySelector("main")?.addEventListener("resize", () => {

@@ -12,6 +12,7 @@
     "start": "node .server/index",
     "dev:dashboard": "ts-node -r tsconfig-paths/register scripts/dev",
     "dev:server": "ts-node-dev -r tsconfig-paths/register src/index",
+    "dev:sink": "ts-node -r tsconfig-paths/register scripts/sink",
     "test": "node scripts/test",
     "test:coverage": "nyc node scripts/test",
     "migrate": "ts-node -r tsconfig-paths/register scripts/migration/perform",
