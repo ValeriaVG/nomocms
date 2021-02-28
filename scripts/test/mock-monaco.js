@@ -15,6 +15,7 @@ require("module")._extensions[".mock"] = function (module, file) {
         layout: noop,
         setValue: noop,
         getValue: noop,
+        onDidChangeModelContent: noop,
       }),
     },
     languages: {

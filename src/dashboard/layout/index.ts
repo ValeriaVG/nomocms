@@ -1,6 +1,9 @@
+import { icon } from "@fortawesome/fontawesome-svg-core";
+import { faCog, faCopy } from "@fortawesome/free-solid-svg-icons";
 import { html } from "amp/lib";
 import { Containers } from "dashboard/types";
 import styles from "./styles.scss";
+
 const GRID_TEMPLATE_COLUMNS = "12rem 1fr 24rem";
 const MIN_COLUMN = 12;
 
@@ -11,7 +14,23 @@ export default (container: HTMLElement): Containers => {
       style="grid-template-columns:${GRID_TEMPLATE_COLUMNS}"
     >
       <aside class="${styles.sidebar}">
-        <app-drawer></app-drawer>
+        <div class="${styles.drawer}">
+          <nav class="${styles.icons}">
+            <ul>
+              <li class="${styles.active}">${icon(faCopy).html}</li>
+              <li>${icon(faCog).html}</li>
+            </ul>
+            <app-logo class="${styles["vertical-logo"]}" vertical></app-logo>
+          </nav>
+          <nav class="${styles.tree}">
+            <input
+              type="search"
+              placeholder="Search ..."
+              class="${styles.search}"
+            />
+            <app-menu></app-menu>
+          </nav>
+        </div>
         <div class="${styles.splitter}" style="right:0"></div>
       </aside>
       <main class="${styles.main}"></main>
