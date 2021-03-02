@@ -1,0 +1,19 @@
+@import "../styles.scss";
+
+.nav {
+  grid-area: nav;
+}
+#preview {
+  grid-area: preview;
+}
+#editor {
+  grid-area: editor;
+}
+body {
+  display: grid;
+  grid-template-columns: 12rem 1fr;
+  grid-template-rows: 1fr 1fr;
+  grid-template-areas:
+    "nav preview"
+    "nav editor";
+}

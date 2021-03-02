@@ -1,11 +1,12 @@
 import { html, attr } from "amp/lib";
+import styles from "./styles.scss";
 
 //  Will be filled with custom elements names
 const elements = new Set<string>();
 window["_elements"] = elements;
-require("../index");
+require("../components");
 document.body.innerHTML = html`
-  <aside>
+  <aside class="${styles.nav}">
     <nav>
       <ul>
         ${[...elements.values()]
@@ -14,14 +15,9 @@ document.body.innerHTML = html`
       </ul>
     </nav>
   </aside>
-  <main>
-    <div id="preview"></div>
-    <code-editor
-      id="editor"
-      language="html"
-      style="min-height:400px"
-    ></code-editor>
-  </main>
+
+  <main id="preview"></main>
+  <code-editor id="editor" language="html"></code-editor>
 `;
 const preview = document.getElementById("preview");
 const editor = document.getElementById("editor");

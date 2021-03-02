@@ -6,7 +6,7 @@ const fuse = fusebox({
   ...dashboard,
   cache: { root: path.join(__dirname, ".cache/sink") },
 
-  entry: path.resolve(__dirname, "../src/dashboard/components/_sink/index.ts"),
+  entry: path.resolve(__dirname, "../src/dashboard/sink/index.ts"),
   devServer: {
     httpServer: {
       port: 5555,
