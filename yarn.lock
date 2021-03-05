@@ -850,16 +850,16 @@ chai-things@^0.2.0:
   resolved "https://registry.yarnpkg.com/chai-things/-/chai-things-0.2.0.tgz#c55128378f9bb399e994f00052151984ed6ebe70"
   integrity sha1-xVEoN4+bs5nplPAAUhUZhO1uvnA=
 
-chai@^4.3.0:
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/chai/-/chai-4.3.0.tgz#5523a5faf7f819c8a92480d70a8cccbadacfc25f"
-  integrity sha512-/BFd2J30EcOwmdOgXvVsmM48l0Br0nmZPlO0uOW4XKh6kpsUumRXBgPV+IlaqFaqr9cYbeoZAM1Npx0i4A+aiA==
+chai@^4.3.3:
+  version "4.3.3"
+  resolved "https://registry.yarnpkg.com/chai/-/chai-4.3.3.tgz#f2b2ad9736999d07a7ff95cf1e7086c43a76f72d"
+  integrity sha512-MPSLOZwxxnA0DhLE84klnGPojWFK5KuhP7/j5dTsxpr2S3XlkqJP5WbyYl1gCTWvG2Z5N+HD4F472WsbEZL6Pw==
   dependencies:
     assertion-error "^1.1.0"
     check-error "^1.0.2"
     deep-eql "^3.0.1"
     get-func-name "^2.0.0"
-    pathval "^1.1.0"
+    pathval "^1.1.1"
     type-detect "^4.0.5"
 
 chain-able@^3.0.0:
@@ -3030,7 +3030,7 @@ path-type@^4.0.0:
   resolved "https://registry.yarnpkg.com/path-type/-/path-type-4.0.0.tgz#84ed01c0a7ba380afe09d90a8c180dcd9d03043b"
   integrity sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==
 
-pathval@^1.1.0:
+pathval@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/pathval/-/pathval-1.1.1.tgz#8534e77a77ce7ac5a2512ea21e0fdb8fcf6c3d8d"
   integrity sha512-Dp6zGqpTdETdR63lehJYPeIOqpiNBNtc7BpWSLrOje7UaIsE5aY92r/AunQA7rsXvet3lrJ3JnZX29UPTKXyKQ==
@@ -3050,10 +3050,10 @@ pg-int8@1.0.1:
   resolved "https://registry.yarnpkg.com/pg-int8/-/pg-int8-1.0.1.tgz#943bd463bf5b71b4170115f80f8efc9a0c0eb78c"
   integrity sha512-WCtabS6t3c8SkpDBUlb1kjOs7l66xsGdKpIPZsg4wR+B3+u9UAum2odSsF9tnvxg80h4ZxLWMy4pRjOsFIqQpw==
 
-pg-mem@^1.8.1:
-  version "1.8.1"
-  resolved "https://registry.yarnpkg.com/pg-mem/-/pg-mem-1.8.1.tgz#69be7da18ca11a5813d34f98f58ea094645676ca"
-  integrity sha512-PwuoCcCvfKjxe6zwN3oyn5Rv+t8TTcCyhgUULyR9m6Nvb/Wed2OXQfOxaYCZHSj49vF9i2PXZdKB7EQ2Krv8AA==
+pg-mem@^1.8.2:
+  version "1.8.2"
+  resolved "https://registry.yarnpkg.com/pg-mem/-/pg-mem-1.8.2.tgz#38422b78ff478df8d3972d070cdf935ea737d634"
+  integrity sha512-kg9LozYV5Ztk3MsrAkay6E1C8J6ZYPKzgPKmwn24dOpuVzStnIYrzWo3s8NppAY56rOz1MintFjMGEpQM+wBeg==
   dependencies:
     functional-red-black-tree "^1.0.1"
     immutable "^4.0.0-rc.12"
