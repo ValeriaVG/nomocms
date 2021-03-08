@@ -60,7 +60,7 @@
     "chai-like": "^1.1.1",
     "chai-things": "^0.2.0",
     "fuse-box": "^4.0.0",
-    "jsdom": "^16.4.0",
+    "jsdom": "^16.5.0",
     "mocha": "^8.3.0",
     "node-fetch": "^2.6.1",
     "node-sass": "^5.0.0",
