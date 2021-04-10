@@ -5,9 +5,9 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:12
+        image: timescale/timescaledb:2.1.1-pg12
         ports:
-        - 5432:5432
+          - 5432:5432
         env:
           POSTGRES_DB: nomocms
           POSTGRES_USER: nomocms
@@ -16,7 +16,7 @@ jobs:
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
-          --health-retries 5      
+          --health-retries 5
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js v14.5.0
