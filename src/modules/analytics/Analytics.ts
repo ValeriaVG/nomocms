@@ -7,10 +7,10 @@ export type PageEventInput = {
   ip?: string;
   headers?: Record<string, string | string[]>;
   payload?: Record<string, string>;
-  created?: number;
+  time?: number;
 };
 
-export type PageEvent = PageEventInput & { created: number };
+export type PageEvent = PageEventInput & { time: number };
 
 export default class Analytics extends SQLDataSource<
   PageEvent,
@@ -19,13 +19,13 @@ export default class Analytics extends SQLDataSource<
   readonly collection = "analytics";
 
   readonly schema: Record<keyof PageEvent, ColumnDefinition> = {
+    time: { type: "timestamp", default: "NOW()" },
     event: { type: "varchar", length: 255 },
     path: { type: "varchar", length: 255 },
     user_id: { type: "int", nullable: true },
     ip: { type: "inet", nullable: true },
     headers: { type: "jsonb", nullable: true },
     payload: { type: "jsonb", nullable: true },
-    created: { type: "timestamp", default: "NOW()" },
   };
 
   async viewsPerDay({
@@ -38,7 +38,7 @@ export default class Analytics extends SQLDataSource<
     const {
       rows: items,
     } = await this.context.db.query(
-      sql`SELECT "created"::date as date, COUNT(*)::int as count FROM ${this.collection} WHERE "event"='pageview' AND "created" BETWEEN $1 and $2 GROUP BY "created"::date ORDER BY "created"::date ASC`,
+      sql`SELECT "time"::date as date, COUNT(*)::int as count FROM ${this.collection} WHERE "event"='pageview' AND "time" BETWEEN $1 and $2 GROUP BY "time"::date ORDER BY "time"::date ASC`,
       [from, to]
     );
     return items;
@@ -46,12 +46,17 @@ export default class Analytics extends SQLDataSource<
 
   readonly migrations = {
     init: {
+      up: createTable("analytics", this.schema),
+      down: sql`DROP TABLE  IF EXISTS analytics`,
+    },
+    init_timescaledb: {
       up: sql`
+      DROP TABLE IF EXISTS analytics;
       ${createTable("analytics", this.schema)};
-      SELECT create_hypertable('analytics','created');
-      CREATE INDEX ON analytics (event, created DESC);
+      SELECT create_hypertable('analytics','time');
+      CREATE INDEX ON analytics (event, time DESC);
       `,
-      down: sql`DROP TABLE analytics IF EXISTS`,
+      down: sql`DROP TABLE  IF EXISTS analytics`,
     },
   };
 }

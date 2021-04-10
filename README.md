@@ -30,7 +30,7 @@ To run on local machine you'll need:
 
 - NodeJS v14.5.0
 - Yarn
-- PostgreSQL (or run `docker-compose up -d`)
+- PostgreSQL with TimescaleDB extension enabled (or run `docker-compose up -d`)
 
 To start server in the development mode:
 

@@ -26,7 +26,7 @@ describe("Analytics", () => {
           .fill({ event: "pageview", path: "/" })
           .map((e, i) => ({
             ...e,
-            created: new Date(`2021-01-0${i + 1}`),
+            time: new Date(`2021-01-0${i + 1}`),
           }))
       )
     );
