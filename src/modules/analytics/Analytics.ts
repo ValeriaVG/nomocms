@@ -49,7 +49,11 @@ export default class Analytics extends SQLDataSource<
       up: createTable("analytics", this.schema, { ifNotExists: true }),
       down: sql`DROP TABLE  IF EXISTS analytics`,
     },
-    init_timescaledb: {
+    enable_timescaledb: {
+      up: sql`CREATE EXTENSION IF NOT EXISTS timescaledb;`,
+      down: sql`SELECT 1`,
+    },
+    init_analytics_hypertable: {
       up: sql`
       DROP TABLE IF EXISTS analytics;
       ${createTable("analytics", this.schema, { ifNotExists: true })};
