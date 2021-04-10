@@ -1,4 +1,4 @@
-import { ColumnDefinition, sql, SQLDataSource } from "core/sql";
+import { ColumnDefinition, createTable, sql, SQLDataSource } from "core/sql";
 
 export type PageEventInput = {
   event: string;
@@ -10,7 +10,7 @@ export type PageEventInput = {
   created?: number;
 };
 
-export type PageEvent = PageEventInput & { id: number; created: number };
+export type PageEvent = PageEventInput & { created: number };
 
 export default class Analytics extends SQLDataSource<
   PageEvent,
@@ -19,7 +19,6 @@ export default class Analytics extends SQLDataSource<
   readonly collection = "analytics";
 
   readonly schema: Record<keyof PageEvent, ColumnDefinition> = {
-    id: { type: "serial", primaryKey: true },
     event: { type: "varchar", length: 255 },
     path: { type: "varchar", length: 255 },
     user_id: { type: "int", nullable: true },
@@ -39,9 +38,20 @@ export default class Analytics extends SQLDataSource<
     const {
       rows: items,
     } = await this.context.db.query(
-      sql`SELECT "created"::date as date, COUNT(id)::int as count FROM ${this.collection} WHERE "event"='pageview' AND "created" BETWEEN $1 and $2 GROUP BY "created"::date ORDER BY "created"::date ASC`,
+      sql`SELECT "created"::date as date, COUNT(*)::int as count FROM ${this.collection} WHERE "event"='pageview' AND "created" BETWEEN $1 and $2 GROUP BY "created"::date ORDER BY "created"::date ASC`,
       [from, to]
     );
     return items;
   }
+
+  readonly migrations = {
+    init: {
+      up: sql`
+      ${createTable("analytics", this.schema)};
+      SELECT create_hypertable('analytics','created');
+      CREATE INDEX ON analytics (event, created DESC);
+      `,
+      down: sql`DROP TABLE analytics IF EXISTS`,
+    },
+  };
 }
