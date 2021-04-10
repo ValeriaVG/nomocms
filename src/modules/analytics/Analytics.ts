@@ -46,13 +46,13 @@ export default class Analytics extends SQLDataSource<
 
   readonly migrations = {
     init: {
-      up: createTable("analytics", this.schema),
+      up: createTable("analytics", this.schema, { ifNotExists: true }),
       down: sql`DROP TABLE  IF EXISTS analytics`,
     },
     init_timescaledb: {
       up: sql`
       DROP TABLE IF EXISTS analytics;
-      ${createTable("analytics", this.schema)};
+      ${createTable("analytics", this.schema, { ifNotExists: true })};
       SELECT create_hypertable('analytics','time');
       CREATE INDEX ON analytics (event, time DESC);
       `,
