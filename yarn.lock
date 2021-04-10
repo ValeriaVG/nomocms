@@ -202,13 +202,13 @@
   dependencies:
     "@fortawesome/fontawesome-common-types" "^0.2.35"
 
-"@graphql-tools/merge@^6.2.10":
-  version "6.2.10"
-  resolved "https://registry.yarnpkg.com/@graphql-tools/merge/-/merge-6.2.10.tgz#cadb37b1bed786cba1b3c6f728c5476a164e153d"
-  integrity sha512-dM3n37PcslvhOAkCz7Cwk0BfoiSVKXGmCX+VMZkATbXk/0vlxUfNEpVfA5yF4IkP27F04SzFQSaNrbD0W2Rszw==
+"@graphql-tools/merge@^6.2.11":
+  version "6.2.11"
+  resolved "https://registry.yarnpkg.com/@graphql-tools/merge/-/merge-6.2.11.tgz#398f6c5fb6498fe0b5f062c65cf648c0e4a57e9c"
+  integrity sha512-temQABWkDTZb/qJwcIdrEbyJ5WkhaWZQeYxiuxGqZWlIOoFkYfqzfAP2qKl2Ry+ZkN+Q/Yozr1/ap//xjpwAlA==
   dependencies:
     "@graphql-tools/schema" "^7.0.0"
-    "@graphql-tools/utils" "^7.5.0"
+    "@graphql-tools/utils" "^7.7.0"
     tslib "~2.1.0"
 
 "@graphql-tools/schema@^7.0.0", "@graphql-tools/schema@^7.1.3":
@@ -219,10 +219,10 @@
     "@graphql-tools/utils" "^7.1.2"
     tslib "~2.1.0"
 
-"@graphql-tools/utils@^7.1.2", "@graphql-tools/utils@^7.5.0":
-  version "7.5.0"
-  resolved "https://registry.yarnpkg.com/@graphql-tools/utils/-/utils-7.5.0.tgz#8485d42eea0f723748dca4cc09344f032bd1e2fa"
-  integrity sha512-8f//RSqHmKRdg9A3GHlZdxzlVfF/938ZD9edXLW7EriSABg1BXu3veru9W02VqORypArb2S/Tyeyvsk2gForqA==
+"@graphql-tools/utils@^7.1.2", "@graphql-tools/utils@^7.7.0":
+  version "7.7.1"
+  resolved "https://registry.yarnpkg.com/@graphql-tools/utils/-/utils-7.7.1.tgz#81f32cb4819b34b3a378d51ab2cd60935977f0b4"
+  integrity sha512-SFT4/dTfrwWer1wSOLU+jqgv3oa/xTR8q+MiNbE9nCH2FXyMsqIOaXKm9wHfKIWFWHozqBdcnwFkQZrdD7H2TQ==
   dependencies:
     "@ardatan/aggregate-error" "0.0.6"
     camel-case "4.1.2"
@@ -355,10 +355,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/jsdom@^16.2.6":
-  version "16.2.6"
-  resolved "https://registry.yarnpkg.com/@types/jsdom/-/jsdom-16.2.6.tgz#9ddf0521e49be5365797e690c3ba63148e562c29"
-  integrity sha512-yQA+HxknGtW9AkRTNyiSH3OKW5V+WzO8OPTdne99XwJkYC+KYxfNIcoJjeiSqP3V00PUUpFP6Myoo9wdIu78DQ==
+"@types/jsdom@^16.2.10":
+  version "16.2.10"
+  resolved "https://registry.yarnpkg.com/@types/jsdom/-/jsdom-16.2.10.tgz#c05ea94682d035943ae2453b79d56178496b6653"
+  integrity sha512-q3aIjp3ehhVSXSbvNyuireAfvU2umRiZ2aLumyeZewCnoNaokrRDdTu5IvaeE9pzNtWHXrUnM9lb22Vl3W08EA==
   dependencies:
     "@types/node" "*"
     "@types/parse5" "*"
@@ -3062,17 +3062,17 @@ pg-int8@1.0.1:
   resolved "https://registry.yarnpkg.com/pg-int8/-/pg-int8-1.0.1.tgz#943bd463bf5b71b4170115f80f8efc9a0c0eb78c"
   integrity sha512-WCtabS6t3c8SkpDBUlb1kjOs7l66xsGdKpIPZsg4wR+B3+u9UAum2odSsF9tnvxg80h4ZxLWMy4pRjOsFIqQpw==
 
-pg-mem@^1.8.2:
-  version "1.8.2"
-  resolved "https://registry.yarnpkg.com/pg-mem/-/pg-mem-1.8.2.tgz#38422b78ff478df8d3972d070cdf935ea737d634"
-  integrity sha512-kg9LozYV5Ztk3MsrAkay6E1C8J6ZYPKzgPKmwn24dOpuVzStnIYrzWo3s8NppAY56rOz1MintFjMGEpQM+wBeg==
+pg-mem@^1.8.6:
+  version "1.8.6"
+  resolved "https://registry.yarnpkg.com/pg-mem/-/pg-mem-1.8.6.tgz#2acda74180ff0cb6fe1b792f3c3c454f215ed882"
+  integrity sha512-UTqdIHArvVe4ACAXi8dLjUSiiXRC1k8aTL0cmeuymnN+mCYNlHtniQZT9L/L1QHp56EJ6PCSXscOmTwCVut1eQ==
   dependencies:
     functional-red-black-tree "^1.0.1"
     immutable "^4.0.0-rc.12"
     lru-cache "^6.0.0"
     moment "^2.27.0"
     object-hash "^2.0.3"
-    pgsql-ast-parser "^6.2.1"
+    pgsql-ast-parser "^7.1.0"
 
 pg-pool@^3.2.2:
   version "3.2.2"
@@ -3115,10 +3115,10 @@ pgpass@1.x:
   dependencies:
     split2 "^3.1.1"
 
-pgsql-ast-parser@^6.2.1:
-  version "6.3.2"
-  resolved "https://registry.yarnpkg.com/pgsql-ast-parser/-/pgsql-ast-parser-6.3.2.tgz#c79cb54614e57647d9f6bee9f0fdce1d7548eda5"
-  integrity sha512-25G57vKnOdAgkFuBz7TC0/Qg3dtJtyu+UrSIzpTEFny9/C4Ol8W30RPWge+h42ag/maqhaUVzWfTk8BWiIheUA==
+pgsql-ast-parser@^7.1.0:
+  version "7.2.1"
+  resolved "https://registry.yarnpkg.com/pgsql-ast-parser/-/pgsql-ast-parser-7.2.1.tgz#1bf0c08dd561834ea702294ca628ab2dd1e26b14"
+  integrity sha512-j8scRJdTBSA1W6nETwevP2dH+BQGdPPFuc0mXolvCRIkRQGTpPoo1hH4a7EQ2KkA4N4quAcNvhOyaIcM7W00yg==
   dependencies:
     moo "^0.5.1"
     nearley "^2.19.5"
