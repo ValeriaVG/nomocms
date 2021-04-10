@@ -31,7 +31,7 @@
     "gray-matter": "^4.0.2",
     "liquidjs": "^9.23.3",
     "marked": "^2.0.1",
-    "mime-types": "^2.1.29",
+    "mime-types": "^2.1.30",
     "monaco-editor": "^0.23.0",
     "pg": "^8.5.1",
     "ramda": "^0.27.1",
