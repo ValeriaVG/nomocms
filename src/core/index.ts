@@ -16,7 +16,7 @@ import { insertInto } from "./sql";
 import cors from "./cors";
 import { perform } from "./sql/migration";
 import { AppModules } from "modules";
-import createRoutes from "utils/routes";
+import { createRoutes } from "utils/router";
 import { mergeDeepRight } from "ramda";
 import gqlRoute from "./graphql";
 

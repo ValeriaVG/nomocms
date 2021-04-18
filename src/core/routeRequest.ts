@@ -1,7 +1,7 @@
 import { ResolverFn, HTTPMethod, Route } from "./types";
 import { HTTPMethodNotAllowed } from "./errors";
 import NormalizedURL from "./NormalizedURL";
-import { RouteMatcher } from "utils/routes";
+import { RouteMatcher } from "utils/router";
 
 export default function routeRequest(
   url: NormalizedURL,

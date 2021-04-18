@@ -1,8 +1,10 @@
 import { HTTPMethod } from "./types";
 export class HTTPError extends Error {
+  public extensions: Record<string, any>;
   constructor(public code: number, public message: string) {
     super(message);
     this.code = code;
+    this.extensions = { code };
   }
 }
 export class HTTPUserInputError extends HTTPError {
