@@ -1,11 +1,9 @@
-import api from "./utils/api";
-import authorized from "./pages/authorized";
-import common from "./pages/common";
-import layout from "./layout";
-
 import "./components";
 import "./styles.scss";
 import gql from "utils/gql";
+import api from "./utils/api";
+import * as router from "./pages";
+import { mount } from "./utils/router";
 
 const state = {
   loading: true,
@@ -20,32 +18,28 @@ const ACCESS = gql`
   }
 `;
 
+const route = () => {
+  if (state.hasAccess) {
+    router.authorized(document.location.pathname);
+  } else {
+    router.initial(document.location.pathname);
+  }
+};
 const app = {
   get state() {
-    return state;
+    return { ...state };
   },
-  setState(patch) {
-    Object.assign(state, patch);
-    this.onStateChange();
-  },
-  checkAccess: async () => {
-    try {
-      const result = await api.query(ACCESS);
-      return Boolean(result?.data?.access.canAccessDashboard);
-    } catch (error) {
-      return false;
-    }
+  setState(newState) {
+    Object.assign(state, newState);
+    route();
   },
   async init() {
-    const hasAccess = await this.checkAccess();
-    this.setState({ hasAccess, loading: false });
-  },
-  onStateChange() {
-    const router = this.state.hasAccess ? authorized : common;
-    const containers = this.state.hasAccess
-      ? layout(document.body)
-      : document.body;
-    return router.mount(containers);
+    mount(route);
+    const result = await api.query(ACCESS).catch(console.error);
+    this.setState({
+      hasAccess: Boolean(result?.data?.access?.canAccessDashboard),
+      loading: false,
+    });
   },
 };
 export default app;
