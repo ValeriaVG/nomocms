@@ -2883,11 +2883,6 @@ levn@~0.3.0:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
 
-liquidjs@^9.23.4:
-  version "9.23.4"
-  resolved "https://registry.yarnpkg.com/liquidjs/-/liquidjs-9.23.4.tgz#02d0842a5cae11d7a51ca251f7e84c9134684e99"
-  integrity sha512-rBkblULYbdYPsXsSPttwlox/4W+J4WMjpKstSwQh1pPsb8SsekBR+KmZzqQ08lSDRiH5KIgku6y7Qwto3UQZWA==
-
 liftoff@3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/liftoff/-/liftoff-3.1.0.tgz#c9ba6081f908670607ee79062d700df062c52ed3"
@@ -2901,6 +2896,11 @@ liftoff@3.1.0:
     object.map "^1.0.0"
     rechoir "^0.6.2"
     resolve "^1.1.7"
+
+liquidjs@^9.23.4:
+  version "9.23.4"
+  resolved "https://registry.yarnpkg.com/liquidjs/-/liquidjs-9.23.4.tgz#02d0842a5cae11d7a51ca251f7e84c9134684e99"
+  integrity sha512-rBkblULYbdYPsXsSPttwlox/4W+J4WMjpKstSwQh1pPsb8SsekBR+KmZzqQ08lSDRiH5KIgku6y7Qwto3UQZWA==
 
 load-json-file@^1.0.0:
   version "1.1.0"
@@ -3736,10 +3736,10 @@ pg-int8@1.0.1:
   resolved "https://registry.yarnpkg.com/pg-int8/-/pg-int8-1.0.1.tgz#943bd463bf5b71b4170115f80f8efc9a0c0eb78c"
   integrity sha512-WCtabS6t3c8SkpDBUlb1kjOs7l66xsGdKpIPZsg4wR+B3+u9UAum2odSsF9tnvxg80h4ZxLWMy4pRjOsFIqQpw==
 
-pg-mem@^1.9.1:
-  version "1.9.1"
-  resolved "https://registry.yarnpkg.com/pg-mem/-/pg-mem-1.9.1.tgz#baef47def6794bdbdc0a44ae9024974e86703f72"
-  integrity sha512-8ujORAVSXqGeqhwlwQ4pDfZu34QlaOD+x3JeaZTVegv1XVEIKG2WbWJI4PtZySiUUTrXZvvA6BqOqOaUcZWFjQ==
+pg-mem@^1.9.6:
+  version "1.9.6"
+  resolved "https://registry.yarnpkg.com/pg-mem/-/pg-mem-1.9.6.tgz#cd58c2b01f6c257d953f7e9a3e26bd3587330a18"
+  integrity sha512-SN2dywvhg97ZpLLjaZ7kE6R9BwLVXB48DbeYBrWa+XJUg+cPPnBhK9NJcDOuY8KtrsnT0XypD0gbqk1joEPuUw==
   dependencies:
     "@mikro-orm/core" "^4.5.3"
     "@mikro-orm/postgresql" "^4.5.3"
