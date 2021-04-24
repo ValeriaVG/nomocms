@@ -7,11 +7,15 @@ export default gql`
     path: String!
     title: String
     content: String!
+    parent: Page
+    children: PagesList!
+    code: Int!
   }
   input PageInput {
     content: String!
     template: ID
     parent_id: ID
+    code: Int
   }
   type PagesList {
     items: [Page]!

@@ -24,8 +24,7 @@ monaco.languages.setMonarchTokensProvider(
 export default class CodeEditor extends HTMLElement {
   private editor: monaco.editor.IStandaloneCodeEditor;
 
-  constructor() {
-    super();
+  connectedCallback() {
     this.style.width = "100%";
     this.style.height = "100%";
     this.style.display = "block";

@@ -1,7 +1,7 @@
 import Logo from "./app-logo";
 import CodeEditor from "./code-editor";
 import PagePreview from "./page-preview";
-import TreeStructure from "./tree-structure";
+import AppMenu from "./app-menu";
 import AppLink from "./app-link";
 
 const defineElement = (name: string, customElement: typeof HTMLElement) => {
@@ -14,6 +14,6 @@ const defineElement = (name: string, customElement: typeof HTMLElement) => {
 
 defineElement("app-logo", Logo);
 defineElement("app-link", AppLink);
-defineElement("tree-structure", TreeStructure);
+defineElement("app-menu", AppMenu);
 defineElement("code-editor", CodeEditor);
 defineElement("page-preview", PagePreview);

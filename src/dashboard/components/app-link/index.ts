@@ -2,8 +2,7 @@ import { redirect } from "dashboard/utils/router";
 
 export default class AppLink extends HTMLElement {
   private link: HTMLAnchorElement;
-  constructor() {
-    super();
+  connectedCallback() {
     this.link = document.createElement("a");
     const to = this.getAttribute("to") || this.getAttribute("href");
     this.link.setAttribute("href", to);

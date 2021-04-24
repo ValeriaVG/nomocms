@@ -98,7 +98,7 @@ export default class Pages extends SQLDataSource<
   // Active schema
   readonly schema: Record<string, ColumnDefinition> = {
     id: { type: "serial", primaryKey: true },
-    path: { type: "varchar", length: 255 },
+    path: { type: "varchar", length: 255, unique: true },
     template: { type: "varchar", length: 50, nullable: true },
     title: { type: "varchar", length: 255 },
     description: { type: "text", nullable: true },
@@ -172,6 +172,10 @@ export default class Pages extends SQLDataSource<
     store_parameters: {
       up: sql`ALTER TABLE pages ADD COLUMN parameters jsonb;`,
       down: sql`ALTER TABLE pages DROP COLUMN parameters`,
+    },
+    make_path_unique: {
+      up: sql`ALTER TABLE pages ADD UNIQUE(path);`,
+      down: sql`ALTER TABLE pages DROP UNIQUE(path);`,
     },
   };
 }

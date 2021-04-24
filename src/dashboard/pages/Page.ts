@@ -1,45 +1,22 @@
 import { html, attr } from "amp/lib";
 import layout from "dashboard/layout";
-import { Containers } from "dashboard/types";
+import api from "dashboard/utils/api";
+import gql from "utils/gql";
 
-const markdown = `---
-url: /
-title: Home Page Title - Website Name
-description: This is SEO Description
----
-
-# Tum nurus ille nepotes Iovemque primus
-
-## Nobiscum quoque
-
-Lorem markdownum ut inque Polydorus florebat oderat peremptis cur ante Lapithae
-conamine, auraeque florem, in. Et *adsere hospitis* oculis pectore rite viri?
-Puduit Iove frustra, [spatiumque sinebat
-et](http://www.decoris-stupuitque.org/tibi.aspx) nihil est ferant calido,
-quaecumque ab ignes. Sed modo **tenax** Nostra, capilli, colla fidem timendos.
-Si in numine hospite [super](http://nec.net/incura) corpore, Neptune in furtim,
-fatis.
-
-## Sine vulgaris
-
-Tibi mali non uni nec dicentem armenta. A est constitit quem. Calescit tandem;
-estote meorum a dicit ait, aevo, non removi [blanditur
-aegida](http://www.actis-templum.io/) ingredior.
-
-1. Dos Cephalus digitis
-2. Iaculo ingens Pygmalion Ixionis illa est Euagrum
-3. Vepre quid agro dixit
-4. Petunt amet fluitantia
-5. Munus sternere instruitur
-
-Nec iramque tenui extulit conceperat cretus tardis, ut pelago Mavors prodit
-Aeacide, fortiter aliquid! In tua venit stratosque illa, umerique sedem, ne
-adhuc ferebat pendent cultor fama **iussa** calido ei vulnere!
+const PAGE = gql`
+  query($id: ID!) {
+    page(id: $id) {
+      content
+    }
+  }
 `;
 
-export default () => {
+export default async ({ id }: { id: string }) => {
   const { main, parameters } = layout(document.body);
-  main.innerHTML = html`<code-editor value=${attr`${markdown}`}>
+  const result = await api.query(PAGE, { id });
+  main.innerHTML = html`<code-editor
+    value=${attr`${result.data.page?.content ?? ""}`}
+  >
   </code-editor>`;
   parameters.innerHTML = html`<page-preview></page-preview>`;
 };

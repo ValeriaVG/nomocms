@@ -11,4 +11,5 @@ export const initial = createRouter(
 
 export const authorized = createRouter({
   "/": Page,
+  "/pages/:id": Page,
 });

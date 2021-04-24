@@ -12,7 +12,7 @@ import routeRequest from "./routeRequest";
 import responseFactory from "./responseFactory";
 import NormalizedURL from "./NormalizedURL";
 import Users from "modules/authorization/Users";
-import { insertInto } from "./sql";
+import { insertInto, sql } from "./sql";
 import cors from "./cors";
 import { perform } from "./sql/migration";
 import { AppModules } from "modules";
@@ -77,6 +77,43 @@ const initializeAccess = async (context: InitializedContext) => {
   context.user = await (context.users as Users).byToken(context.token);
 };
 
+const ensurePages = async (context: InitializedContext) => {
+  await context.db.query(
+    ...insertInto(
+      context.pages["collection"],
+      [
+        {
+          path: "/",
+          title: "Home",
+          code: 200,
+          content: [
+            "---",
+            "title: Home",
+            "---",
+            "# Coming soon",
+            "Currently under construction",
+          ].join("\n"),
+          html: `<h1>Coming soon</h1>\n<p>Currently under construction</p>`,
+        },
+        {
+          path: "/*",
+          code: 404,
+          title: "Not Found",
+          content: [
+            "---",
+            "title: Not Found",
+            "---",
+            "# 404: Page not found",
+            "Page you were looking for does not exist",
+          ].join("\n"),
+          html: `<h1>Page not found</h1>\n<p>Page you were looking for does not exist</p>`,
+        },
+      ],
+      { onConflict: { constraint: "path", do: "NOTHING" } }
+    )
+  );
+};
+
 export default async function core(modules: AppModules, ctx: APIContext) {
   const routes = createRoutes(mergeDeepRight(modules.routes, gqlRoute));
   try {
@@ -86,7 +123,7 @@ export default async function core(modules: AppModules, ctx: APIContext) {
     console.error(error);
     process.exit(1);
   }
-
+  await ensurePages(ctx as InitializedContext);
   return async (req: IncomingMessage, res: ServerResponse) => {
     const sendResponse = responseFactory(req, res);
 

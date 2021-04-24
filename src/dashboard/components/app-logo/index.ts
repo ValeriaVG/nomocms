@@ -81,8 +81,7 @@ const verticalLogo = html`<svg
   />
 </svg> `;
 export default class Logo extends HTMLElement {
-  constructor() {
-    super();
+  connectedCallback() {
     const vertical = this.hasAttribute("vertical");
     this.innerHTML = vertical ? verticalLogo : horizontalLogo;
   }
