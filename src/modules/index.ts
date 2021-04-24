@@ -5,6 +5,7 @@ import templates from "./templates";
 import analytics from "./analytics";
 import date from "./date";
 import health from "./health";
+import scripts from "./scripts";
 import { AppModule } from "core/types";
 
 const modules = mergeModules([
@@ -14,6 +15,7 @@ const modules = mergeModules([
   templates,
   date,
   analytics,
+  scripts,
   // Keep pages last
   pages,
 ]);

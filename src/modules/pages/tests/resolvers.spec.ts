@@ -10,7 +10,7 @@ chai.use(like);
 describe("pages.resolvers", () => {
   it("can list pages", async () => {
     const db = mockDatabase();
-    const pages = new Pages({ db });
+    const pages = new Pages({ db } as any);
 
     await db.query(createTable(pages.collection, pages.schema));
     await db.query(

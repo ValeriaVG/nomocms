@@ -83,7 +83,8 @@ export type Routes = {
 
 export type ExcludeReserved<T> = Exclude<T, GenericResponse>;
 
-export type InitializedContext = APIContext & Record<string, DataSource>;
+export type InitializedContext = APIContext &
+  Record<string, DataSource> & { params: Record<string, string> };
 
 export type AppModule = {
   dataSources?: Record<string, typeof DataSource>;

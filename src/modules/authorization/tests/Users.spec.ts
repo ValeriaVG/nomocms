@@ -8,7 +8,7 @@ import Tokens from "../Tokens";
 import { createTable, insertInto } from "core/sql";
 
 const db = mockDatabase();
-const ctx = { db };
+const ctx = { db } as any;
 const permissions = new Permissions(ctx);
 ctx["permissions"] = permissions;
 const tokens = new Tokens(ctx);

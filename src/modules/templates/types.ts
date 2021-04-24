@@ -3,6 +3,7 @@ export type TemplateData = {
   body?: string;
   style?: string;
   head?: string;
+  script?: string;
   /**
    * Compiled template style
    */

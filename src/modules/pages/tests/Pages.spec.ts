@@ -4,11 +4,12 @@ import Pages from "../Pages";
 import { createTable } from "core/sql";
 import { mockDatabase } from "mocks";
 import Templates from "modules/templates/Templates";
+import Scripts from "modules/scripts/Scripts";
 
 describe("Pages", () => {
   it("can create a page", async () => {
     const db = mockDatabase();
-    const pages = new Pages({ db });
+    const pages = new Pages({ db } as any);
     await db.query(createTable(pages.collection, pages.schema));
     const content = `
 ---
@@ -27,7 +28,7 @@ Page Content
   });
   it("can update a page", async () => {
     const db = mockDatabase();
-    const pages = new Pages({ db });
+    const pages = new Pages({ db } as any);
     await db.query(createTable(pages.collection, pages.schema));
     const content = `
 ---
@@ -62,7 +63,7 @@ Page Content
 
   it("renders with default template if none provided", async () => {
     const db = mockDatabase();
-    const templates = new Templates({ db });
+    const templates = new Templates({ db } as any);
     const pages = new Pages({ db, templates } as any);
     await db.query(createTable(pages.collection, pages.schema));
     await db.query(createTable(templates.collection, templates.schema));
@@ -80,6 +81,60 @@ Page Content
     const { body } = await pages.retrieve("/");
     expect(body).to.be.equal(
       '<h1 id="page-title">Page Title</h1>\n<p>Page Content</p>\n'
+    );
+  });
+  it("renders children pages", async () => {
+    const db = mockDatabase();
+    const ctx: any = { db };
+
+    const pages = new Pages(ctx);
+    const scripts = new Scripts(ctx);
+    const templates = new Templates(ctx);
+
+    ctx.pages = pages;
+    ctx.templates = templates;
+    ctx.scripts = scripts;
+
+    await db.query(createTable(pages.collection, pages.schema));
+    await db.query(createTable(templates.collection, templates.schema));
+    await templates.create({
+      id: "list",
+      body: `<ul>
+{%- for item in items -%}
+<li>
+<a href="<% item.path %>"><% item.title %></a>
+</li>      
+{%- endfor -%}
+</ul>`,
+      script: "getChildPages",
+    });
+    const { id } = await pages.create({
+      content: `
+---
+path: /
+title: List
+template: list
+---`,
+    });
+    await pages.create({
+      parent_id: id,
+      content: `
+---
+path: /page-1
+title: Page 1
+---`,
+    });
+    await pages.create({
+      parent_id: id,
+      content: `
+---
+path: /page-2
+title: Page 2
+---`,
+    });
+    const { body } = await pages.retrieve("/");
+    expect(body).to.be.equal(
+      '<ul><li>\n<a href="/page-1">Page 1</a>\n</li><li>\n<a href="/page-2">Page 2</a>\n</li></ul>'
     );
   });
 });

@@ -1,5 +1,6 @@
 import { ColumnDefinition, SQLDataSource } from "core/sql";
 import { ErrorResponse } from "core/types";
+import Templates from "modules/templates/Templates";
 import sass from "sass";
 
 export type StyleData = {
@@ -65,7 +66,7 @@ export default class Styles extends SQLDataSource<StyleData> {
                 .catch(done);
             // If imported 'template.style'
             if (url.endsWith(".style")) {
-              this.context["templates"]
+              (this.context.templates as Templates)
                 .get(url, "style")
                 .then((contents) => {
                   if (contents) return done({ contents });

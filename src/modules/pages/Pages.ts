@@ -99,7 +99,6 @@ export default class Pages extends SQLDataSource<
   readonly schema: Record<string, ColumnDefinition> = {
     id: { type: "serial", primaryKey: true },
     path: { type: "varchar", length: 255 },
-    // TODO: add default template
     template: { type: "varchar", length: 50, nullable: true },
     title: { type: "varchar", length: 255 },
     description: { type: "text", nullable: true },
