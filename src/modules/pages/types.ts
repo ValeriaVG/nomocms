@@ -1,5 +1,5 @@
 export type ContentPageInput = {
-  template: string;
+  template?: string;
   description?: string;
   content: string;
   parent_id?: number;

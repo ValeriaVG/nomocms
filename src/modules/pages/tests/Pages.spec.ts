@@ -3,6 +3,7 @@ import { expect } from "chai";
 import Pages from "../Pages";
 import { createTable } from "core/sql";
 import { mockDatabase } from "mocks";
+import Templates from "modules/templates/Templates";
 
 describe("Pages", () => {
   it("can create a page", async () => {
@@ -57,5 +58,28 @@ Page Content
     expect(page).to.have.property("content", updatedContent);
     expect(page).to.have.property("template", "other");
     expect(page).to.have.property("code", 404);
+  });
+
+  it("renders with default template if none provided", async () => {
+    const db = mockDatabase();
+    const templates = new Templates({ db });
+    const pages = new Pages({ db, templates } as any);
+    await db.query(createTable(pages.collection, pages.schema));
+    await db.query(createTable(templates.collection, templates.schema));
+    await pages.create({
+      content: `
+---
+path: /
+title: Example Page
+---
+
+# Page Title
+Page Content
+        `,
+    });
+    const { body } = await pages.retrieve("/");
+    expect(body).to.be.equal(
+      '<h1 id="page-title">Page Title</h1>\n<p>Page Content</p>\n'
+    );
   });
 });

@@ -40,10 +40,15 @@ export default class Templates extends SQLDataSource<TemplateData> {
   });
 
   static delimiter = "\u0000\u0000\u0000";
+  static DEFAULT_TEMPLATE: TemplateData = {
+    id: "",
+    body: "<% content %>",
+  };
 
   async render(id: string, variables: Record<string, any> = {}) {
-    const tpl = (await this.get(id)) as TemplateData;
-    if (!tpl) return null;
+    const tpl =
+      (id && ((await this.get(id)) as TemplateData)) ||
+      Templates.DEFAULT_TEMPLATE;
     const tmp = (tpl.head ?? "") + Templates.delimiter + (tpl.body ?? "");
     return this.renderText(tmp, variables).then((result) => {
       const [head, body] = result.split(Templates.delimiter);

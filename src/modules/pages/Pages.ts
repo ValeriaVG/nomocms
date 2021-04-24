@@ -48,11 +48,6 @@ export default class Pages extends SQLDataSource<
     if (!input.path)
       throw new HTTPUserInputError("path", "Please defined a path");
     const templates = this.context["templates"] as Templates;
-    if (!input.template)
-      throw new HTTPUserInputError(
-        "template",
-        "Please choose a template for this page"
-      );
     // Render page into url
     const result = await templates.render(input.template, {
       ...input,
@@ -83,9 +78,11 @@ export default class Pages extends SQLDataSource<
   }
   // TODO: add caching
   async retrieve(path: string) {
-    return this.findOne({
+    const page = await this.findOne({
       where: { path },
-    }).then((page) => page && this.render(page));
+    });
+    if (!page) return;
+    return this.render(page);
   }
   // TODO: make stream for big sites
   async getSiteMap() {
@@ -103,7 +100,7 @@ export default class Pages extends SQLDataSource<
     id: { type: "serial", primaryKey: true },
     path: { type: "varchar", length: 255 },
     // TODO: add default template
-    template: { type: "varchar", length: 50 },
+    template: { type: "varchar", length: 50, nullable: true },
     title: { type: "varchar", length: 255 },
     description: { type: "text", nullable: true },
     content: { type: "text" },
@@ -113,6 +110,7 @@ export default class Pages extends SQLDataSource<
     published: { type: "timestamp", nullable: true },
     code: { type: "int", nullable: false, default: "200" },
     parent_id: { type: "int", nullable: true },
+    parameters: { type: "jsonb", nullable: true },
   };
 
   readonly view: string = "mv_pages_tree";
@@ -167,6 +165,14 @@ export default class Pages extends SQLDataSource<
     ["create-view-update-trigger"]: {
       up: sql`CREATE TRIGGER pages_view_update AFTER INSERT OR UPDATE OR DELETE ON pages EXECUTE FUNCTION refresh_pages();`,
       down: sql`DROP TRIGGER pages_view_update ON pages`,
+    },
+    make_template_nullable: {
+      up: sql`ALTER TABLE pages ALTER COLUMN template DROP NOT NULL;`,
+      down: sql`ALTER TABLE pages ALTER COLUMN template ADD NOT NULL;`,
+    },
+    store_parameters: {
+      up: sql`ALTER TABLE pages ADD COLUMN parameters jsonb;`,
+      down: sql`ALTER TABLE pages DROP COLUMN parameters`,
     },
   };
 }
