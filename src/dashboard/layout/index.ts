@@ -7,7 +7,13 @@ import styles from "./styles.scss";
 const GRID_TEMPLATE_COLUMNS = "12rem 1fr 24rem";
 const MIN_COLUMN = 12;
 
-export default (container: HTMLElement): Containers => {
+const state: Partial<Containers> = {};
+export default (
+  container: HTMLElement,
+  redraw: boolean = false
+): Containers => {
+  if (!redraw && state.main && state.parameters && state.sidebar)
+    return state as Containers;
   container.innerHTML = html`
     <div
       class="${styles.wrapper}"
@@ -42,19 +48,19 @@ export default (container: HTMLElement): Containers => {
   `;
 
   const wrapper = container.querySelector(`.${styles.wrapper}`);
-  const main = container.querySelector("main");
-  const sidebar = container.querySelector(`.${styles.sidebar}`) as HTMLElement;
-  const parameters = container.querySelector(
+  state.main = container.querySelector("main");
+  state.sidebar = container.querySelector(`.${styles.sidebar}`) as HTMLElement;
+  state.parameters = container.querySelector(
     `.${styles.parameters}>section`
   ) as HTMLElement;
   container
     .querySelectorAll(`.${styles.splitter}`)
     .forEach((element: HTMLElement, i: number) =>
       setupSplitter(element, wrapper as HTMLElement, i === 0, () =>
-        main.dispatchEvent(new CustomEvent("resize"))
+        state.main.dispatchEvent(new CustomEvent("resize"))
       )
     );
-  return { main, sidebar, parameters };
+  return state as Containers;
 };
 
 const setupSplitter = (

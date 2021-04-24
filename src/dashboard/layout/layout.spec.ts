@@ -4,7 +4,7 @@ import layout from "./.";
 
 describe("layout", () => {
   beforeEach(() => {
-    layout(document.body);
+    layout(document.body, true);
   });
   afterEach(() => {
     document.body.innerHTML = "";

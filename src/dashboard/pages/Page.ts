@@ -10,13 +10,15 @@ const PAGE = gql`
     }
   }
 `;
-
+const state: { codeEditor?: HTMLElement; pagePreview?: HTMLElement } = {};
 export default async ({ id }: { id: string }) => {
-  const { main, parameters } = layout(document.body);
+  if (!state.codeEditor || !state.pagePreview) {
+    const { main, parameters } = layout(document.body);
+    main.innerHTML = html`<code-editor language="markdown"></code-editor>`;
+    parameters.innerHTML = html`<page-preview></page-preview>`;
+    state.codeEditor = main.querySelector("code-editor");
+    state.pagePreview = parameters.querySelector("page-preview");
+  }
   const result = await api.query(PAGE, { id });
-  main.innerHTML = html`<code-editor
-    value=${attr`${result.data.page?.content ?? ""}`}
-  >
-  </code-editor>`;
-  parameters.innerHTML = html`<page-preview></page-preview>`;
+  state.codeEditor!.setAttribute("value", result.data?.page.content ?? "");
 };
