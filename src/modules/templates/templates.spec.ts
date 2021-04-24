@@ -6,7 +6,7 @@ import { mockDatabase } from "mocks";
 import { createTable, insertInto } from "core/sql";
 
 const db = mockDatabase();
-const styles = new Styles({ db });
+const styles = new Styles({ db } as any);
 const templates = new Templates({ db, styles } as any);
 
 describe("Templates Integration test", () => {
@@ -49,6 +49,7 @@ describe("Templates Integration test", () => {
       body: '<template type="amp-mustache">\n  Hello {{world}}!\n</template>',
       style: "body,html{margin:0;}",
       compiled: "body,html{margin:0}",
+      script: null,
     });
   });
 });

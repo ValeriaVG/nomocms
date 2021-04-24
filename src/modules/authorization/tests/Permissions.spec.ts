@@ -5,7 +5,7 @@ import { mockDatabase } from "mocks";
 import { createTable, insertInto } from "core/sql";
 
 const db = mockDatabase();
-const permissions = new Permissions({ db });
+const permissions = new Permissions({ db } as any);
 
 describe("Permissions Integration Test", () => {
   before(async () => {

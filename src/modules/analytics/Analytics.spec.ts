@@ -16,7 +16,7 @@ describe("Analytics", () => {
     await db.end();
   });
   it("can calculate viewsPerDay", async () => {
-    const analytics = new Analytics({ db });
+    const analytics = new Analytics({ db } as any);
     await db.query(analytics.defaultMigrations.init.down);
     await db.query(analytics.defaultMigrations.init.up);
     await db.query(

@@ -10,9 +10,8 @@ import {
   SelectOptions,
   update,
 } from "core/sql";
-import { Client } from "pg";
 
-import { DataSource } from "../types";
+import { DataSource, InitializedContext } from "../types";
 
 /**
  * Primary CRUD interface for generic entities
@@ -44,9 +43,7 @@ export default abstract class SQLDataSource<
    * Requires context with db
    * @param context
    */
-  constructor(
-    protected context: { db: Client; params?: Record<string, string> }
-  ) {
+  constructor(protected context: InitializedContext) {
     super(context);
   }
 

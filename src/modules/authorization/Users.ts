@@ -2,6 +2,7 @@ import { HTTPUserInputError } from "core/errors";
 import bcrypt, { genSalt } from "bcryptjs";
 import Permissions from "./Permissions";
 import { ColumnDefinition, SQLDataSource } from "core/sql";
+import Tokens from "./Tokens";
 
 export type UserLoginInput = {
   email: string;
@@ -46,7 +47,9 @@ export default class Users extends SQLDataSource<User, UserInput> {
     return this.findOne({
       where: { "tokens.id": token },
       join: {
-        table: (this.context["tokens"].collection ?? "tokens") + " as tokens",
+        table:
+          ((this.context["tokens"] as Tokens).collection ?? "tokens") +
+          " as tokens",
         on: `tokens.user_id=${this.collection}.id AND tokens.expires > NOW()`,
       },
       columns: [`${this.collection}.*`],

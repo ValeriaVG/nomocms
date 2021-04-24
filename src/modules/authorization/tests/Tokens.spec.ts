@@ -5,7 +5,7 @@ import { Client } from "pg";
 import { createTable, dropTable, insertInto } from "core/sql";
 
 const db = new Client({ user: "nomocms", password: "nomocms" });
-const tokens = new Tokens({ db });
+const tokens = new Tokens({ db } as any);
 
 describe("Tokens Integration Test", () => {
   before(async () => {

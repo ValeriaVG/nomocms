@@ -6,7 +6,7 @@ import { mockDatabase } from "mocks";
 import { createTable, insertInto } from "core/sql";
 
 const db = mockDatabase();
-const ctx = { db };
+const ctx: any = { db };
 const styles = new Styles(ctx);
 const templates = new Templates(ctx);
 ctx["styles"] = styles;

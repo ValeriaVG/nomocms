@@ -43,15 +43,13 @@ export default class Pages extends SQLDataSource<
 > {
   readonly collection = "pages";
   async render(
-    input: ContentPageInput & { html: string; path: string; title: string },
-    extra?: Record<string, any>
+    input: ContentPageInput & { html: string; path: string; title: string }
   ) {
     if (!input.path)
       throw new HTTPUserInputError("path", "Please defined a path");
     const templates = this.context["templates"] as Templates;
     // Render page into url
     const result = await templates.render(input.template, {
-      ...extra,
       ...input,
       content: input.html,
     });
@@ -84,11 +82,7 @@ export default class Pages extends SQLDataSource<
       where: { path },
     });
     if (!page) return;
-    const items = await this.find({
-      where: { parent_id: page.id, code: "200" },
-      limit: 10,
-    });
-    return this.render(page, { items });
+    return this.render(page);
   }
   // TODO: make stream for big sites
   async getSiteMap() {

@@ -2,7 +2,8 @@ import { TemplateData } from "./types";
 import { Liquid } from "liquidjs";
 import { HTTPUserInputError } from "core/errors";
 import Styles from "modules/styles/Styles";
-import { ColumnDefinition, SQLDataSource } from "core/sql";
+import { ColumnDefinition, sql, SQLDataSource } from "core/sql";
+import { ContentPage } from "modules/pages/types";
 
 export default class Templates extends SQLDataSource<TemplateData> {
   readonly collection = "templates";
@@ -12,7 +13,8 @@ export default class Templates extends SQLDataSource<TemplateData> {
     body: { type: "text", nullable: true },
     style: { type: "text", nullable: true },
     head: { type: "text", nullable: true },
-    compiled: { type: "text", nullable: true },
+    script: { type: "text", nullable: true },
+    compiled: { type: "varchar", length: 255, nullable: true },
   };
 
   private engine = new Liquid({
@@ -50,7 +52,9 @@ export default class Templates extends SQLDataSource<TemplateData> {
       (id && ((await this.get(id)) as TemplateData)) ||
       Templates.DEFAULT_TEMPLATE;
     const tmp = (tpl.head ?? "") + Templates.delimiter + (tpl.body ?? "");
-    return this.renderText(tmp, variables).then((result) => {
+    const script = tpl.script && this.context.scripts[tpl.script];
+    const extra = script ? await script(variables) : {};
+    return this.renderText(tmp, { ...variables, ...extra }).then((result) => {
       const [head, body] = result.split(Templates.delimiter);
       return { head, body, id, style: tpl.compiled };
     });
@@ -98,5 +102,21 @@ export default class Templates extends SQLDataSource<TemplateData> {
     } catch (error) {
       throw new HTTPUserInputError(error.name, error.message);
     }
+  };
+  readonly migrations = {
+    init: {
+      up: sql`CREATE TABLE IF NOT EXISTS templates (
+        id character varying(50) PRIMARY KEY,
+        body text,
+        style text,
+        head text,
+        compiled text
+    )`,
+      down: sql`DROP TABLE IF EXISTS templates`,
+    },
+    add_script: {
+      up: sql`ALTER TABLE templates ADD COLUMN script varchar(255);`,
+      down: sql`ALTER TABLE templates DROP COLUMN script`,
+    },
   };
 }
