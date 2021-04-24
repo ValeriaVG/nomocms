@@ -2883,11 +2883,6 @@ levn@~0.3.0:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
 
-liquidjs@^9.23.4:
-  version "9.23.4"
-  resolved "https://registry.yarnpkg.com/liquidjs/-/liquidjs-9.23.4.tgz#02d0842a5cae11d7a51ca251f7e84c9134684e99"
-  integrity sha512-rBkblULYbdYPsXsSPttwlox/4W+J4WMjpKstSwQh1pPsb8SsekBR+KmZzqQ08lSDRiH5KIgku6y7Qwto3UQZWA==
-
 liftoff@3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/liftoff/-/liftoff-3.1.0.tgz#c9ba6081f908670607ee79062d700df062c52ed3"
@@ -2901,6 +2896,11 @@ liftoff@3.1.0:
     object.map "^1.0.0"
     rechoir "^0.6.2"
     resolve "^1.1.7"
+
+liquidjs@^9.23.4:
+  version "9.23.4"
+  resolved "https://registry.yarnpkg.com/liquidjs/-/liquidjs-9.23.4.tgz#02d0842a5cae11d7a51ca251f7e84c9134684e99"
+  integrity sha512-rBkblULYbdYPsXsSPttwlox/4W+J4WMjpKstSwQh1pPsb8SsekBR+KmZzqQ08lSDRiH5KIgku6y7Qwto3UQZWA==
 
 load-json-file@^1.0.0:
   version "1.1.0"
@@ -4294,10 +4294,10 @@ sass-graph@2.2.5:
     scss-tokenizer "^0.2.3"
     yargs "^13.3.2"
 
-sass@^1.32.10:
-  version "1.32.10"
-  resolved "https://registry.yarnpkg.com/sass/-/sass-1.32.10.tgz#d40da4e20031b450359ee1c7e69bc8cc89569241"
-  integrity sha512-Nx0pcWoonAkn7CRp0aE/hket1UP97GiR1IFw3kcjV3pnenhWgZEWUf0ZcfPOV2fK52fnOcK3JdC/YYZ9E47DTQ==
+sass@^1.32.11:
+  version "1.32.11"
+  resolved "https://registry.yarnpkg.com/sass/-/sass-1.32.11.tgz#b236b3ea55c76602c2ef2bd0445f0db581baa218"
+  integrity sha512-O9tRcob/fegUVSIV1ihLLZcftIOh0AF1VpKgusUfLqnb2jQ0GLDwI5ivv1FYWivGv8eZ/AwntTyTzjcHu0c/qw==
   dependencies:
     chokidar ">=3.0.0 <4.0.0"
 
