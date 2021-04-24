@@ -11,6 +11,7 @@ export default gql`
   input PageInput {
     content: String!
     template: ID
+    parent_id: ID
   }
   type PagesList {
     items: [Page]!

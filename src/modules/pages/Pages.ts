@@ -43,13 +43,15 @@ export default class Pages extends SQLDataSource<
 > {
   readonly collection = "pages";
   async render(
-    input: ContentPageInput & { html: string; path: string; title: string }
+    input: ContentPageInput & { html: string; path: string; title: string },
+    extra?: Record<string, any>
   ) {
     if (!input.path)
       throw new HTTPUserInputError("path", "Please defined a path");
     const templates = this.context["templates"] as Templates;
     // Render page into url
     const result = await templates.render(input.template, {
+      ...extra,
       ...input,
       content: input.html,
     });
@@ -82,7 +84,11 @@ export default class Pages extends SQLDataSource<
       where: { path },
     });
     if (!page) return;
-    return this.render(page);
+    const items = await this.find({
+      where: { parent_id: page.id, code: "200" },
+      limit: 10,
+    });
+    return this.render(page, { items });
   }
   // TODO: make stream for big sites
   async getSiteMap() {
@@ -99,7 +105,6 @@ export default class Pages extends SQLDataSource<
   readonly schema: Record<string, ColumnDefinition> = {
     id: { type: "serial", primaryKey: true },
     path: { type: "varchar", length: 255 },
-    // TODO: add default template
     template: { type: "varchar", length: 50, nullable: true },
     title: { type: "varchar", length: 255 },
     description: { type: "text", nullable: true },

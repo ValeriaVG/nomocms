@@ -44,7 +44,9 @@ export default abstract class SQLDataSource<
    * Requires context with db
    * @param context
    */
-  constructor(protected context: { db: Client }) {
+  constructor(
+    protected context: { db: Client; params?: Record<string, string> }
+  ) {
     super(context);
   }
 

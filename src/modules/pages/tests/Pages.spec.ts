@@ -82,4 +82,49 @@ Page Content
       '<h1 id="page-title">Page Title</h1>\n<p>Page Content</p>\n'
     );
   });
+  it("renders children pages", async () => {
+    const db = mockDatabase();
+    const templates = new Templates({ db });
+    const pages = new Pages({ db, templates } as any);
+    await db.query(createTable(pages.collection, pages.schema));
+    await db.query(createTable(templates.collection, templates.schema));
+    await templates.create({
+      id: "list",
+      body: `<ul>
+{%- for item in items -%}
+<li>
+<a href="<% item.path %>"><% item.title %></a>
+</li>      
+{%- endfor -%}
+</ul>`,
+    });
+    const { id } = await pages.create({
+      content: `
+---
+path: /
+title: List
+template: list
+---`,
+    });
+    await pages.create({
+      parent_id: id,
+      content: `
+---
+path: /page-1
+title: Page 1
+---`,
+    });
+    await pages.create({
+      parent_id: id,
+      content: `
+---
+path: /page-2
+title: Page 2
+---`,
+    });
+    const { body } = await pages.retrieve("/");
+    expect(body).to.be.equal(
+      '<ul><li>\n<a href="/page-1">Page 1</a>\n</li><li>\n<a href="/page-2">Page 2</a>\n</li></ul>'
+    );
+  });
 });
