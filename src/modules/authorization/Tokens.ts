@@ -1,4 +1,4 @@
-import { SQLDataSource, ColumnDefinition, deleteFrom } from "core/sql";
+import { SQLDataSource, ColumnDefinition, deleteFrom, sql } from "core/sql";
 
 type UserToken = {
   id: string;
@@ -63,4 +63,12 @@ export default class Tokens extends SQLDataSource<UserToken> {
       .query(...deleteFrom(this.collection, { where: { user_id } }))
       .then(({ rowCount }) => ({ deleted: rowCount }));
   }
+
+  readonly migrations = {
+    ...this.defaultMigrations,
+    foreign_user_id: {
+      up: sql`ALTER TABLE tokens ADD FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE`,
+      down: sql`ALTER TABLE tokens DROP FOREIGN KEY (user_id)`,
+    },
+  };
 }

@@ -3,6 +3,7 @@ import {
   SQLDataSource,
   deleteFrom,
   insertInto,
+  sql,
 } from "core/sql";
 
 /**
@@ -132,4 +133,12 @@ export default class Permissions extends SQLDataSource<
       }, new Map())
     );
   }
+
+  readonly migrations = {
+    ...this.defaultMigrations,
+    foreign_user_id: {
+      up: sql`ALTER TABLE permissions ADD FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE`,
+      down: sql`ALTER TABLE permissions DROP FOREIGN KEY (user_id)`,
+    },
+  };
 }

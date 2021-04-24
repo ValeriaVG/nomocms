@@ -62,5 +62,9 @@ export default class Analytics extends SQLDataSource<
       `,
       down: sql`DROP TABLE  IF EXISTS analytics`,
     },
+    foreign_user_id: {
+      up: sql`ALTER TABLE analytics ADD FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL ON UPDATE CASCADE`,
+      down: sql`ALTER TABLE analytics DROP FOREIGN KEY (user_id)`,
+    },
   };
 }
