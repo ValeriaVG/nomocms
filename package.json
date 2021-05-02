@@ -35,7 +35,7 @@
     "monaco-editor": "^0.23.0",
     "pg": "^8.6.0",
     "ramda": "^0.27.1",
-    "sass": "^1.32.11",
+    "sass": "^1.32.12",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
