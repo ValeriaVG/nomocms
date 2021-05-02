@@ -29,11 +29,6 @@ export default (
             <app-logo class="${styles["vertical-logo"]}" vertical></app-logo>
           </nav>
           <nav class="${styles.tree}">
-            <input
-              type="search"
-              placeholder="Search ..."
-              class="${styles.search}"
-            />
             <app-menu></app-menu>
           </nav>
         </div>
