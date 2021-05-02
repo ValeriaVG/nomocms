@@ -4338,10 +4338,10 @@ pg-int8@1.0.1:
   resolved "https://registry.yarnpkg.com/pg-int8/-/pg-int8-1.0.1.tgz#943bd463bf5b71b4170115f80f8efc9a0c0eb78c"
   integrity sha512-WCtabS6t3c8SkpDBUlb1kjOs7l66xsGdKpIPZsg4wR+B3+u9UAum2odSsF9tnvxg80h4ZxLWMy4pRjOsFIqQpw==
 
-pg-mem@^1.9.6:
-  version "1.9.6"
-  resolved "https://registry.yarnpkg.com/pg-mem/-/pg-mem-1.9.6.tgz#cd58c2b01f6c257d953f7e9a3e26bd3587330a18"
-  integrity sha512-SN2dywvhg97ZpLLjaZ7kE6R9BwLVXB48DbeYBrWa+XJUg+cPPnBhK9NJcDOuY8KtrsnT0XypD0gbqk1joEPuUw==
+pg-mem@^1.9.7:
+  version "1.9.7"
+  resolved "https://registry.yarnpkg.com/pg-mem/-/pg-mem-1.9.7.tgz#acffbd97206554b46e36c863820df081d29a15c1"
+  integrity sha512-IQxr5rDXNMBVWfIlaNstvqRK9UsXcdqwmDhsBI51tO4uFbnFj86o9EPr9E2RqphIyw4tyAS0I5aj7JQ6d1mtgg==
   dependencies:
     "@mikro-orm/core" "^4.5.3"
     "@mikro-orm/postgresql" "^4.5.3"
