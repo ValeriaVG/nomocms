@@ -34,7 +34,11 @@ const PREVIEW_PAGE = gql`
   }
 `;
 
-const state: { codeEditor?: CodeEditor; pagePreview?: PagePreview } = {};
+const state: {
+  codeEditor?: CodeEditor;
+  pagePreview?: PagePreview;
+  currentPreview?: string;
+} = {};
 
 const savePage = async (id?: string) => {
   const content = state.codeEditor.value;
@@ -74,9 +78,11 @@ export default async ({ id }: { id?: string }) => {
     parameters.innerHTML = html`<page-preview></page-preview>`;
     state.codeEditor = main.querySelector("code-editor");
     state.pagePreview = parameters.querySelector("page-preview");
-    state.codeEditor.onchange = () => updatePreview();
-    updatePreview(true);
   }
+  state.codeEditor.onchange = () => {
+    updatePreview(state.currentPreview !== id);
+    state.currentPreview = id;
+  };
   const result = await api.query(PAGE, { id });
   state.codeEditor!.setAttribute("value", result.data?.page.content ?? "");
 };
