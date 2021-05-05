@@ -2903,10 +2903,10 @@ liftoff@3.1.0:
     rechoir "^0.6.2"
     resolve "^1.1.7"
 
-liquidjs@^9.23.4:
-  version "9.23.4"
-  resolved "https://registry.yarnpkg.com/liquidjs/-/liquidjs-9.23.4.tgz#02d0842a5cae11d7a51ca251f7e84c9134684e99"
-  integrity sha512-rBkblULYbdYPsXsSPttwlox/4W+J4WMjpKstSwQh1pPsb8SsekBR+KmZzqQ08lSDRiH5KIgku6y7Qwto3UQZWA==
+liquidjs@^9.24.2:
+  version "9.24.2"
+  resolved "https://registry.yarnpkg.com/liquidjs/-/liquidjs-9.24.2.tgz#3506747ea30b393e6270f0e9bbd88d381635c825"
+  integrity sha512-cuLmLuDrn10FSQY4sZ6mjfmLy5uf5HoZ5n2k7H04ZB0Q9DBuvjx8Jw5Zd76PCo6AMV4HW7E9w5Gw17GkeK0uUQ==
 
 load-json-file@^1.0.0:
   version "1.1.0"
