@@ -26,11 +26,13 @@ export default gql`
     page(id: ID!): Page @requiresPermission(scope: "pages", min: read)
     pages(parent: ID, limit: Int, offset: Int): PagesList
       @requiresPermission(scope: "pages", min: list)
+    pagePreview(input: PageInput): String
+      @requiresPermission(scope: "pages", min: read)
   }
   type Mutation {
-    createPage(input: PageInput): Page
+    createPage(input: PageInput!): Page
       @requiresPermission(scope: "pages", min: create)
-    updatePage(id: ID!, input: PageInput): Page
+    updatePage(id: ID!, input: PageInput!): Page
       @requiresPermission(scope: "pages", min: update)
     deletePage(id: ID!): Boolean
       @requiresPermission(scope: "pages", min: delete)

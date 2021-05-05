@@ -1,7 +1,9 @@
 import { html, attr } from "amp/lib";
 import CodeEditor from "dashboard/components/code-editor";
+import PagePreview from "dashboard/components/page-preview";
 import layout from "dashboard/layout";
 import api from "dashboard/utils/api";
+import { deferred } from "dashboard/utils/functions";
 import gql from "utils/gql";
 
 const PAGE = gql`
@@ -26,7 +28,13 @@ const CREATE_PAGE = gql`
   }
 `;
 
-const state: { codeEditor?: CodeEditor; pagePreview?: HTMLElement } = {};
+const PREVIEW_PAGE = gql`
+  query($input: PageInput!) {
+    pagePreview(input: $input)
+  }
+`;
+
+const state: { codeEditor?: CodeEditor; pagePreview?: PagePreview } = {};
 
 const savePage = async (id?: string) => {
   const content = state.codeEditor.value;
@@ -37,6 +45,17 @@ const savePage = async (id?: string) => {
   });
   console.debug(result);
 };
+
+const updatePreview = deferred(async () => {
+  const content = state.codeEditor.value;
+  const result = await api.query(PREVIEW_PAGE, { input: { content } });
+  if (!result.data) return;
+  const url =
+    URL.createObjectURL(
+      new Blob([result.data.pagePreview], { type: "text/html" })
+    ) + "#development=1";
+  state.pagePreview.frame.setAttribute("src", url);
+}, 500);
 
 export default async ({ id }: { id?: string }) => {
   const onKeyUp = (e: KeyboardEvent) => {
@@ -54,6 +73,8 @@ export default async ({ id }: { id?: string }) => {
     parameters.innerHTML = html`<page-preview></page-preview>`;
     state.codeEditor = main.querySelector("code-editor");
     state.pagePreview = parameters.querySelector("page-preview");
+    state.codeEditor.onchange = () => updatePreview();
+    updatePreview(true);
   }
   const result = await api.query(PAGE, { id });
   state.codeEditor!.setAttribute("value", result.data?.page.content ?? "");

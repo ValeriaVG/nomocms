@@ -43,10 +43,11 @@ export default class Pages extends SQLDataSource<
 > {
   readonly collection = "pages";
   async render(
-    input: ContentPageInput & { html: string; path: string; title: string }
+    input: ContentPageInput & { html: string; path: string; title: string },
+    preview?: Boolean
   ) {
-    if (!input.path)
-      throw new HTTPUserInputError("path", "Please defined a path");
+    if (!preview && !input.path)
+      throw new HTTPUserInputError("path", "Please define a path");
     const templates = this.context["templates"] as Templates;
     // Render page into url
     const result = await templates.render(input.template, {

@@ -2,10 +2,6 @@ import NormalizedURL from "core/NormalizedURL";
 import Pages from "./Pages";
 
 export default {
-  "/_preview/page": async ({ pages }: { pages: Pages }, { input }) => {
-    const result = await pages.render(input);
-    return { ...result, type: "amp" } as any;
-  },
   "/sitemap.xml": async ({
     pages,
     appUrl,
