@@ -37,12 +37,12 @@ const PREVIEW_PAGE = gql`
 const state: {
   codeEditor?: CodeEditor;
   pagePreview?: PagePreview;
+  saveButton?: HTMLButtonElement;
   currentPreview?: string;
 } = {};
 
 const savePage = async (id?: string) => {
   const content = state.codeEditor.value;
-
   const result = await api.mutate(id ? UPDATE_PAGE : CREATE_PAGE, {
     id,
     input: { content },
@@ -63,22 +63,17 @@ const updatePreview = deferred(async () => {
 }, 500);
 
 export default async ({ id }: { id?: string }) => {
-  const onKeyUp = (e: KeyboardEvent) => {
-    if (e.ctrlKey && e.key === "s") savePage(id);
-  };
-
-  document.removeEventListener("keyup", onKeyUp);
-  document.addEventListener("keyup", onKeyUp, true);
-
   if (!state.codeEditor || !state.pagePreview) {
     const { main, parameters } = layout(document.body);
-    main.innerHTML = html`<code-editor
-      language="markdown-extended"
-    ></code-editor>`;
+    main.innerHTML = html` <button>Save</button>
+      <code-editor language="markdown-extended"></code-editor>`;
     parameters.innerHTML = html`<page-preview></page-preview>`;
     state.codeEditor = main.querySelector("code-editor");
     state.pagePreview = parameters.querySelector("page-preview");
+    state.saveButton = main.querySelector("button");
   }
+
+  state.saveButton.onclick = () => savePage(id);
   state.codeEditor.onchange = () => {
     updatePreview(state.currentPreview !== id);
     state.currentPreview = id;
