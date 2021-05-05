@@ -14,6 +14,7 @@ export type RouteMatcher<T> = (
 
 export function createRoutes<T>(routes: Record<string, T>): RouteMatcher<T> {
   const cache = new Map<string, RegExp>();
+  const defaultRoute = routes["/*"];
   return (url) => {
     const urls = Array.isArray(url) ? url : [url];
     for (let path in routes) {
@@ -30,18 +31,18 @@ export function createRoutes<T>(routes: Record<string, T>): RouteMatcher<T> {
         }
       }
     }
+    if (defaultRoute) return [defaultRoute, {}];
     return [];
   };
 }
 
 export default function createRouter(
-  routes: Record<string, (params: Record<string, string>) => void>,
-  defaultRoute: () => void = () => {}
+  routes: Record<string, (params: Record<string, string>) => void>
 ) {
   const matchRoute = createRoutes(routes);
   return (path: string) => {
     const [route, params] = matchRoute(path);
-    if (!route) return defaultRoute();
+    if (!route) return;
     return route(params);
   };
 }

@@ -12,7 +12,7 @@ import routeRequest from "./routeRequest";
 import responseFactory from "./responseFactory";
 import NormalizedURL from "./NormalizedURL";
 import Users from "modules/authorization/Users";
-import { insertInto, sql } from "./sql";
+import { insertInto } from "./sql";
 import cors from "./cors";
 import { perform } from "./sql/migration";
 import { AppModules } from "modules";
@@ -143,7 +143,6 @@ export default async function core(modules: AppModules, ctx: APIContext) {
         method as HTTPMethod,
         routes
       );
-      // TODO: resolver === null
       const response = await resolver(context, { ...routeParams, ...params });
       if (typeof response !== "object")
         throw new Error(

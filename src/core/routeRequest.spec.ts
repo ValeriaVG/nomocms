@@ -91,6 +91,10 @@ describe("routeRequest", () => {
         state.path = "user";
         state.params = params;
       },
+      "/*": () => {
+        state.path = "404";
+        state.params = {};
+      },
     });
     route("/");
     expect(state).to.have.property("path", "home");
@@ -100,5 +104,7 @@ describe("routeRequest", () => {
     route(`/user/${rnd}`);
     expect(state).to.have.property("path", "user");
     expect(state.params).to.have.property("id", rnd.toString());
+    route(`/some/other/path`);
+    expect(state).to.have.property("path", "404");
   });
 });
