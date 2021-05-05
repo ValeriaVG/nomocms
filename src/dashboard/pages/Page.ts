@@ -47,6 +47,7 @@ const savePage = async (id?: string) => {
 };
 
 const updatePreview = deferred(async () => {
+  state.pagePreview.frame.setAttribute("src", "");
   const content = state.codeEditor.value;
   const result = await api.query(PREVIEW_PAGE, { input: { content } });
   if (!result.data) return;

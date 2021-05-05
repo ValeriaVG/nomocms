@@ -15,4 +15,16 @@ describe("deferred", () => {
     await sleep(100);
     expect(state).to.have.property("num", 1);
   });
+  it("allows forced immediate execution", async () => {
+    const state = { num: 0 };
+    const deferredFunction = deferred(() => {
+      state.num++;
+    }, 100);
+    deferredFunction(true);
+    deferredFunction(true);
+    deferredFunction(true);
+    deferredFunction(true);
+    await sleep(100);
+    expect(state).to.have.property("num", 4);
+  });
 });
