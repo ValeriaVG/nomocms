@@ -2,7 +2,8 @@ export const deferred = (fun: CallableFunction, timeoutMS: number) => {
   let timer;
   return (force?: boolean) => {
     if (timer) clearTimeout(timer);
-    timer = setTimeout(fun, force ? 0 : timeoutMS);
+    if (force) return fun();
+    timer = setTimeout(fun, timeoutMS);
   };
 };
 
