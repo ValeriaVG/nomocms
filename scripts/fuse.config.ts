@@ -1,5 +1,5 @@
 import path from "path";
-import { pluginSass } from "fuse-box";
+import { pluginSass } from "./utils/pluginSass";
 import pluginMonacoEditorWorkers from "./utils/pluginMonacoEditorWorkers";
 export const dashboard = {
   entry: path.resolve(__dirname, "../src/dashboard/index.ts"),
