@@ -29,7 +29,7 @@
     "formidable": "^1.2.2",
     "graphql": "^15.5.0",
     "gray-matter": "^4.0.3",
-    "liquidjs": "^9.24.2",
+    "liquidjs": "^9.25.0",
     "marked": "^2.0.3",
     "mime-types": "^2.1.30",
     "monaco-editor": "^0.23.0",
