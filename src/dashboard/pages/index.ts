@@ -1,17 +1,5 @@
-import layout from "dashboard/layout";
-import createRouter from "utils/router";
-import Login from "./Login";
-import Page from "./Page";
+import { defineElements } from "dashboard/utils/elements";
+import LoadingScreen from "./loading-screen";
+import LoginPage from "./login-page";
 
-export const initial = createRouter({
-  "/login": Login,
-  "/*": Login,
-});
-
-export const authorized = createRouter({
-  "/": () => {
-    const { main } = layout(document.body);
-    main.innerHTML = "<h1>Home</h1><p>Welcome!</p>";
-  },
-  "/pages/:id": Page,
-});
+defineElements({ "login-page": LoginPage, "loading-screen": LoadingScreen });

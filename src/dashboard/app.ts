@@ -1,14 +1,11 @@
 import "./components";
+import "./pages";
 import "./styles.scss";
 import gql from "utils/gql";
 import api from "./utils/api";
-import * as router from "./pages";
-import { mount } from "./utils/router";
-
-const state = {
-  loading: true,
-  hasAccess: false,
-};
+import { createStateEmitter } from "./utils/state";
+import { html } from "amp/lib";
+import markup from "./markup";
 
 const ACCESS = gql`
   {
@@ -18,28 +15,29 @@ const ACCESS = gql`
   }
 `;
 
-const route = () => {
-  if (state.hasAccess) {
-    router.authorized(document.location.pathname);
-  } else {
-    router.initial(document.location.pathname);
-  }
-};
 const app = {
-  get state() {
-    return { ...state };
-  },
-  setState(newState) {
-    Object.assign(state, newState);
-    route();
-  },
-  async init() {
-    mount(route);
-    const result = await api.query(ACCESS).catch(console.error);
-    this.setState({
-      hasAccess: Boolean(result?.data?.access?.canAccessDashboard),
-      loading: false,
-    });
+  ...createStateEmitter({
+    loading: true,
+    hasAccess: false,
+  }),
+  mount(element: HTMLElement) {
+    // Mount loading page
+    const processUpdates = ({ loading, hasAccess }) => {
+      if (loading)
+        return (element.innerHTML = html`<loading-screen></loading-screen>`);
+      if (hasAccess) return (element.innerHTML = markup);
+      element.innerHTML = html`<login-page></login-page>`;
+    };
+    this.onUpdate(processUpdates);
+    processUpdates(this.getState());
+    // Fetch access
+    (async () => {
+      const result = await api.query(ACCESS).catch(console.error);
+      this.setState({
+        hasAccess: Boolean(result?.data?.access?.canAccessDashboard),
+        loading: false,
+      });
+    })();
   },
 };
 export default app;

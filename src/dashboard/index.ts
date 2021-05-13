@@ -1,5 +1,2 @@
-// Temporary UI markup
-import "./markup";
-
-// import app from "./app";
-// app.init();
+import app from "./app";
+app.mount(document.body);

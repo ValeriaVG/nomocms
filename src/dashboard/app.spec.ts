@@ -4,8 +4,21 @@ import sinon from "sinon";
 import app from "./app";
 import api from "./utils/api";
 
+const init = () =>
+  new Promise((r) => {
+    app.mount(document.body);
+    const onLoad = ({ loading }: { loading: boolean }) => {
+      if (!loading) {
+        app.offUpdate(onLoad);
+        r(true);
+      }
+    };
+    app.onUpdate(onLoad);
+  });
+
 describe("dashboard", () => {
   beforeEach(() => {
+    app.setState({ loading: false, hasAccess: false });
     document.body.innerHTML = "";
   });
   afterEach(() => {
@@ -16,7 +29,7 @@ describe("dashboard", () => {
     sinon.replace(api, "query", async () => ({
       data: { access: { canAccessDashboard: false } },
     }));
-    await app.init();
+    await app.mount(document.body);
     expect(document.querySelector("input[type=password]")).not.to.be.null;
     expect(document.querySelector("aside")).to.be.null;
   });
@@ -24,7 +37,7 @@ describe("dashboard", () => {
     sinon.replace(api, "query", async () => {
       throw new Error("error");
     });
-    await app.init();
+    await init();
     expect(document.querySelector("input[type=password]")).not.to.be.null;
     expect(document.querySelector("aside")).to.be.null;
   });
@@ -33,7 +46,7 @@ describe("dashboard", () => {
       code: 500,
       errors: ["something"],
     }));
-    await app.init();
+    await init();
     expect(document.querySelector("input[type=password]")).not.to.be.null;
     expect(document.querySelector("aside")).to.be.null;
   });
@@ -45,7 +58,7 @@ describe("dashboard", () => {
         },
       },
     }));
-    await app.init();
+    await init();
     expect(document.querySelector("input[type=password]")).to.be.null;
     expect(document.querySelector("aside")).not.to.be.null;
     expect(document.querySelector("main")).not.to.be.null;

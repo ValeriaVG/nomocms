@@ -13,7 +13,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import "../components";
 
-document.body.innerHTML = html`
+export default html`
   <div class="${styles.wrapper}">
     <header class="${styles.header}">
       <nav class="${styles.tabs}">
@@ -63,6 +63,16 @@ document.body.innerHTML = html`
         </ul>
       </section>
     </aside>
-    <main></main>
+    <main>
+      <code-editor
+        language="markdown-extended"
+        value="---
+path:/
+---
+#Hello!
+
+"
+      ></code-editor>
+    </main>
   </div>
 `;
