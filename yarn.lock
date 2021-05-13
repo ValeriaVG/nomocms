@@ -3037,10 +3037,10 @@ moment@^2.27.0:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
   integrity sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==
 
-monaco-editor@^0.23.0:
-  version "0.23.0"
-  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.23.0.tgz#24844ba5640c7adb3a2a3ff3b520cf2d7170a6f0"
-  integrity sha512-q+CP5zMR/aFiMTE9QlIavGyGicKnG2v/H8qVvybLzeFsARM8f6G9fL0sMST2tyVYCwDKkGamZUI6647A0jR/Lg==
+monaco-editor@^0.24.0:
+  version "0.24.0"
+  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.24.0.tgz#990b55096bcc95d08d8d28e55264c6eb17707269"
+  integrity sha512-o1f0Lz6ABFNTtnEqqqvlY9qzNx24rQZx1RgYNQ8SkWkE+Ka63keHH/RqxQ4QhN4fs/UYOnvAtEUZsPrzccH++A==
 
 moo@^0.5.0, moo@^0.5.1:
   version "0.5.1"
@@ -4009,10 +4009,10 @@ safe-regex@^1.1.0:
   resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
   integrity sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
 
-sass@^1.32.12:
-  version "1.32.12"
-  resolved "https://registry.yarnpkg.com/sass/-/sass-1.32.12.tgz#a2a47ad0f1c168222db5206444a30c12457abb9f"
-  integrity sha512-zmXn03k3hN0KaiVTjohgkg98C3UowhL1/VSGdj4/VAAiMKGQOE80PFPxFP2Kyq0OUskPKcY5lImkhBKEHlypJA==
+sass@^1.32.13:
+  version "1.32.13"
+  resolved "https://registry.yarnpkg.com/sass/-/sass-1.32.13.tgz#8d29c849e625a415bce71609c7cf95e15f74ed00"
+  integrity sha512-dEgI9nShraqP7cXQH+lEXVf73WOPCse0QlFzSD8k+1TcOxCMwVXfQlr0jtoluZysQOyJGnfr21dLvYKDJq8HkA==
   dependencies:
     chokidar ">=3.0.0 <4.0.0"
 
