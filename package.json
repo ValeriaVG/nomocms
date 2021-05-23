@@ -30,12 +30,12 @@
     "graphql": "^15.5.0",
     "gray-matter": "^4.0.3",
     "liquidjs": "^9.25.0",
-    "marked": "^2.0.3",
+    "marked": "^2.0.4",
     "mime-types": "^2.1.30",
     "monaco-editor": "^0.24.0",
     "pg": "^8.6.0",
     "ramda": "^0.27.1",
-    "sass": "^1.32.13",
+    "sass": "^1.33.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
@@ -65,7 +65,7 @@
     "node-fetch": "^2.6.1",
     "nyc": "^15.1.0",
     "pg-mem": "^1.9.9",
-    "postcss": "^8.2.15",
+    "postcss": "^8.3.0",
     "postcss-modules": "^4.0.0",
     "sinon": "^10.0.1",
     "supertest": "^6.1.3",
