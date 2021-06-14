@@ -32,7 +32,7 @@
     "liquidjs": "^9.25.0",
     "marked": "^2.0.7",
     "mime-types": "^2.1.31",
-    "monaco-editor": "^0.24.0",
+    "monaco-editor": "^0.25.0",
     "pg": "^8.6.0",
     "ramda": "^0.27.1",
     "sass": "^1.34.1",
