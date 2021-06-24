@@ -51,7 +51,7 @@
     "@types/node": "^15.12.4",
     "@types/node-fetch": "^2.5.10",
     "@types/pg": "^8.6.0",
-    "@types/ramda": "^0.27.40",
+    "@types/ramda": "^0.27.41",
     "@types/sass": "^1.16.0",
     "@types/sinon": "^10.0.2",
     "@types/supertest": "^2.0.11",
