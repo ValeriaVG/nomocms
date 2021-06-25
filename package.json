@@ -30,7 +30,7 @@
     "graphql": "^15.5.1",
     "gray-matter": "^4.0.3",
     "liquidjs": "^9.25.1",
-    "marked": "^2.1.1",
+    "marked": "^2.1.2",
     "mime-types": "^2.1.31",
     "monaco-editor": "^0.25.2",
     "pg": "^8.6.0",
