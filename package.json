@@ -45,7 +45,7 @@
     "@types/chai-like": "^1.1.0",
     "@types/chai-things": "^0.0.34",
     "@types/cookie": "^0.4.0",
-    "@types/formidable": "^1.2.2",
+    "@types/formidable": "^1.2.3",
     "@types/jsdom": "^16.2.12",
     "@types/mocha": "^8.2.2",
     "@types/node": "^16.0.0",
