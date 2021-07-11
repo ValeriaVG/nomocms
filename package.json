@@ -52,7 +52,7 @@
     "@types/node-fetch": "^2.5.11",
     "@types/pg": "^8.6.0",
     "@types/ramda": "^0.27.44",
-    "@types/sass": "^1.16.0",
+    "@types/sass": "^1.16.1",
     "@types/sinon": "^10.0.2",
     "@types/supertest": "^2.0.11",
     "amdefine": "^1.0.1",
