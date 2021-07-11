@@ -369,10 +369,10 @@
   dependencies:
     "@types/chai" "*"
 
-"@types/chai-things@^0.0.34":
-  version "0.0.34"
-  resolved "https://registry.yarnpkg.com/@types/chai-things/-/chai-things-0.0.34.tgz#42c2be3c9670559b342d163473403da488ce27bc"
-  integrity sha512-vcpFz782jq7FpEnE9Yq0cfgP8NwRPQgQ2271Q+7hEldOHttTQaYuVj0S9ViQXkM+sYSgUh/2OF5vTq8iei8Ljg==
+"@types/chai-things@^0.0.35":
+  version "0.0.35"
+  resolved "https://registry.yarnpkg.com/@types/chai-things/-/chai-things-0.0.35.tgz#4b5d9ec032067faa62b3bf7bb40dc0bec941945f"
+  integrity sha512-BC8FwMf9FHj87XT4dgTwbdb8dNRilGqYWGmwLPdJ54YNk6K2PlcFTt68NGHjgPDnms8zIYcOtmPePd0mPNTo/Q==
   dependencies:
     "@types/chai" "*"
 
