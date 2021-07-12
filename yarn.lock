@@ -362,10 +362,10 @@
   resolved "https://registry.yarnpkg.com/@types/bcryptjs/-/bcryptjs-2.4.2.tgz#e3530eac9dd136bfdfb0e43df2c4c5ce1f77dfae"
   integrity sha512-LiMQ6EOPob/4yUL66SZzu6Yh77cbzJFYll+ZfaPiPPFswtIlA/Fs1MzdKYA7JApHU49zQTbJGX3PDmCpIdDBRQ==
 
-"@types/chai-like@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@types/chai-like/-/chai-like-1.1.0.tgz#288668e132f2c4fd618dc5747e0c1f2b7f20c4cc"
-  integrity sha512-PQ8Ejnng+k377MZv+PLV2q8J4vzDZup95kZv7WhmHQ9He8haZqBz4b1fYY9uZQfbq+Oaz04m2/9Ffl5BGbFImg==
+"@types/chai-like@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@types/chai-like/-/chai-like-1.1.1.tgz#c454039b0a2f92664fb5b7b7a2a66c3358783ae7"
+  integrity sha512-s46EZsupBuVhLn66DbRee5B0SELLmL4nFXVrBiV29BxLGm9Sh7Bful623j3AfiQRu2zAP4cnlZ3ETWB3eWc4bA==
   dependencies:
     "@types/chai" "*"
 
