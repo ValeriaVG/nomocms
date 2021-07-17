@@ -24,9 +24,11 @@ const app = {
     // Mount loading page
     const processUpdates = ({ loading, hasAccess }) => {
       if (loading)
-        return (element.innerHTML = html`<loading-screen></loading-screen>`);
+        return (element.innerHTML = html`<loading-screen></loading-screen
+          ><snack-bar></snack-bar>`);
       if (hasAccess) return (element.innerHTML = markup);
-      element.innerHTML = html`<login-page></login-page>`;
+      element.innerHTML = html`<login-page></login-page
+        ><snack-bar></snack-bar>`;
     };
     this.onUpdate(processUpdates);
     processUpdates(this.getState());

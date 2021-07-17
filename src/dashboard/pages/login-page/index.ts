@@ -1,5 +1,6 @@
 import { html } from "amp/lib";
 import app from "dashboard/app";
+import SnackBar from "dashboard/components/snack-bar";
 import api from "dashboard/utils/api";
 import gql from "utils/gql";
 import styles from "./styles.scss";
@@ -60,6 +61,17 @@ export default class LoginPage extends HTMLElement {
       {}
     );
     const result = await api.query(LOGIN, data);
+    const snackbar: SnackBar = document.querySelector("snack-bar");
+    if (result?.errors) {
+      for (const error of result.errors) {
+        snackbar.addNotification({
+          type: "error",
+          title: "Failed to log in",
+          message: error,
+          timeoutMS: 15_000,
+        });
+      }
+    }
     if (!result?.data?.login.canAccessDashboard) return;
     this.setAMPAccessCookie(result.data.login.token);
     app.setState({ hasAccess: true });

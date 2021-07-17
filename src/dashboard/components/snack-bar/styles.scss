@@ -1,0 +1,33 @@
+@import "../../theme";
+.snackbar {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  width: min(20rem, calc(100% - 2rem));
+}
+
+.notification {
+  color: white;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin: 0.5rem 0;
+  [slot="title"] {
+    display: inherit;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+  }
+  [slot="message"] {
+    display: inherit;
+    font-size: 0.8em;
+    color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+.error-notification {
+  @extend .notification;
+  background: $danger;
+}
+.success-notification {
+  @extend .notification;
+  background: $success;
+}

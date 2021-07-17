@@ -5,6 +5,7 @@ import CodeEditor from "./code-editor";
 import PagePreview from "./page-preview";
 import AppMenu from "./app-menu";
 import AppLink from "./app-link";
+import SnackBar from "./snack-bar";
 
 defineElements({
   "app-logo": Logo,
@@ -12,4 +13,5 @@ defineElements({
   "app-menu": AppMenu,
   "code-editor": CodeEditor,
   "page-preview": PagePreview,
+  "snack-bar": SnackBar,
 });

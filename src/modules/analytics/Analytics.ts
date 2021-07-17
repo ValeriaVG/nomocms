@@ -35,9 +35,7 @@ export default class Analytics extends SQLDataSource<
     from: Date;
     to: Date;
   }): Promise<Array<{ date: Date; pageviews: number }>> {
-    const {
-      rows: items,
-    } = await this.context.db.query(
+    const { rows: items } = await this.context.db.query(
       sql`SELECT "time"::date as date, COUNT(*)::int as count FROM ${this.collection} WHERE "event"='pageview' AND "time" BETWEEN $1 and $2 GROUP BY "time"::date ORDER BY "time"::date ASC`,
       [from, to]
     );
@@ -60,7 +58,7 @@ export default class Analytics extends SQLDataSource<
       SELECT create_hypertable('analytics','time');
       CREATE INDEX ON analytics (event, time DESC);
       `,
-      down: sql`DROP TABLE  IF EXISTS analytics`,
+      down: sql`DROP TABLE IF EXISTS analytics`,
     },
     foreign_user_id: {
       up: sql`ALTER TABLE analytics ADD FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL ON UPDATE CASCADE`,
