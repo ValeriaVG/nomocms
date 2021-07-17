@@ -60,20 +60,26 @@ export default class LoginPage extends HTMLElement {
       }),
       {}
     );
-    const result = await api.query(LOGIN, data);
+    const result = await api.query<{
+      login:
+        | { canAccessDashboard: true; token: string }
+        | { canAccessDashboard: false };
+    }>(LOGIN, data);
     const snackbar: SnackBar = document.querySelector("snack-bar");
-    if (result?.errors) {
+    if ("errors" in result) {
       for (const error of result.errors) {
         snackbar.addNotification({
           type: "error",
           title: "Failed to log in",
-          message: error,
+          message: error.message,
           timeoutMS: 15_000,
         });
       }
+      return;
     }
-    if (!result?.data?.login.canAccessDashboard) return;
-    this.setAMPAccessCookie(result.data.login.token);
-    app.setState({ hasAccess: true });
+    if (result.data.login.canAccessDashboard) {
+      this.setAMPAccessCookie(result.data.login.token);
+      app.setState({ hasAccess: true });
+    }
   };
 }

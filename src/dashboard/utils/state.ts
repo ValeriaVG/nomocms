@@ -36,5 +36,8 @@ export function createStateEmitter<T extends Record<string, any>>(
     }
     stateSubscribers.forEach((handler) => handler(state));
   };
-  return { getState, setState, on, off, onUpdate, offUpdate };
+  const stop = () => {
+    stateSubscribers.forEach((handler) => stateSubscribers.delete(handler));
+  };
+  return { getState, setState, on, off, onUpdate, offUpdate, stop };
 }

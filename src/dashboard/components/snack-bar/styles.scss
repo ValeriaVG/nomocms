@@ -4,6 +4,7 @@
   bottom: 1rem;
   right: 1rem;
   width: min(20rem, calc(100% - 2rem));
+  z-index: 10;
 }
 
 .notification {

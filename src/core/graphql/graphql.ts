@@ -30,7 +30,7 @@ export default function GraphQL(schema) {
       variableValues,
     });
     if ("errors" in response) {
-      return { code: response.errors[0]?.extensions?.code ?? 400, response };
+      return { ...response, code: response.errors[0]?.extensions?.code ?? 400 };
     }
     return response;
   };

@@ -33,7 +33,7 @@ export default class AppMenu extends HTMLElement {
   async connectedCallback() {
     this.innerHTML = html` <input type="search" placeholder="Search ..." /> `;
     const tree = await api.query(GET_TREE);
-    this.attachTree(tree.data.pages.items, this);
+    if ("data" in tree) this.attachTree(tree.data.pages.items, this);
   }
   attachTree(items: Item[], element: HTMLElement) {
     const ul = document.createElement("ul");

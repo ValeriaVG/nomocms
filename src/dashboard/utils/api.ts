@@ -2,7 +2,10 @@ import { GraphQLQuery } from "utils/gql";
 import { apiURL } from "../config";
 
 export function createApi(url: string) {
-  const call = async (query: GraphQLQuery, variables?: Record<string, any>) => {
+  const call = async <T = any>(
+    query: GraphQLQuery,
+    variables?: Record<string, any>
+  ): Promise<{ data: T } | { errors: { message: string }[] }> => {
     const request: { query: string; variables?: Record<string, any> } = {
       query: query.text,
     };
@@ -20,9 +23,8 @@ export function createApi(url: string) {
       const json = await response.json();
       return json;
     } catch (error) {
-      console.error(error);
       return {
-        errors: [error],
+        errors: [{ message: error.message }],
       };
     }
   };
