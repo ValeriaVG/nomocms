@@ -4,8 +4,9 @@ import SnackBar from "./index";
 describe("snack-bar", () => {
   let snackbar: SnackBar;
   before(() => {
-    customElements.define("test-snack-bar", SnackBar);
-    snackbar = document.createElement("test-snack-bar") as SnackBar;
+    if (!customElements.get("snack-bar"))
+      customElements.define("snack-bar", SnackBar);
+    snackbar = document.createElement("snack-bar") as SnackBar;
     document.body.appendChild(snackbar);
   });
   beforeEach(() => {
