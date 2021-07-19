@@ -2807,10 +2807,10 @@ moment@^2.27.0:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
   integrity sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==
 
-monaco-editor@^0.26.0:
-  version "0.26.0"
-  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.26.0.tgz#6c1141dc10edb58a9c089d83efdac339f2c65c88"
-  integrity sha512-Ce1Zs/dPCFv+FQ7x9BIKNRN8ytsj8IyompD3zaENnb8h8W8HMaW/RIw723WOs27ZTLsESiFAQfHrhZs+zDyO3w==
+monaco-editor@^0.26.1:
+  version "0.26.1"
+  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.26.1.tgz#62bb5f658bc95379f8abb64b147632bd1c019d73"
+  integrity sha512-mm45nUrBDk0DgZKgbD7+bhDOtcAFNGPJJRAdS6Su1kTGl6XEgC7U3xOmDUW/0RrLf+jlvCGaqLvD4p2VjwuwwQ==
 
 moo@^0.5.0, moo@^0.5.1:
   version "0.5.1"
