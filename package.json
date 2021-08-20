@@ -64,7 +64,7 @@
     "mocha": "^9.0.3",
     "node-fetch": "^2.6.1",
     "nyc": "^15.1.0",
-    "pg-mem": "^1.9.11",
+    "pg-mem": "^1.9.17",
     "postcss": "^8.3.6",
     "postcss-modules": "^4.2.2",
     "sinon": "^11.1.2",
