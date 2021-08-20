@@ -68,7 +68,7 @@
     "postcss": "^8.3.6",
     "postcss-modules": "^4.2.2",
     "sinon": "^11.1.2",
-    "supertest": "^6.1.4",
+    "supertest": "^6.1.6",
     "ts-node": "^10.2.1",
     "ts-node-dev": "^1.1.8",
     "tsconfig-paths": "^3.10.1",
