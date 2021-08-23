@@ -48,7 +48,7 @@
     "@types/formidable": "^1.2.3",
     "@types/jsdom": "^16.2.13",
     "@types/mocha": "^9.0.0",
-    "@types/node": "^16.6.2",
+    "@types/node": "^16.7.1",
     "@types/node-fetch": "^2.5.12",
     "@types/pg": "^8.6.1",
     "@types/ramda": "^0.27.44",
