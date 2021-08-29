@@ -3,6 +3,7 @@ import bcrypt, { genSalt } from "bcryptjs";
 import Permissions from "./Permissions";
 import { ColumnDefinition, SQLDataSource } from "core/sql";
 import Tokens from "./Tokens";
+import { omit } from "ramda";
 
 export type UserLoginInput = {
   email: string;
@@ -81,6 +82,7 @@ export default class Users extends SQLDataSource<User, UserInput> {
     return operation
       .then(async (user) => {
         if (!user) return null;
+        delete values["pwhash"];
         if (
           typeof permissions !== "undefined" &&
           "permissions" in this.context
@@ -112,6 +114,7 @@ export default class Users extends SQLDataSource<User, UserInput> {
     const isCorrect = await bcrypt.compare(password, user.pwhash);
     if (!isCorrect)
       throw new HTTPUserInputError("password", "Wrong email or password");
+    delete user.pwhash;
     return user;
   }
 }

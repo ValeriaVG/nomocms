@@ -152,6 +152,13 @@ export default async function core(modules: AppModules, ctx: APIContext) {
       const code = "code" in error ? error.code : 500;
       const message = code >= 500 ? "Internal Server Error" : error.message;
       if (code >= 500) console.error(error);
+
+      if ("errors" in error)
+        return sendResponse({
+          errors: error["errors"],
+          code,
+        });
+
       return sendResponse({
         errors: [{ name: error["field"] ?? error.name, message }],
         code,

@@ -14,6 +14,17 @@ export class HTTPUserInputError extends HTTPError {
     this.field = field;
   }
 }
+
+export class HTTPUserInputErrors extends HTTPError {
+  public readonly errors: Array<{ name: string; message: string }>;
+  constructor(errors: Array<{ name: string; message: string }>) {
+    super(
+      400,
+      errors.map(({ name, message }) => `${name}:${message}`).join("\n")
+    );
+    this.errors = errors;
+  }
+}
 export class HTTPNotAuthorized extends HTTPError {
   constructor(message?: string) {
     super(403, message ?? "Access Denied");

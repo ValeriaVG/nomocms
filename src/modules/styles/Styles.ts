@@ -1,3 +1,4 @@
+import { HTTPUserInputError, HTTPUserInputErrors } from "core/errors";
 import { ColumnDefinition, SQLDataSource } from "core/sql";
 import { ErrorResponse } from "core/types";
 import Templates from "modules/templates/Templates";
@@ -24,15 +25,12 @@ export default class Styles extends SQLDataSource<StyleData> {
    * @param scss
    */
 
-  async update(id: string, { source }): Promise<StyleData | ErrorResponse> {
+  async update(id: string, { source }): Promise<StyleData> {
     try {
       const { css } = await this.compile(source);
       return this.upsert({ id, source, compiled: css?.toString() });
     } catch (error) {
-      return {
-        errors: [{ name: error.name, message: error.message }],
-        code: 400,
-      };
+      throw new HTTPUserInputError(error.name, error.message);
     }
   }
 
@@ -42,9 +40,8 @@ export default class Styles extends SQLDataSource<StyleData> {
     const exists = await this.exists({ id });
     if (exists)
       errors.push({ name: "id", message: "Style with this ID already exists" });
-    if (errors.length) return { errors, code: 400 };
+    if (errors.length) throw new HTTPUserInputErrors(errors);
     const result = await this.update(id, { source });
-    if (!result || "errors" in result) return result;
     return { id, source, compiled: result.compiled };
   }
 

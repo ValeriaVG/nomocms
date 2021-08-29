@@ -7,12 +7,26 @@ import Permissions, { Permission } from "./Permissions";
 import Tokens from "./Tokens";
 import createRoutes from "utils/createRoutes";
 import { requiresPermission } from "./utils";
+import ensureType from "core/ensureType";
+import { Required, Text } from "core/transformers";
+
+const removePwhash = (user) => {
+  if (!user) return null;
+  delete user.pwhash;
+  return user as {
+    id: string;
+    name: string;
+    email: string;
+    created: Date;
+    updated: Date;
+  };
+};
 
 const routes = {
-  ...createRoutes("users"),
+  ...createRoutes("users", removePwhash),
   "/_api/login": {
     POST: async (
-      { input: { email, password } },
+      { input },
       {
         users,
         token,
@@ -21,6 +35,10 @@ const routes = {
         ...ctx
       }: APIContext & { users: Users; tokens: Tokens; permissions: Permissions }
     ) => {
+      const { email, password } = ensureType(input, {
+        email: Required(Text),
+        password: Required(Text),
+      });
       if (!token) token = `nomocms-${uuid()}`;
       //Check if its a superuser defined by env variables
       if (
@@ -31,7 +49,11 @@ const routes = {
       ) {
         if (token)
           tokens.save({ user_id: ctx.superuser.id, token, ip: ctx.ip });
-        return { user: ctx.superuser, canAccessDashboard: true, token };
+        return {
+          user: removePwhash(ctx.superuser),
+          canAccessDashboard: true,
+          token,
+        };
       }
       const user = await users.login({ email, password });
       if (!user) return { user };
@@ -64,7 +86,7 @@ const routes = {
               user_id: user.id,
             }))
     );
-    return { canAccessDashboard, user };
+    return { canAccessDashboard, user: removePwhash(user) };
   },
 };
 
@@ -79,7 +101,7 @@ routes["/_api/users/:id"].GET = requiresPermission(
     const userPermissions = await (permissions as Permissions).getPermissions({
       user_id: user.id,
     });
-    return { ...user, permissions: userPermissions };
+    return { ...removePwhash(user), permissions: userPermissions };
   }
 );
 
