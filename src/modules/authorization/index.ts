@@ -1,9 +1,7 @@
 import Tokens from "./Tokens";
 import Users from "./Users";
 import Permissions from "./Permissions";
-import directiveResolvers from "./directiveResolvers";
-import resolvers from "./resolvers";
-import typeDefs from "./typeDefs";
+import routes from "./routes";
 
 export default {
   dataSources: {
@@ -11,7 +9,5 @@ export default {
     permissions: Permissions,
     tokens: Tokens,
   },
-  directiveResolvers,
-  resolvers,
-  typeDefs,
+  routes,
 };

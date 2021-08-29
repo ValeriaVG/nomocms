@@ -10,7 +10,7 @@ test("sitemap.xml", async () => {
         { id: 2, path: "/about", title: "About" },
       ]),
   } as any;
-  const sitemap = await routes["/sitemap.xml"]({
+  const sitemap = await routes["/sitemap.xml"](null, {
     pages,
     appUrl: "https://example.com",
   });

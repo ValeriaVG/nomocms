@@ -1,14 +1,19 @@
 import NormalizedURL from "core/NormalizedURL";
 import Pages from "./Pages";
+import adminRoutes from "./adminRoutes";
 
 export default {
-  "/sitemap.xml": async ({
-    pages,
-    appUrl,
-  }: {
-    appUrl: string;
-    pages: Pages;
-  }) => {
+  ...adminRoutes,
+  "/sitemap.xml": async (
+    _,
+    {
+      pages,
+      appUrl,
+    }: {
+      appUrl: string;
+      pages: Pages;
+    }
+  ) => {
     {
       const sitemap = await pages.getSiteMap();
       const entries = sitemap
@@ -27,7 +32,7 @@ export default {
       };
     }
   },
-  "/*": async ({ pages, url }: { pages: Pages; url: NormalizedURL }) => {
+  "/*": async (_, { pages, url }: { pages: Pages; url: NormalizedURL }) => {
     const page = await pages.retrieve(url.normalizedPath);
     if (page) return { type: "amp", ...page };
     const notFoundPage = await pages.retrieve("/*");

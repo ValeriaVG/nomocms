@@ -1,0 +1,45 @@
+@import "../theme";
+
+.login {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $background-color;
+  form {
+    fieldset {
+      border: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      margin: 1rem 0;
+      min-width: 320px;
+    }
+    * + label {
+      margin-top: 1rem;
+    }
+    label {
+      line-height: 2;
+      font-size: 0.8rem;
+    }
+    input {
+      padding: 0.5rem;
+    }
+    button {
+      width: 100%;
+      color: white;
+      background-color: $primary;
+      border: none;
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color ease-in 300ms;
+      &:hover {
+        background-color: $primary-hover;
+        transition: background-color ease-out 300ms;
+      }
+    }
+  }
+}

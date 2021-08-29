@@ -1,11 +1,9 @@
 import Styles from "./Styles";
-import resolvers from "./resolvers";
-import typeDefs from "./typeDefs";
+import routes from "./routes";
 
 export default {
   dataSources: {
     styles: Styles,
   },
-  resolvers,
-  typeDefs,
+  routes,
 };

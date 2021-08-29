@@ -18,7 +18,6 @@ import { perform } from "./sql/migration";
 import { AppModules } from "modules";
 import { createRoutes } from "utils/router";
 import { mergeDeepRight } from "ramda";
-import gqlRoute from "./graphql";
 
 const initSuperUser = (ctx: APIContext) =>
   ctx.db
@@ -115,7 +114,7 @@ const ensurePages = async (context: InitializedContext) => {
 };
 
 export default async function core(modules: AppModules, ctx: APIContext) {
-  const routes = createRoutes(mergeDeepRight(modules.routes, gqlRoute));
+  const routes = createRoutes(modules.routes);
   try {
     await initDataSources(ctx, modules.dataSources);
     ctx.superuser = await initSuperUser(ctx);
@@ -129,10 +128,10 @@ export default async function core(modules: AppModules, ctx: APIContext) {
 
     try {
       cors(req, res);
-      const context: InitializedContext = Object.assign(
+      const context = Object.assign(
         createSessionContext(req),
         ctx
-      );
+      ) as InitializedContext;
       const params = await requestParams(req);
       context.token = context.cookies["amp-access"] ?? params.rid;
       // Clean context for each request
@@ -143,7 +142,7 @@ export default async function core(modules: AppModules, ctx: APIContext) {
         method as HTTPMethod,
         routes
       );
-      const response = await resolver(context, { ...routeParams, ...params });
+      const response = await resolver({ ...routeParams, ...params }, context);
       if (typeof response !== "object")
         throw new Error(
           `Wrong response returned from ${context.url.normalizedPath}`

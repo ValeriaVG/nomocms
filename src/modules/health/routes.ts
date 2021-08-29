@@ -1,7 +1,7 @@
 import { Pool } from "pg";
 
 export default {
-  "/_health": async ({ db }: { db: Pool }) => {
+  "/_health": async (_, { db }: { db: Pool }) => {
     try {
       return {
         db: await db

@@ -5,7 +5,7 @@ import routes from "./routes";
 describe("health", () => {
   it("responds with ok", async () => {
     expect(
-      await routes["/_health"]({
+      await routes["/_health"](null, {
         db: { query: async () => ({ rows: [{ status: "OK" }] }) } as any,
       })
     ).to.deep.equal({ db: "OK" });

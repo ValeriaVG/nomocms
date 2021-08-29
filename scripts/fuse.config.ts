@@ -12,7 +12,6 @@ export const dashboard = {
     pluginSass("*.scss", {
       asModule: { scopeBehaviour: "local" },
     }),
-
     pluginMonacoEditorWorkers(),
   ],
   env: {

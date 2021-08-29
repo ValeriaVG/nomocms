@@ -1,2 +1,4 @@
-import app from "./app";
-app.mount(document.body).catch(console.error);
+import { h, render } from "preact";
+import "./styles.scss";
+import App from "./App";
+render(h(App, null), document.body);

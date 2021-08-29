@@ -1,10 +1,8 @@
 import Analytics from "./Analytics";
-import resolvers from "./resolvers";
-import typeDefs from "./typeDefs";
+import routes from "./routes";
 
 export default {
-  resolvers,
-  typeDefs,
+  routes,
   dataSources: {
     analytics: Analytics,
   },

@@ -1,8 +1,14 @@
 import { IncomingMessage } from "http";
-import { IncomingForm } from "formidable";
+import formidable, { IncomingForm } from "formidable";
 import { HTTPError } from "./errors";
+import { JSONObject } from "./types";
 
-export default async function requestParams(req: IncomingMessage) {
+export default async function requestParams(req: IncomingMessage): Promise<
+  Record<string, string> & {
+    input?: JSONObject;
+    files?: formidable.Files;
+  }
+> {
   try {
     const params = {} as any;
     const url = new URL(req.url, "http://localhost");
@@ -11,7 +17,7 @@ export default async function requestParams(req: IncomingMessage) {
     });
 
     if (["GET", "DELETE"].includes(req.method.toUpperCase())) return params;
-    params.input = await new Promise((resolve, reject) => {
+    const input = await new Promise((resolve, reject) => {
       new IncomingForm({ multiples: true } as any).parse(
         req,
         (err, fields, incomingFiles) => {
@@ -21,6 +27,7 @@ export default async function requestParams(req: IncomingMessage) {
         }
       );
     });
+    params.input = input;
     return params;
   } catch (error) {
     throw new HTTPError(400, error.message);

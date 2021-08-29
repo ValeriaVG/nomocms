@@ -1,11 +1,9 @@
 import Templates from "./Templates";
-import typeDefs from "./typeDefs";
-import resolvers from "./resolvers";
+import routes from "./routes";
 
 export default {
   dataSources: {
     templates: Templates,
   },
-  typeDefs,
-  resolvers,
+  routes,
 };

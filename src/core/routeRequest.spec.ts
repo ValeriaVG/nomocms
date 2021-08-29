@@ -9,11 +9,12 @@ const makeUrl = (url: string) => new NormalizedURL(url);
 
 describe("routeRequest", () => {
   it("routes existing requests", () => {
-    const GET = () => {};
-    const DELETE = () => {};
-    const POST = () => {};
-    const PATCH = () => {};
-    const getItems = () => {};
+    const noop = () => ({});
+    const GET = noop;
+    const DELETE = noop;
+    const POST = noop;
+    const PATCH = noop;
+    const getItems = noop;
 
     const routes = createRoutes({
       "/api/item": {

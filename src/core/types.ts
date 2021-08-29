@@ -1,13 +1,10 @@
+import formidable from "formidable";
 import { IncomingHttpHeaders } from "http";
 import { User } from "modules/authorization/Users";
+import { AppDataSources } from "modules/types";
 import { Pool } from "pg";
 import { Readable } from "stream";
 import NormalizedURL from "./NormalizedURL";
-import {
-  IResolvers,
-  ITypeDefinitions,
-  IDirectiveResolvers,
-} from "@graphql-tools/utils";
 
 export type HTTPMethod = "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
 
@@ -19,19 +16,20 @@ export type LogFunction = (...args: any) => void;
 
 export type APILogger = Record<"error" | "info" | "log" | "warn", LogFunction>;
 
-export type APIContext = {
+export interface APIContext {
   db: Pool;
-  log?: APILogger;
-  cookies?: Record<string, string>;
-  token?: string;
-  user?: User;
-  headers?: IncomingHttpHeaders;
-  url?: NormalizedURL;
-  ip?: string;
-  superuser?: User;
+  log: APILogger;
+  token: string;
+  headers: IncomingHttpHeaders;
+  url: NormalizedURL;
   params: Record<string, string>;
   method: string;
-};
+  appUrl: string;
+  user?: User;
+  ip?: string;
+  superuser?: User;
+  cookies?: Record<string, string>;
+}
 
 export type SimpleType = string | number | boolean | null;
 
@@ -70,10 +68,14 @@ export type RouteResponse =
   | HTMLResponse
   | DataResponse;
 
-export type ResolverFn<P = any, C = any, R extends RouteResponse = any> = (
-  params: P,
-  context: APIContext & C
-) => MaybePromise<R>;
+export type ResolverFn<
+  P extends Record<string, string> & {
+    input?: JSONObject;
+    files?: formidable.Files;
+  } = Record<string, any>,
+  C extends InitializedContext = InitializedContext,
+  R extends RouteResponse = RouteResponse
+> = (params: P, context: C) => MaybePromise<R>;
 
 export type Route = ResolverFn | Partial<Record<HTTPMethod, ResolverFn>>;
 
@@ -84,13 +86,10 @@ export type Routes = {
 export type ExcludeReserved<T> = Exclude<T, GenericResponse>;
 
 export type InitializedContext = APIContext &
-  Record<string, DataSource> & { params: Record<string, string> };
+  AppDataSources & { params: Record<string, string> };
 
 export type AppModule = {
   dataSources?: Record<string, typeof DataSource>;
-  typeDefs?: ITypeDefinitions;
-  resolvers?: IResolvers<any, APIContext>;
-  directiveResolvers?: IDirectiveResolvers<any, any>;
   routes?: Record<string, Route>;
 };
 

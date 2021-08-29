@@ -3,7 +3,6 @@ import { Liquid } from "liquidjs";
 import { HTTPUserInputError } from "core/errors";
 import Styles from "modules/styles/Styles";
 import { ColumnDefinition, sql, SQLDataSource } from "core/sql";
-import { ContentPage } from "modules/pages/types";
 
 export default class Templates extends SQLDataSource<TemplateData> {
   readonly collection = "templates";
