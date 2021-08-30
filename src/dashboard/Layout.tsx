@@ -13,6 +13,8 @@ import FontAwesomeIcon from "./utils/FontAwesomeIcon";
 import { NavLink } from "dashboard/utils/BrowserRouter";
 import { NotificationContext } from "./utils/notifications";
 import NotificationElement from "./components/NotificationElement";
+import styles from "./layout.scss";
+import Logo from "./components/Logo";
 
 export default function Layout({
   children,
@@ -23,15 +25,15 @@ export default function Layout({
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const toggleMenu = () => setIsExpanded((t) => !t);
   return (
-    <>
+    <div class={styles.layout}>
       <header>
         <button onClick={toggleMenu}>
           <FontAwesomeIcon icon={faBars} />
         </button>
       </header>
-      <aside class={isExpanded && "expanded"}>
+      <aside class={isExpanded && styles.expanded}>
         <nav>
-          <ul class="menu">
+          <ul class={styles.menu}>
             <li>
               <NavLink to="/" exact>
                 <FontAwesomeIcon icon={faHome} />
@@ -64,8 +66,8 @@ export default function Layout({
             </li>
           </ul>
         </nav>
-        <nav class="bottom-nav">
-          <ul class="menu">
+        <nav class={styles["bottom-nav"]}>
+          <ul class={styles.menu}>
             <li>
               <NavLink to="/logout">
                 <FontAwesomeIcon icon={faSignOutAlt} />
@@ -76,14 +78,16 @@ export default function Layout({
         </nav>
       </aside>
       <main>
-        <div class="notifications">
+        <div class={styles.notifications}>
           {notifications.map((notification) => (
             <NotificationElement key={notification.id} {...notification} />
           ))}
         </div>
         {children}
       </main>
-      <footer>NOMOCMS v0.1.0</footer>
-    </>
+      <footer>
+        <Logo /> v0.1.0
+      </footer>
+    </div>
   );
 }

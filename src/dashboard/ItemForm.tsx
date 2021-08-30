@@ -14,6 +14,7 @@ import NotFound from "./pages/NotFound";
 import useNotification from "./utils/notifications";
 import preventDefault from "./utils/preventDefault";
 import useQuery from "./utils/useQuery";
+import styles from "./layout.scss";
 
 export type ItemFormProps<T> = {
   singular: string;
@@ -72,11 +73,11 @@ export function ItemCreate<T extends Record<string, any>>({
           />
           <h1>{label}</h1>
         </div>
-        <div class="buttons">
-          <Link to={path} className="button-alt" type="cancel">
+        <div class={styles.buttons}>
+          <Link to={path} className={styles["button-alt"]} type="cancel">
             Cancel
           </Link>
-          <button class="button-primary" type="submit">
+          <button class={styles["button-primary"]} type="submit">
             <FontAwesomeIcon icon={faSave} />
             Create
           </button>
@@ -159,16 +160,16 @@ export function ItemUpdate<T extends Record<string, any>>({
             />
             <h1>{label}</h1>
           </div>
-          <div class="buttons">
+          <div class={styles.buttons}>
             <Link
               to={path}
-              className="button-alt"
+              className={styles["button-alt"]}
               type="cancel"
               onClick={() => history.goBack()}
             >
               Cancel
             </Link>
-            <button class="button-primary" type="submit">
+            <button class={styles["button-primary"]} type="submit">
               <FontAwesomeIcon icon={faSave} />
               Save
             </button>
@@ -178,7 +179,7 @@ export function ItemUpdate<T extends Record<string, any>>({
       </form>
       <footer>
         <button
-          class="button button-danger"
+          class={[styles.button, styles["button-danger"]].join(" ")}
           onClick={askAndDelete}
           style="margin-left:auto;"
         >
@@ -194,6 +195,7 @@ export default function ItemForm<T>(props: ItemFormProps<T>) {
   const {
     params: { id },
   } = useRouteMatch<{ id?: string }>();
+  console.log({ id });
   const { loading, result } = useQuery(id && props.apipath + "/" + id);
 
   if (id && result?.id)

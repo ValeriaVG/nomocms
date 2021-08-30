@@ -1,3 +1,4 @@
+import { HTTPNotFound } from "core/errors";
 import { Permission } from "modules/authorization/Permissions";
 import { requiresPermission } from "modules/authorization/utils";
 import { SQLDataSource } from "../core/sql";
@@ -11,19 +12,13 @@ export default function createRoutes<
   type D = SQLDataSource<T, I, P>;
 
   return {
-    [`/_api/${scope}`]: requiresPermission(
-      [scope, Permission.list],
-      async (params: ListParams, ctx) => {
-        const result = await (ctx[scope] as D).list(params);
-        result.items = result.items.map(transformItem);
-        return result;
-      }
-    ),
-    [`/_api/${scope}/:id`]: {
+    [`/_api/${scope}`]: {
       GET: requiresPermission(
-        [scope, Permission.view],
-        async ({ id }: { id: T["id"] }, ctx) => {
-          return transformItem(await (ctx[scope] as D).get(id));
+        [scope, Permission.list],
+        async (params: ListParams, ctx) => {
+          const result = await (ctx[scope] as D).list(params);
+          result.items = result.items.map(transformItem);
+          return result;
         }
       ),
       POST: requiresPermission(
@@ -32,7 +27,18 @@ export default function createRoutes<
           return transformItem(await (ctx[scope] as D).create(input));
         }
       ),
-      PUT: requiresPermission(
+    },
+
+    [`/_api/${scope}/:id`]: {
+      GET: requiresPermission(
+        [scope, Permission.view],
+        async ({ id }: { id: T["id"] }, ctx) => {
+          const item = transformItem(await (ctx[scope] as D).get(id));
+          if (!item) throw new HTTPNotFound();
+          return item;
+        }
+      ),
+      POST: requiresPermission(
         [scope, Permission.update],
         async ({ id, input }: { id: number; input: P }, ctx) => {
           return transformItem(await (ctx[scope] as D).update(id, input));

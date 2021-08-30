@@ -2,7 +2,7 @@ import { faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import FontAwesomeIcon from "dashboard/utils/FontAwesomeIcon";
 import * as Preact from "preact";
 import { Link } from "../utils/BrowserRouter";
-import "./breadcrumbs.scss";
+import styles from "./breadcrumbs.scss";
 
 export default function BreadCrumbs({
   path,
@@ -11,7 +11,7 @@ export default function BreadCrumbs({
   path: Array<{ to?: string; label: string | Preact.JSX.Element }>;
 }) {
   return (
-    <nav className="breadcrumbs" {...props}>
+    <nav className={styles.breadcrumbs} {...props}>
       <ul>
         {path.map(({ to, label }, i) => {
           return (

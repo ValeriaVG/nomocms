@@ -64,7 +64,13 @@ export default class Pages extends SQLDataSource<
     try {
       const { data, content } = matter(input.content.trim());
       const html = marked(content);
-      const values = { ...data, ...input, content: input.content, html };
+      const values = {
+        ...data,
+        ...input,
+        title: data.title,
+        content: input.content,
+        html,
+      };
       return values;
     } catch (error) {
       throw new HTTPUserInputError("content", error.message);

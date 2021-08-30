@@ -5,7 +5,7 @@ import ItemForm from "./ItemForm";
 import ItemsList from "./ItemsList";
 import { FormValues } from "./utils/useForm";
 
-export default function ItemRoutes<T extends { id: string }>({
+export default function ItemRoutes<T extends { id: string | number }>({
   name,
   columns,
   renderForm,

@@ -7,7 +7,7 @@
   margin: 1rem 0;
 
   tr {
-    border-bottom: 1px solid darken($light, 8%);
+    border-bottom: 1px solid darken($text-color, 8%);
   }
   td {
     padding: 1rem 0;
@@ -26,7 +26,7 @@
   td[colspan] {
     padding: 4rem 2rem;
     text-align: center;
-    color: lighten($dark, 50%);
+    color: lighten($background-color, 50%);
   }
   thead {
     th {
@@ -34,7 +34,7 @@
       font-weight: normal;
 
       font-size: 0.7rem;
-      color: lighten($dark, 30%);
+      color: lighten($background-color, 30%);
     }
   }
 }

@@ -10,7 +10,7 @@
   color: $color;
   min-width: 240px;
   @include laying-flat();
-  .notification--progress {
+  .progress {
     position: absolute;
     bottom: 0;
     background: fade-out($color, 0.75);
@@ -23,18 +23,18 @@
       transition: width 100ms ease;
     }
   }
-  .notification--content {
+  .content {
     padding: 1rem;
   }
 }
 
-.notification-error {
-  @include notification($danger, $light);
+.error {
+  @include notification($danger, $text-color);
 }
 
-.notification-success {
-  @include notification($positive, $light);
+.success {
+  @include notification($success, $text-color);
 }
-.notification-info {
-  @include notification($info, $light);
+.info {
+  @include notification($info, $text-color);
 }

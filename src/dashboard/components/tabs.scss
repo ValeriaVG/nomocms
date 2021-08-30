@@ -5,8 +5,8 @@
   padding: 0;
   display: flex;
   & > li {
-    background: darken($light, 3%);
-    color: lighten($dark, 20%);
+    background: darken($text-color, 3%);
+    color: lighten($background-color, 20%);
     @include laying-flat();
     position: relative;
     border-top-left-radius: 3px;
@@ -20,8 +20,8 @@
       }
     }
     &.active {
-      background: $light;
-      color: $dark;
+      background: $text-color;
+      color: $background-color;
       @include laying-flat(0px, 3px, 5px);
       margin-top: -1px;
       margin-right: -1px;

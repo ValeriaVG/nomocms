@@ -1,6 +1,13 @@
 import * as Preact from "preact";
-import { useState, useMemo, useRef, useContext, useEffect } from "preact/hooks";
-import { createRoutes } from "utils/router";
+import {
+  useState,
+  useMemo,
+  useRef,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+} from "preact/hooks";
+import { createNestedRoutes, createRoutes } from "utils/router";
 import preventDefault from "./preventDefault";
 
 export type RouterState = {
@@ -47,9 +54,11 @@ export const BrowserRouter = ({
   const [path, setPath] = useState<string>(document.location.pathname);
   const [params, setParams] = useState<Record<string, string>>({});
   const history = useRef<string[]>([]);
+
   const actions: HistoryActions = {
     push: (path) => {
       history.current.push(path);
+      window.history.pushState({}, "", path);
       setPath(path);
     },
     goBack: () => {
@@ -57,9 +66,16 @@ export const BrowserRouter = ({
       if (prev) setPath(prev);
     },
   };
+
   return (
     <BrowserRouterContext.Provider
-      value={{ path, basename, params, setParams, ...actions }}
+      value={{
+        path,
+        basename,
+        params,
+        setParams,
+        ...actions,
+      }}
       children={children}
     />
   );
@@ -77,20 +93,24 @@ export const Switch = ({
   const routes = childrenArray.reduce((a, c) => {
     // FIXME: filter out everything but Route
     if (typeof c === "object" && "props" in c) {
-      const { path, ...props } = c.props;
-      a[path] = props;
+      const { path, component, exact } = c.props;
+      a[path] = { exact, route: component };
     }
     return a;
-  }, {}) as Record<string, Omit<BrowserRoute, "path">>;
+  }, {}) as Record<
+    string,
+    { exact?: boolean; route: () => Preact.JSX.Element }
+  >;
 
-  const matchRoute = useMemo(() => createRoutes(routes), [children]);
+  const matchRoute = useMemo(() => createNestedRoutes(routes), [children]);
   const { path, setParams } = useContext(BrowserRouterContext);
-  const [route, params] = matchRoute(path);
-  useEffect(() => {
-    setParams(params);
-  }, [params]);
-  if (!route) return null;
-  const CurrentRoute = route.component;
+  const [CurrentRoute, params] = matchRoute(path);
+  useLayoutEffect(() => {
+    // TODO: this is not perfect
+    params && setParams(params);
+  }, [path]);
+
+  if (!CurrentRoute) return null;
   return <CurrentRoute {...params} />;
 };
 

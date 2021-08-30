@@ -3,7 +3,7 @@ import FontAwesomeIcon from "dashboard/utils/FontAwesomeIcon";
 import * as Preact from "preact";
 import { useEffect, useState } from "preact/hooks";
 import useNotification, { Notification } from "../utils/notifications";
-import "./notifications.scss";
+import styles from "./notifications.scss";
 
 export default function NotificationElement({
   id,
@@ -27,7 +27,7 @@ export default function NotificationElement({
 
   return (
     <div
-      class={`notification notification-${variant}`}
+      class={`${styles.notification} ${styles[variant]}`}
       onClick={() => remove(id)}
     >
       <span style="position:absolute;top:0.25rem;right:0.5rem;opacity:0.5">
@@ -36,15 +36,15 @@ export default function NotificationElement({
       {Boolean(ttl) && (
         <>
           <meta name="ttl-seconds" value={timeLeft?.toFixed(0)} />
-          <div class="notification--progress">
+          <div class={styles.progress}>
             <div
-              class="notification--progress--value"
+              class={styles["progress-value"]}
               style={{ width: `${(timeLeft / ttl) * 100}%` }}
             />
           </div>
         </>
       )}
-      <div class="notification--content">{content}</div>
+      <div class={styles.content}>{content}</div>
     </div>
   );
 }

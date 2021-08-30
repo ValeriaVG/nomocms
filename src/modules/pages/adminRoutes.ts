@@ -1,4 +1,6 @@
 import boilerplate from "amp/boilerplate";
+import { Permission } from "modules/authorization/Permissions";
+import { requiresPermission } from "modules/authorization/utils";
 import createRoutes from "utils/createRoutes";
 import Pages from "./Pages";
 
@@ -18,12 +20,15 @@ const listPages = async (
   return { items };
 };
 
-const previewPage = async ({ input }, { pages }: { pages: Pages }) => {
-  const values = pages.parse(input);
-  const result = await pages.render({ ...input, ...values }, true);
-  const content = boilerplate({ ...result, url: "/_preview" });
-  return { content, type: "amp" };
-};
+const previewPage = requiresPermission(
+  ["pages", Permission.view],
+  async ({ input }, { pages }: { pages: Pages }) => {
+    const values = pages.parse(input);
+    const result = await pages.render({ ...input, ...values }, true);
+    const content = boilerplate({ ...result, url: "/_preview" });
+    return { content, type: "amp" };
+  }
+);
 
 const routes = createRoutes("pages");
 routes["/_api/pages"]["GET"] = listPages;

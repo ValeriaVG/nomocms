@@ -44,6 +44,7 @@ export default class Templates extends SQLDataSource<TemplateData> {
   static DEFAULT_TEMPLATE: TemplateData = {
     id: "",
     body: "<% content %>",
+    head: "<title><% title %></title>",
   };
 
   async render(id: string, variables: Record<string, any> = {}) {

@@ -11,9 +11,7 @@ export default ({
   style?: string;
   url: string;
 }) => {
-  const eventUrl =
-    (appUrl ?? "") +
-    "/_api?query=mutation%7Bping(event%3A%22${pageview}%22,path%3A%22${path}%22)%7D";
+  const eventUrl = (appUrl ?? "") + "/_ping?event=${eventId}&path=${path}";
   return html` <!DOCTYPE html>
     <html ⚡ lang="en">
       <head>

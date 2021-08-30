@@ -1,10 +1,9 @@
-import { faCircleNotch } from "@fortawesome/free-solid-svg-icons";
 import * as Preact from "preact";
 import { useEffect, useState } from "preact/hooks";
-//import Dashboard from "./Dashboard";
+import Loading from "./components/Loading";
+import Dashboard from "./Dashboard";
 import Login from "./pages/Login";
 import api from "./utils/api";
-import FontAwesomeIcon from "./utils/FontAwesomeIcon";
 
 type AppUserState = {
   canAccessDashboard: boolean;
@@ -46,8 +45,8 @@ export default function App() {
       }}
     >
       {(() => {
-        if (loading) return <FontAwesomeIcon icon={faCircleNotch} spin />;
-        if (state.canAccessDashboard) return <>Dashboard Will Load Here</>;
+        if (loading) return <Loading style={{ height: "100vh" }} />;
+        if (state.canAccessDashboard) return <Dashboard />;
         return <Login />;
       })()}
     </UserContext.Provider>

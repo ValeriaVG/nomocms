@@ -11,6 +11,7 @@ import FontAwesomeIcon from "dashboard/utils/FontAwesomeIcon";
 import { Permission } from "modules/authorization/Permissions";
 import { User, UserInput } from "modules/authorization/Users";
 import * as Preact from "preact";
+import styles from "../layout.scss";
 
 export default function Users() {
   return (
@@ -37,7 +38,7 @@ export default function Users() {
           return setValue("permissions", values.permissions & ~permission);
         };
         return (
-          <div class="buttons">
+          <div class={styles.buttons}>
             <fieldset>
               <label>
                 <span style="width:114px;">Name:</span>

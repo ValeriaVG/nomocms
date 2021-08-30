@@ -6,8 +6,9 @@ import useQuery from "dashboard/utils/useQuery";
 import * as Preact from "preact";
 import { Link } from "./utils/BrowserRouter";
 import Errors from "./utils/Errors";
+import styles from "./layout.scss";
 
-export default function ItemsList<T extends { id: string }>({
+export default function ItemsList<T extends { id: string | number }>({
   singular,
   plural,
   path,
@@ -31,9 +32,9 @@ export default function ItemsList<T extends { id: string }>({
       <header>
         <div>
           <h1>{plural}</h1>
-          {legend && <div class="legend">{legend}</div>}
+          {legend && <div class={styles.legend}>{legend}</div>}
         </div>
-        <Link to={`${path}/new`} className="button-primary">
+        <Link to={`${path}/new`} className={styles["button-primary"]}>
           <FontAwesomeIcon icon={faPlus} />
           New {singular}
         </Link>
@@ -47,7 +48,7 @@ export default function ItemsList<T extends { id: string }>({
             ...columns,
             edit: {
               render: ({ id }) => (
-                <Link to={`${path}/${id}`} className="button-alt">
+                <Link to={`${path}/${id}`} className={styles["button-alt"]}>
                   Edit
                 </Link>
               ),

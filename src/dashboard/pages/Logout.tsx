@@ -1,6 +1,7 @@
 import * as Preact from "preact";
 import api from "dashboard/utils/api";
 import { useHistory } from "dashboard/utils/BrowserRouter";
+import styles from "../layout.scss";
 
 export default function Logout() {
   const onSubmit = (e) => {
@@ -17,9 +18,9 @@ export default function Logout() {
         <label style="padding:0;margin:1rem 0">
           Are you sure you want to logout?
         </label>
-        <div class="buttons">
+        <div class={styles.buttons}>
           <button
-            class="button-alt"
+            class={styles["button-alt"]}
             type="cancel"
             onClick={(e) => {
               e.preventDefault();
@@ -28,7 +29,7 @@ export default function Logout() {
           >
             Cancel
           </button>
-          <button class="button-secondary" type="submit">
+          <button class={styles["button-secondary"]} type="submit">
             Log out
           </button>
         </div>

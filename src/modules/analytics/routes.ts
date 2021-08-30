@@ -22,7 +22,7 @@ export default {
     }
   ),
   "/_ping": async (
-    { event, path, ...payload }: any,
+    { event, path, input, files, ...payload }: any,
     { user, analytics, headers, ip }: APIContext & { analytics: Analytics }
   ) => {
     const info: PageEventInput = {

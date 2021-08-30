@@ -1,6 +1,6 @@
 import preventDefault from "dashboard/utils/preventDefault";
 import * as Preact from "preact";
-import "./tabs.scss";
+import styles from "./tabs.scss";
 export default function Tabs<
   T extends Record<string, string | Preact.JSX.Element>
 >({
@@ -15,13 +15,13 @@ export default function Tabs<
 } & Preact.JSX.HTMLAttributes<HTMLDivElement>) {
   return (
     <nav {...props}>
-      <ul class="tabs">
+      <ul class={styles.tabs}>
         {Object.keys(labels).map((key, i, arr) => {
           const isActive = key === active;
           return (
             <li
               key={key}
-              class={isActive && "active"}
+              class={isActive && styles.active}
               style={{ zIndex: isActive ? arr.length + 1 : arr.length - i }}
             >
               <button

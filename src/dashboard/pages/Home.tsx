@@ -1,5 +1,6 @@
-import useQuery from "dashboard/utils/useQuery";
 import * as Preact from "preact";
+import useQuery from "dashboard/utils/useQuery";
+
 // import {
 //   LineChart,
 //   XAxis,
@@ -30,9 +31,8 @@ export default function Home(): any {
   const data = result?.items ?? [];
 
   return (
-    <>
-      <section style="padding:2rem 2rem 2rem 0;">
-        {/* <ResponsiveContainer width={"100%"} minHeight={260}>
+    <section style={{ padding: "2rem 2rem 2rem 0;" }}>
+      {/* <ResponsiveContainer width={"100%"} minHeight={260}>
           <LineChart data={data}>
             <XAxis
               dataKey="date"
@@ -60,12 +60,11 @@ export default function Home(): any {
             />
           </LineChart>
         </ResponsiveContainer> */}
-      </section>
-    </>
+    </section>
   );
 }
 
-function formatDate(ts: number) {
-  const date = new Date(ts);
-  return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
-}
+// function formatDate(ts: number) {
+//   const date = new Date(ts);
+//   return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+// }

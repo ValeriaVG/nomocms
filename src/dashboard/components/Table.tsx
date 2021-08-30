@@ -1,7 +1,7 @@
 import { faCircleNotch } from "@fortawesome/free-solid-svg-icons";
 import FontAwesomeIcon from "dashboard/utils/FontAwesomeIcon";
 import * as Preact from "preact";
-import "./table.scss";
+import styles from "./table.scss";
 
 export type TableColumns<T> = {
   [key: string]: {
@@ -33,7 +33,7 @@ export default function Table<T>({
     [[], []]
   );
   return (
-    <table class="table" {...props}>
+    <table class={styles.table} {...props}>
       <thead>
         <tr>
           {head.map(({ key, label }) => (
