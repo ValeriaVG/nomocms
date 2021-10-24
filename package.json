@@ -4,6 +4,7 @@
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
     "@types/node": "^16.11.4",
+    "@types/pg": "^8.6.1",
     "nyc": "^15.1.0",
     "source-map-support": "^0.5.20",
     "tiny-jest": "^1.0.4",
@@ -20,9 +21,12 @@
     "site"
   ],
   "scripts": {
-    "dev:site": "ts-node-dev site/index.ts",
+    "dev": "ts-node-dev site/index.ts",
     "test": "ts-node-dev tools/test.ts",
     "build": "tsc --project ./tsconfig.json",
     "coverage": "nyc ts-node tools/test"
+  },
+  "dependencies": {
+    "pg": "^8.7.1"
   }
 }

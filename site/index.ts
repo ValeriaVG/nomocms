@@ -1,46 +1,44 @@
-import http from 'http';
-import example from '../modules/example';
-import { HTTPMethod } from './HTTPMethod';
-import createRouter from './router';
-import { Readable } from 'stream';
+import http from "http";
+import example from "../modules/example";
+import createHandler, { AppModule } from "./http/handler";
+import db from "./db";
+import account from "../modules/account";
+import content from "../modules/content";
+import { ensureMigrationsTable, performMigration } from "./db/migrations";
 
 const port = process.env.PORT || 3030;
+const context = { db };
 
-const modules = [example];
+const modules: Array<AppModule<typeof context>> = [example, account, content];
+export const server = http.createServer(createHandler(modules, context));
 
-const routes = modules.reduceRight((a, m) => ({ ...a, ...m.routes }), {});
-const routePath = createRouter<{ req: http.IncomingMessage }>(routes);
-export const server = http.createServer(async (req, res) => {
-	const url = new URL(req.url, 'http://127.0.0.1');
-	const result = await routePath(
-		{ path: url.pathname, method: req.method.toUpperCase() as HTTPMethod },
-		{ req }
-	);
-	res.statusCode = result.status || 200;
-	if (result.headers) {
-		for (const [header, value] of Object.entries(result.headers)) {
-			res.setHeader(header, value as string);
-		}
-	}
-	if (result.body instanceof Readable) {
-		// TODO: Warn that it needs length, if missing
-		return result.body.pipe(res);
-	}
-	if (result.body) {
-		const buffer =
-			result.body instanceof Buffer
-				? result.body
-				: typeof result.body === 'string'
-				? Buffer.from(result.body)
-				: Buffer.from(JSON.stringify(result.body));
-		res.setHeader('content-length', buffer.byteLength);
-		res.write(buffer);
-	}
-	return res.end();
-});
+export const syncSchema = async () => {
+  const client = await db.connect().catch((error) => {
+    console.error(`Failed to connect to database`, error);
+    process.exit(-1);
+  });
+  try {
+    await client.query(`BEGIN;`);
+    await ensureMigrationsTable(client);
+    for (const mod of modules) {
+      for (const migration of mod.migrations ?? []) {
+        await performMigration(client, migration, "up");
+      }
+    }
+    await client.query(`COMMIT;`);
+    await client.release();
+  } catch (error) {
+    console.error(`Failed to sync DB schema`, error);
+    await client.query(`ROLLBACK;`);
+    await client.release();
+    process.exit(-1);
+  }
+};
 
 if (!module.parent) {
-	server.listen(port, () => {
-		console.info(`Server is listening on http://localhost:${port}`);
-	});
+  syncSchema().then(() =>
+    server.listen(port, () => {
+      console.info(`Server is listening on http://localhost:${port}`);
+    })
+  );
 }

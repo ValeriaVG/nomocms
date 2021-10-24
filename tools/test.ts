@@ -1,3 +1,4 @@
+#!/usr/bin/env ts-node
 import fs from "fs/promises";
 import path from "path";
 import { prettify, Test } from "tiny-jest";
@@ -8,8 +9,9 @@ async function runTests(dir) {
     for (let file of files) {
       const filePath = path.join(dir, file);
       const stat = await fs.stat(filePath);
-      if (stat.isDirectory()) return runTests(filePath);
-      if (/\.(test|spec)\.(t|j)s$/.test(file)) {
+      if (stat.isDirectory()) {
+        await runTests(filePath);
+      } else if (/\.(test|spec)\.ts$/.test(file)) {
         const mod = await import(filePath);
         const test = mod.test || mod.default || mod;
         if (test && test instanceof Test) {
