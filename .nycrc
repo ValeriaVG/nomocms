@@ -1,0 +1,13 @@
+{
+  "extends": "@istanbuljs/nyc-config-typescript",
+  "all": true,
+  "exclude": [
+    "tools",
+    "build",
+    "node_modules"
+  ],
+  "reporter": [
+    "lcov",
+    "text-summary"
+  ]
+}

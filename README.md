@@ -1,11 +1,9 @@
 # ![NoMoCMS](./logo.svg)
 
-> Important: Master branch is not yet stable as project is undergoing massive refactoring
-
 [![Maintainability](https://api.codeclimate.com/v1/badges/fba64515ad8b4aa8c338/maintainability)](https://codeclimate.com/github/ValeriaVG/nomocms/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/fba64515ad8b4aa8c338/test_coverage)](https://codeclimate.com/github/ValeriaVG/nomocms/test_coverage)
 
-Content management system for blazingly fast websites powered by AMP.
+Content management system for blazingly fast websites powered by Svelte.
 
 NoMoCMS is currently in active development. It's not ready for production use until it reaches v1.0.
 
@@ -28,44 +26,25 @@ You can set up a superuser account though the following environment variables:
 
 To run on local machine you'll need:
 
-- NodeJS v14.5.0
-- Yarn
+- NodeJS (tested on v14.17.6)
 - PostgreSQL with TimescaleDB extension enabled (or run `docker-compose up -d`)
 
-To start server in the development mode:
+To start in the development mode:
 
 ```
-yarn dev:server
+npm run dev
 ```
 
-To start dashboard in the development mode:
+To build :
 
 ```
-yarn dev:dashboard
-```
-
-To build server:
-
-```
-yarn build:server
-```
-
-To build dashboard:
-
-```
-yarn build:dashboard
+npm run build
 ```
 
 To run all tests:
 
 ```
-yarn test
-```
-
-To run specific test:
-
-```
-yarn test <fileName or RegExp>
+npm run test
 ```
 
 ## Disclaimer

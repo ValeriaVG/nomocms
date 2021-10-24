@@ -19,17 +19,17 @@ jobs:
           --health-retries 5
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js v14.5.0
+      - name: Use Node.js v16.9.1
         uses: actions/setup-node@v2
         with:
-          node-version: v14.5.0
-      - run: yarn
-      - name: Migrate Database
-        run: yarn migrate
+          node-version: v16.9.1
+      - run: npm ci
+      # - name: Migrate Database
+      #   run: yarn migrate
       - name: Test & Coverage
-        uses: paambaati/codeclimate-action@v2.7.5
+        uses: paambaati/codeclimate-action@v3.0.0
         env:
           CC_TEST_REPORTER_ID: fd71960f2e58540b3d99e869cc64077fb49da77f9b69d5e048639e4febadafb0
         with:
-          coverageCommand: yarn test:coverage
+          coverageCommand: npm run coverage
           coverageLocations: "./coverage/lcov.info:lcov"

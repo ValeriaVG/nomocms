@@ -1,18 +1,16 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "module": "commonjs",
+    "module": "CommonJS",
     "allowJs": true,
     "noImplicitAny": false,
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "baseUrl": "src",
-    "outDir": ".server",
+    "outDir": "build",
     "noEmitOnError": true,
     "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true,
-    "typeRoots": ["./node_modules/@types", "./src/typings"]
+    "skipLibCheck": true
   },
-  "include": ["src", "scripts"],
+  "include": ["cms", "modules", "site", "tools"],
   "exclude": ["node_modules"]
 }

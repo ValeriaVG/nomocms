@@ -1,12 +1,6 @@
 node_modules
-*.log
+build
 .env
-coverage
-.nyc_output
-dist
-.cache
-.dist
-.dashboard
-.server
 .DS_Store
-.workers/manifest-web-worker.json
+.nyc_output
+coverage
