@@ -1,0 +1,10 @@
+{
+  "name": "nomocms-account-module",
+  "description": "Authorization & authentication module for NoMoCMS",
+  "scripts": {
+    "test": "ts-node ../../tools/test.ts modules/account"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3"
+  }
+}

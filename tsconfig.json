@@ -1,18 +1,21 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "module": "commonjs",
+    "module": "CommonJS",
     "allowJs": true,
     "noImplicitAny": false,
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "baseUrl": "src",
-    "outDir": ".server",
+    "outDir": "build",
     "noEmitOnError": true,
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
-    "typeRoots": ["./node_modules/@types", "./src/typings"]
+    "resolveJsonModule": true,
+    "baseUrl": "."
   },
-  "include": ["src", "scripts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "build"],
+  "include": ["lib"],
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  }
 }

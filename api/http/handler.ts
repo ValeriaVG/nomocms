@@ -1,0 +1,99 @@
+import { IncomingMessage, ServerResponse } from "http";
+import { Readable } from "stream";
+import { Migration } from "../db/migrations";
+import { HTTPMethod } from "lib/HTTPMethod";
+import createRouter, { Route } from "./router";
+import { HTTPStatus } from "lib/HTTPStatus";
+
+export interface AppModule<C = any> {
+  routes?: Record<string, Route<C>>;
+  migrations?: Array<Migration>;
+}
+
+export default function createHandler<C>(
+  modules: Array<AppModule<C>>,
+  context: C
+) {
+  const routes = modules.reduceRight(
+    (a, m) => ({ ...a, ...(m.routes || {}) }),
+    {} as Record<string, Route<C>>
+  );
+  const routePath = createRouter<{ req: IncomingMessage }>(routes);
+
+  return async (req: IncomingMessage, res: ServerResponse) => {
+    // TODO: Proper CORS
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Headers", "*");
+    const url = new URL(req.url, "http://127.0.0.1");
+    try {
+      const body = await consumeJSON(req);
+      const result = await routePath(
+        { path: url.pathname, method: req.method.toUpperCase() as HTTPMethod },
+        { ...context, req },
+        { body, queryParams: url.searchParams }
+      );
+      if (!result)
+        throw new Error(
+          `Route ${url.pathname} returned incorrect response: ${JSON.stringify(
+            result
+          )}`
+        );
+      res.statusCode = result.status || 200;
+      if (result.headers) {
+        for (const [header, value] of Object.entries(result.headers)) {
+          res.setHeader(header, value as string);
+        }
+      }
+      if (result.body instanceof Readable) {
+        // TODO: Warn that it needs length, if missing
+        return result.body.pipe(res);
+      }
+      if (result.body) {
+        const buffer =
+          result.body instanceof Buffer
+            ? result.body
+            : typeof result.body === "string"
+            ? Buffer.from(result.body)
+            : Buffer.from(JSON.stringify(result.body));
+        res.setHeader("content-length", buffer.byteLength);
+        res.write(buffer);
+      }
+      return res.end();
+    } catch (err) {
+      console.error(err);
+      res.statusCode = HTTPStatus.InternalServerError;
+      res.write(`{"error":"Internal Server Error"}`);
+      res.end();
+    }
+  };
+}
+
+async function consumeJSON(req: IncomingMessage) {
+  if (!req?.on) return;
+  if (
+    req?.headers &&
+    req.headers["content-type"] &&
+    !req.headers["content-type"].toLowerCase().startsWith("application/json")
+  )
+    return;
+
+  let data = "";
+
+  return new Promise((resolve, reject) => {
+    const flush = () => {
+      if (!data) return resolve(undefined);
+      try {
+        resolve(JSON.parse(data));
+      } catch (err) {
+        // TODO: throw proper HTTPError
+        reject(err);
+      }
+    };
+    req.on("data", (chunk) => {
+      if (!chunk.length) return flush();
+      data += chunk.toString();
+    });
+    req.on("end", flush);
+    req.on("error", reject);
+  });
+}

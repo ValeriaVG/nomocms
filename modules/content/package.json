@@ -1,0 +1,7 @@
+{
+  "name": "nomocms-content-module",
+  "description": "Page content module for NoMoCMS",
+  "scripts": {
+    "test": "ts-node ../../tools/test.ts modules/content"
+  }
+}

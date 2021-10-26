@@ -1,0 +1,15 @@
+{
+  "name": "nomocms-api",
+  "description": "API for NoMoCMS",
+  "scripts": {
+    "build": "tsc --project ./tsconfig.json",
+    "start": "ts-node-dev -r tsconfig-paths/register index.ts",
+    "test": "ts-node ../tools/test.ts api"
+  },
+  "devDependencies": {
+    "ts-node-dev": "^1.1.8"
+  },
+  "dependencies": {
+    "dotenv": "^10.0.0"
+  }
+}
