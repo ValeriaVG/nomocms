@@ -1,0 +1,7 @@
+{
+  "name": "nomocms-modules",
+  "description": "Modules for NoMoCMS",
+  "scripts": {
+    "test": "ts-node ../tools/test.ts modules"
+  }
+}

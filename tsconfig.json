@@ -9,8 +9,13 @@
     "outDir": "build",
     "noEmitOnError": true,
     "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "baseUrl": "."
   },
-  "include": ["cms", "modules", "site", "tools"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "build"],
+  "include": ["lib"],
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  }
 }

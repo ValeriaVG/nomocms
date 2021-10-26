@@ -1,8 +1,8 @@
 #!/usr/bin/env ts-node
 import path from "path";
 import fs from "fs/promises";
-import db from "../site/db";
-import { ensureMigrationsTable, performMigration } from "../site/db/migrations";
+import db from "api/db";
+import { ensureMigrationsTable, performMigration } from "api/db/migrations";
 
 const [_, __, command, ...args] = process.argv;
 

@@ -1,0 +1,40 @@
+import path from "path";
+import { readFile, mkdir, writeFile } from "fs/promises";
+import { serve } from "esbuild";
+import createEngine from "lib/engine";
+import * as config from "./config";
+
+export const getHTML = async (props: { version?: string } = {}) => {
+  const engine = createEngine();
+  const template = await readFile(config.indexHTML);
+  return engine.parseAndRender(template.toString(), props);
+};
+
+const startDevServer = async () => {
+  // Make build dir
+  const tmpDir = path.resolve(__dirname, ".dev");
+  try {
+    await mkdir(tmpDir);
+  } catch (err) {
+    if (err.code !== "EEXIST") {
+      console.error(err);
+      process.exit(-1);
+    }
+  }
+  const html = await getHTML({ version: "dev" });
+  await writeFile(path.join(tmpDir, "index.html"), html);
+  const devServer = await serve(
+    {
+      port: 3000,
+      servedir: tmpDir,
+    },
+    {
+      ...config.esbuild,
+      write: false,
+    }
+  );
+  console.log(`Dev server is listening on http://localhost:${devServer.port}`);
+};
+if (!module.parent) {
+  startDevServer();
+}

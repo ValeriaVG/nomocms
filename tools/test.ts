@@ -24,6 +24,8 @@ async function runTests(dir) {
     console.error(`Failed to read directory ${dir}`, err);
   }
 }
-
-const directories = ["../site", "../modules", "../cms"];
-Promise.all(directories.map((dir) => runTests(path.join(__dirname, dir))));
+const [_, __, ...dirs] = process.argv;
+const directories = dirs.length ? dirs : ["api", "modules", "dashboard", "lib"];
+Promise.all(
+  directories.map((dir) => runTests(path.resolve(__dirname, "..", dir)))
+);

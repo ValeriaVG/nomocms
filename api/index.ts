@@ -1,15 +1,19 @@
 import http from "http";
-import example from "../modules/example";
+
 import createHandler, { AppModule } from "./http/handler";
 import db from "./db";
-import account from "../modules/account";
-import content from "../modules/content";
+
+import version from "modules/version";
+import account from "modules/account";
+import content from "modules/content";
+
 import { ensureMigrationsTable, performMigration } from "./db/migrations";
 
 const port = process.env.PORT || 3030;
 const context = { db };
 
-const modules: Array<AppModule<typeof context>> = [example, account, content];
+const modules: Array<AppModule<typeof context>> = [version, account, content];
+
 export const server = http.createServer(createHandler(modules, context));
 
 export const syncSchema = async () => {

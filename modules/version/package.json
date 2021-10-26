@@ -1,0 +1,7 @@
+{
+  "name": "nomocms-version-module",
+  "description": "Example module for NoMoCMS, adding a /version endpoint",
+  "scripts": {
+    "test": "ts-node ../../tools/test.ts modules/example"
+  }
+}

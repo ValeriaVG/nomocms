@@ -1,0 +1,7 @@
+{
+  "name": "nomocms-account-module",
+  "description": "Authorization & authentication module for NoMoCMS",
+  "scripts": {
+    "test": "ts-node ../../tools/test.ts modules/account"
+  }
+}

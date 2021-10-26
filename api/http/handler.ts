@@ -21,6 +21,8 @@ export default function createHandler<C>(
   const routePath = createRouter<{ req: IncomingMessage }>(routes);
 
   return async (req: IncomingMessage, res: ServerResponse) => {
+    // TODO: Proper CORS
+    res.setHeader("Access-Control-Allow-Origin", "*");
     const url = new URL(req.url, "http://127.0.0.1");
     const result = await routePath(
       { path: url.pathname, method: req.method.toUpperCase() as HTTPMethod },
