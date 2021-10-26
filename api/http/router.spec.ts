@@ -63,8 +63,8 @@ it("should handle method routing", async () => {
 
 it("should handle variables in the path", async () => {
   const routeRequest = createRouter<void>({
-    "/item/:id": (_, { id }) => ({ status: 200, body: { id } }),
-    "/:a/:b/:c": { POST: (_, vars) => ({ status: 201, body: vars }) },
+    "/item/:id": (_, { params: body }) => ({ status: 200, body }),
+    "/:a/:b/:c": { POST: (_, { params }) => ({ status: 201, body: params }) },
   });
 
   expect(
@@ -102,5 +102,27 @@ it("should handle variables in the path", async () => {
     })
   ).toMatchObject({
     status: 404,
+  });
+
+  it("should handle body & query parameters in the path", async () => {
+    const routeRequest = createRouter<{}>({
+      "/test": (_, { body, queryParams }) => ({
+        status: 200,
+        body: { id: body.id, q: queryParams.get("q") },
+      }),
+    });
+    expect(
+      await routeRequest(
+        { path: "/test", method: HTTPMethod.GET },
+        {},
+        {
+          body: { id: 1 },
+          queryParams: new URLSearchParams("q=query"),
+        }
+      )
+    ).toMatchObject({
+      status: 200,
+      body: { id: 1, q: "query" },
+    });
   });
 });

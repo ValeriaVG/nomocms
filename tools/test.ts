@@ -4,6 +4,7 @@ import path from "path";
 import { prettify, Test } from "tiny-jest";
 
 async function runTests(dir) {
+  let passed = true;
   try {
     const files = await fs.readdir(dir);
     for (let file of files) {
@@ -16,16 +17,22 @@ async function runTests(dir) {
         const test = mod.test || mod.default || mod;
         if (test && test instanceof Test) {
           test.title && console.info(test.title);
-          await test.run().then(prettify);
+          const res = await test.run();
+          prettify(res);
+          passed = res.every((t) => t.passed);
         }
       }
     }
   } catch (err) {
     console.error(`Failed to read directory ${dir}`, err);
+    passed = false;
   }
+  return passed;
 }
 const [_, __, ...dirs] = process.argv;
 const directories = dirs.length ? dirs : ["api", "modules", "dashboard", "lib"];
 Promise.all(
   directories.map((dir) => runTests(path.resolve(__dirname, "..", dir)))
-);
+).then((results) => {
+  if (!results.every(Boolean)) process.exit(-1);
+});

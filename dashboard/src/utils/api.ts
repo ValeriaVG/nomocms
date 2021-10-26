@@ -32,8 +32,7 @@ export function createAPIFetcher(url: string, fetchFn = fetch) {
       exec<T>(path, { method: HTTPMethod.PUT, body }),
     patch: <T>(path: string, body: any) =>
       exec<T>(path, { method: HTTPMethod.PUT, body }),
-    delete: <T>(path: string, body: any) =>
-      exec<T>(path, { method: HTTPMethod.DELETE }),
+    delete: <T>(path: string) => exec<T>(path, { method: HTTPMethod.DELETE }),
   };
 }
 

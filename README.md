@@ -1,5 +1,7 @@
 # ![NoMoCMS](./logo.svg)
 
+> ⚠️ Important: Master branch is not yet stable as project is undergoing massive refactoring ⚠️
+
 [![Maintainability](https://api.codeclimate.com/v1/badges/fba64515ad8b4aa8c338/maintainability)](https://codeclimate.com/github/ValeriaVG/nomocms/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/fba64515ad8b4aa8c338/test_coverage)](https://codeclimate.com/github/ValeriaVG/nomocms/test_coverage)
 
@@ -9,9 +11,9 @@ NoMoCMS is currently in active development. It's not ready for production use un
 
 Current stage: alpha
 
-## How to deploy
+<!-- ## How to deploy
 
-[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/ValeriaVG/nomocms/tree/main&refcode=6ad1223ed047)
+[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/ValeriaVG/nomocms/tree/main&refcode=6ad1223ed047) -->
 
 ## First-time & Emergency access
 

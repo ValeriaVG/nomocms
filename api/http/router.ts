@@ -9,10 +9,14 @@ export interface HandlerResponse<
   body?: T;
   status: HTTPStatus;
 }
-export type RouteHandler<C = any> = (
-  ctx: C,
-  vars?: Record<string, string>
-) => Promise<HandlerResponse> | HandlerResponse;
+export type RouteHandler<
+  C = any,
+  O extends {
+    body?: any;
+    params?: Record<string, string>;
+    queryParams?: URLSearchParams;
+  } = any
+> = (ctx: C, input?: O) => Promise<HandlerResponse> | HandlerResponse;
 
 export type Route<C = any> =
   | RouteHandler<C>
@@ -39,15 +43,17 @@ export default function createRouter<C = any>(routes: Record<string, Route>) {
   }
   return async (
     { path, method }: { path: string; method: HTTPMethod },
-    ctx: C
+    ctx: C,
+    reqInput?: { body?: any; queryParams?: URLSearchParams }
   ): Promise<HandlerResponse> => {
     const routePath = (path: string, params: Record<string, string> = {}) => {
+      const input = Object.assign({ params }, reqInput);
       const route = map.get(path);
-      if (typeof route === "function") return route(ctx, params);
+      if (typeof route === "function") return route(ctx, input);
       if (typeof route !== "object")
         throw new Error(`Mailformed route for ${path}: ${route}`);
       if (!route[method]) return { status: HTTPStatus.MethodNotAllowed };
-      return route[method](ctx, params);
+      return route[method](ctx, input);
     };
     const respondWithOptions = (path: string) => {
       const route = map.get(path);

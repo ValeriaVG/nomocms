@@ -3,11 +3,21 @@
   "all": true,
   "exclude": [
     "tools",
-    "build",
-    "node_modules"
+    "*/build/**",
+    "node_modules/*",
+    ".dev/*",
+    "**/*.d.ts",
+    "dashboard/scripts",
+    "coverage",
+    ".nyc_output",
+    "**/migrations"
+  ],
+  "extension": [
+    ".ts"
   ],
   "reporter": [
     "lcov",
-    "text-summary"
+    "text-summary",
+    "html"
   ]
 }

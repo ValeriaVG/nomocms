@@ -29,4 +29,19 @@ it("can fetch data", async () => {
       headers: { "content-type": "application/json" },
     },
   });
+  expect(await api.put("put", { v: 1 })).toMatchObject({
+    url: "http://example.com/put",
+    options: {
+      method: "PUT",
+      body: '{"v":1}',
+      headers: { "content-type": "application/json" },
+    },
+  });
+  expect(await api.delete("delete")).toMatchObject({
+    url: "http://example.com/delete",
+    options: {
+      method: "DELETE",
+      headers: { "content-type": "application/json" },
+    },
+  });
 });

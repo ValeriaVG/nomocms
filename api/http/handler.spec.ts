@@ -1,3 +1,4 @@
+import { Readable } from "stream";
 import { Test, expect } from "tiny-jest";
 import createHandler from "./handler";
 
@@ -67,5 +68,35 @@ it("handles simple requests", async () => {
     finished: true,
     body: ["health page"],
     statusCode: 200,
+  });
+
+  it("can consume JSON body", async () => {
+    const modules = [
+      {
+        routes: {
+          "/:foo/:bar": async (_, input) => {
+            return {
+              status: 200,
+              body: {
+                ...input,
+                queryParams: Object.fromEntries(input.queryParams.entries()),
+              },
+            };
+          },
+        },
+      },
+    ];
+    const handle = createHandler(modules, {});
+    const req: any = Readable.from(['{"id":1}']);
+    req["url"] = "/a/b?q=search";
+    req["method"] = "GET";
+    req["headers"] = { "content-type": "application/json" };
+    const res = createTestResponse();
+    await handle(req, res);
+    expect(JSON.parse(res.body[0])).toMatchObject({
+      body: { id: 1 },
+      params: { foo: "a", bar: "b" },
+      queryParams: { q: "search" },
+    });
   });
 });

@@ -1,5 +1,4 @@
 import http from "http";
-
 import createHandler, { AppModule } from "./http/handler";
 import db from "./db";
 
@@ -39,10 +38,11 @@ export const syncSchema = async () => {
   }
 };
 
-if (!module.parent) {
-  syncSchema().then(() =>
-    server.listen(port, () => {
-      console.info(`Server is listening on http://localhost:${port}`);
-    })
-  );
+if (require.main === module) {
+  syncSchema().then(() => {
+    if (!server.listening)
+      server.listen(port, () => {
+        console.info(`Server is listening on http://localhost:${port}`);
+      });
+  });
 }

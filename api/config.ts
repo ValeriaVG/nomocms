@@ -1,6 +1,8 @@
 import { PoolConfig } from "pg";
+import { config } from "dotenv";
+config();
 
-const dbConfig: PoolConfig = {
+export const db: PoolConfig = {
   host: process.env.DATABASE_HOST ?? "localhost",
   port: Number(process.env.DATABASE_PORT ?? 5432),
   user: process.env.DATABASE_USER ?? "nomocms",
@@ -12,4 +14,7 @@ const dbConfig: PoolConfig = {
     : false,
 };
 
-export default dbConfig;
+export const superuser = {
+  email: process.env.SUPERUSER_EMAIL,
+  password: process.env.SUPERUSER_PASSWORD,
+};

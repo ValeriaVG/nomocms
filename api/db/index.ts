@@ -1,4 +1,4 @@
 import { Pool } from "pg";
-import dbConfig from "./config";
+import { db as dbConfig } from "../config";
 
 export default new Pool(dbConfig);

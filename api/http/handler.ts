@@ -26,9 +26,11 @@ export default function createHandler<C>(
     res.setHeader("Access-Control-Allow-Headers", "*");
     const url = new URL(req.url, "http://127.0.0.1");
     try {
+      const body = await consumeJSON(req);
       const result = await routePath(
         { path: url.pathname, method: req.method.toUpperCase() as HTTPMethod },
-        { ...context, req }
+        { ...context, req },
+        { body, queryParams: url.searchParams }
       );
       if (!result)
         throw new Error(
@@ -60,8 +62,38 @@ export default function createHandler<C>(
     } catch (err) {
       console.error(err);
       res.statusCode = HTTPStatus.InternalServerError;
-      res.write("Internal Server Error");
+      res.write(`{"error":"Internal Server Error"}`);
       res.end();
     }
   };
+}
+
+async function consumeJSON(req: IncomingMessage) {
+  if (!req?.on) return;
+  if (
+    req?.headers &&
+    req.headers["content-type"] &&
+    !req.headers["content-type"].toLowerCase().startsWith("application/json")
+  )
+    return;
+
+  let data = "";
+
+  return new Promise((resolve, reject) => {
+    const flush = () => {
+      if (!data) return resolve(undefined);
+      try {
+        resolve(JSON.parse(data));
+      } catch (err) {
+        // TODO: throw proper HTTPError
+        reject(err);
+      }
+    };
+    req.on("data", (chunk) => {
+      if (!chunk.length) return flush();
+      data += chunk.toString();
+    });
+    req.on("end", flush);
+    req.on("error", reject);
+  });
 }

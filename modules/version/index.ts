@@ -7,7 +7,7 @@ export default {
         headers: {
           "content-type": "application/json",
         },
-        body: JSON.stringify({ version: info.version }),
+        body: { version: info.version },
       };
     },
   },
