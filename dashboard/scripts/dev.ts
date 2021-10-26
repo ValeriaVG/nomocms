@@ -34,6 +34,9 @@ const startDevServer = async () => {
     }
   );
   console.log(`Dev server is listening on http://localhost:${devServer.port}`);
+  process.on("SIGINT", devServer.stop);
+  process.on("SIGTERM", devServer.stop);
+  process.on("SIGABRT", devServer.stop);
 };
 if (!module.parent) {
   startDevServer();
