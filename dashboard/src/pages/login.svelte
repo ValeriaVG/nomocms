@@ -1,9 +1,11 @@
 <script>
   import logo from "../logo.svg";
-  const onSubmit = (e) => {
+  import api from "../utils/api";
+  const onSubmit = async (e) => {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.target).entries());
-    console.log(data);
+    const response = await api.post("/login", data);
+    console.log(response);
   };
 </script>
 

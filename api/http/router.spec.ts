@@ -1,6 +1,6 @@
 import { Test, expect } from "tiny-jest";
-import { HTTPMethod } from "./HTTPMethod";
-import { HTTPStatus } from "./HTTPStatus";
+import { HTTPMethod } from "lib/HTTPMethod";
+import { HTTPStatus } from "lib/HTTPStatus";
 import createRouter from "./router";
 
 export const test = new Test("Router");

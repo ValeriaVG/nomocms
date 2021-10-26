@@ -1,8 +1,7 @@
 import { IncomingMessage, ServerResponse } from "http";
-import { PoolClient } from "pg";
 import { Readable } from "stream";
 import { Migration } from "../db/migrations";
-import { HTTPMethod } from "./HTTPMethod";
+import { HTTPMethod } from "lib/HTTPMethod";
 import createRouter, { Route } from "./router";
 
 export interface AppModule<C = any> {
@@ -23,6 +22,7 @@ export default function createHandler<C>(
   return async (req: IncomingMessage, res: ServerResponse) => {
     // TODO: Proper CORS
     res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Headers", "*");
     const url = new URL(req.url, "http://127.0.0.1");
     const result = await routePath(
       { path: url.pathname, method: req.method.toUpperCase() as HTTPMethod },

@@ -1,5 +1,5 @@
-import { HTTPMethod } from "./HTTPMethod";
-import { HTTPStatus } from "./HTTPStatus";
+import { HTTPMethod } from "lib/HTTPMethod";
+import { HTTPStatus } from "lib/HTTPStatus";
 import { Readable } from "stream";
 
 export interface HandlerResponse<
@@ -40,7 +40,7 @@ export default function createRouter<C = any>(routes: Record<string, Route>) {
   return async (
     { path, method }: { path: string; method: HTTPMethod },
     ctx: C
-  ) => {
+  ): Promise<HandlerResponse> => {
     const routePath = (path: string, params: Record<string, string> = {}) => {
       const route = map.get(path);
       if (typeof route === "function") return route(ctx, params);
@@ -49,13 +49,29 @@ export default function createRouter<C = any>(routes: Record<string, Route>) {
       if (!route[method]) return { status: HTTPStatus.MethodNotAllowed };
       return route[method](ctx, params);
     };
+    const respondWithOptions = (path: string) => {
+      const route = map.get(path);
+      return {
+        status: HTTPStatus.NoContent,
+        headers: {
+          Allow:
+            typeof route === "function" ? "GET" : Object.keys(route).join(","),
+        },
+      };
+    };
     // Has this exact path
     if (map.has(path)) {
+      if (method === HTTPMethod.OPTIONS) {
+        return respondWithOptions(path);
+      }
       return routePath(path);
     }
     for (const [re, pathWithVars] of variablePaths) {
       const matches = path.match(re);
       if (matches) {
+        if (method === HTTPMethod.OPTIONS) {
+          return respondWithOptions(pathWithVars);
+        }
         const params = matches.groups ?? {};
         return routePath(pathWithVars, params);
       }

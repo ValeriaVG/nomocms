@@ -23,8 +23,7 @@
     "lib"
   ],
   "scripts": {
-    "dev": "ts-node-dev site/index.ts",
-    "test": "ts-node-dev tools/test.ts",
+    "test": "ts-node tools/test.ts",
     "build": "npm run build -w api && npm run build -w dashboard",
     "coverage": "nyc ts-node tools/test"
   },
