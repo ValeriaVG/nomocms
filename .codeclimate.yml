@@ -36,3 +36,4 @@ exclude_patterns:
   - "**/*.spec.ts"
   - "**/*.js"
   - "**/*.d.ts"
+  - "**/migrations/**"
