@@ -3,7 +3,7 @@
   "version": "0.2.0-beta",
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
-    "@types/node": "^16.11.4",
+    "@types/node": "^16.11.6",
     "@types/pg": "^8.6.1",
     "nyc": "^15.1.0",
     "source-map-support": "^0.5.20",
