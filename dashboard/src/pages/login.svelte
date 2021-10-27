@@ -5,7 +5,6 @@
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.target).entries());
     const response = await api.post("/login", data);
-    console.log(response);
   };
 </script>
 

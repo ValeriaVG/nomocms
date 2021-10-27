@@ -1,4 +1,4 @@
-import { login } from "./login";
+import { login, logout } from "./login";
 
 export default {
   // "/account": {
@@ -13,6 +13,6 @@ export default {
   "/login": {
     //GET: getCurrentAccount,
     POST: login,
-    // DELETE: logout,
+    DELETE: logout,
   },
 };

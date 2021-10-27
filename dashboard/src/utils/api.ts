@@ -11,7 +11,7 @@ export function createAPIFetcher(url: string, fetchFn = fetch) {
   ) => {
     const options: RequestInit = {
       method,
-      credentials: "same-origin",
+      credentials: "include",
     };
     if (body) {
       options.body = JSON.stringify(body);

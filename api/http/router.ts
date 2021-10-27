@@ -57,11 +57,13 @@ export default function createRouter<C = any>(routes: Record<string, Route>) {
     };
     const respondWithOptions = (path: string) => {
       const route = map.get(path);
+      const methods =
+        typeof route === "function" ? "GET" : Object.keys(route).join(", ");
       return {
         status: HTTPStatus.NoContent,
         headers: {
-          Allow:
-            typeof route === "function" ? "GET" : Object.keys(route).join(","),
+          Allow: methods,
+          "Access-Control-Allow-Methods": methods,
         },
       };
     };

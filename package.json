@@ -26,7 +26,8 @@
     "test": "ts-node tools/test.ts",
     "build": "npm run build -w api && npm run build -w dashboard",
     "coverage": "nyc ts-node tools/test",
-    "api": "NODE_PATH=api/build node api/build/api/index"
+    "api": "NODE_PATH=api/build node api/build/api/index",
+    "migration": "ts-node tools/migrate.ts"
   },
   "dependencies": {
     "liquidjs": "^9.28.2",

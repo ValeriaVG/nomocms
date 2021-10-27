@@ -57,7 +57,9 @@ export default {
     const client = await db.connect();
     await client.query(`BEGIN;`);
     await ensureMigrationsTable(client);
-    const migration = await import(`../modules/${mod}/${name}.ts`);
+    const { default: migration } = await import(
+      `../modules/${mod}/migrations/${name}.ts`
+    );
     await performMigration(client, migration, operation);
     await client.query(`COMMIT;`);
     await client.release();
