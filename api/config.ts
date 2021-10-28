@@ -7,6 +7,7 @@ export const db: PoolConfig = {
   port: Number(process.env.DATABASE_PORT ?? 5432),
   user: process.env.DATABASE_USER ?? "nomocms",
   password: process.env.DATABASE_PASSWORD ?? "nomocms",
+  database: process.env.DATABASE_NAME ?? "nomocms",
   ssl: process.env.DATABASE_CA
     ? {
         ca: process.env.DATABASE_CA,

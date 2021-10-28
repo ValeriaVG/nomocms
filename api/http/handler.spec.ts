@@ -19,6 +19,9 @@ const createTestResponse = (): any => ({
   setHeader(key: string, value: string) {
     this.headers.set(key, value);
   },
+  hasHeader() {
+    return false;
+  },
 });
 
 it("handles simple requests", async () => {

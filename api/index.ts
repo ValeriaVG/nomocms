@@ -7,6 +7,7 @@ import account from "modules/account";
 import content from "modules/content";
 
 import { ensureMigrationsTable, performMigration } from "./db/migrations";
+import { Pool } from "pg";
 
 const port = process.env.PORT || 3030;
 const context = { db };
@@ -15,7 +16,7 @@ const modules: Array<AppModule<typeof context>> = [version, account, content];
 
 export const server = http.createServer(createHandler(modules, context));
 
-export const syncSchema = async () => {
+export const syncSchema = async (db: Pool, modules: Array<AppModule>) => {
   const client = await db.connect().catch((error) => {
     console.error(`Failed to connect to database`, error);
     process.exit(-1);
@@ -39,7 +40,7 @@ export const syncSchema = async () => {
 };
 
 if (require.main === module) {
-  syncSchema().then(() => {
+  syncSchema(db, modules).then(() => {
     if (!server.listening)
       server.listen(port, () => {
         console.info(`Server is listening on http://localhost:${port}`);

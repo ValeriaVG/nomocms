@@ -7,6 +7,23 @@ import { randomUUID } from "crypto";
 import { IncomingMessage } from "http";
 import { parse } from "querystring";
 
+export interface User {
+  id: string | null;
+  email: string;
+  isSuperUser?: boolean;
+}
+
+export const createToken = async (db: Pool, user: User) => {
+  const token = randomUUID();
+  const createdAt = new Date();
+  const expiresAt = new Date(createdAt.getTime() + 30 * 24 * 60 * 60 * 1_000);
+  await db.query(
+    `INSERT INTO account_tokens (token,account_id,created_at,expires_at,is_superuser) VALUES($1,$2,$3,$4,$5)`,
+    [token, user.id, createdAt, expiresAt, user.isSuperUser]
+  );
+  return `token=${token};HttpOnly;Path=/;Expires=${expiresAt.toUTCString()}`;
+};
+
 export const login: RouteHandler<
   { db: Pool },
   { body: { email: string; password: string } }
@@ -18,7 +35,7 @@ export const login: RouteHandler<
     },
   };
   if (!email || !password) return error;
-  let user: { id: string | null; email: string; isSuperUser?: boolean };
+  let user: User;
   if (
     superuser.email &&
     email.trim().toLowerCase() === superuser.email &&
@@ -42,11 +59,12 @@ export const login: RouteHandler<
     `INSERT INTO account_tokens (token,account_id,created_at,expires_at,is_superuser) VALUES($1,$2,$3,$4,$5)`,
     [token, user.id, createdAt, expiresAt, user.isSuperUser]
   );
+  const tokenCookie = await createToken(db, user);
   return {
     status: 200,
     body: { user },
     headers: {
-      "Set-Cookie": `token=${token};HttpOnly;Path=/;Expires=${expiresAt.toUTCString()}`,
+      "Set-Cookie": tokenCookie,
     },
   };
 };

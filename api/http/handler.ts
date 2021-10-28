@@ -51,6 +51,13 @@ export default function createHandler<C>(
         return result.body.pipe(res);
       }
       if (result.body) {
+        if (
+          !res.hasHeader("content-type") &&
+          !Buffer.isBuffer(result.body) &&
+          typeof result.body !== "string"
+        ) {
+          res.setHeader("content-type", "application/json");
+        }
         const buffer =
           result.body instanceof Buffer
             ? result.body
