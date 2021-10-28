@@ -32,7 +32,7 @@
     "migration": "ts-node tools/migrate.ts"
   },
   "dependencies": {
-    "liquidjs": "^9.28.2",
+    "liquidjs": "^9.28.3",
     "pg": "^8.7.1"
   }
 }
