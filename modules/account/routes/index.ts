@@ -1,5 +1,5 @@
 import { createAccount } from "./accounts";
-import { login, logout } from "./login";
+import { getCurrentAccount, login, logout } from "./login";
 
 export default {
   "/account": {
@@ -12,7 +12,7 @@ export default {
   //   PUT: updateAccount,
   // },
   "/login": {
-    //GET: getCurrentAccount,
+    GET: getCurrentAccount,
     POST: login,
     DELETE: logout,
   },

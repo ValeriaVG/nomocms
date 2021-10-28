@@ -10,6 +10,14 @@ export interface AppModule<C = any> {
   migrations?: Array<Migration>;
 }
 
+const setCORSHeaders = (res: ServerResponse) => {
+  // TODO: Proper CORS
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Vary", "Origin");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+};
+
 export default function createHandler<C>(
   modules: Array<AppModule<C>>,
   context: C
@@ -21,11 +29,7 @@ export default function createHandler<C>(
   const routePath = createRouter<{ req: IncomingMessage }>(routes);
 
   return async (req: IncomingMessage, res: ServerResponse) => {
-    // TODO: Proper CORS
-    res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
-    res.setHeader("Access-Control-Allow-Credentials", "true");
-    res.setHeader("Vary", "Origin");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    setCORSHeaders(res);
     const url = new URL(req.url, "http://127.0.0.1");
     try {
       const body = await consumeJSON(req);

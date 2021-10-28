@@ -10,7 +10,7 @@
   };
   $: Page = routes[path];
 
-  api.get("/version").then(console.log);
+  api.get("/login").then(console.log);
 </script>
 
 <svelte:component this={Page} />

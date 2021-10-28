@@ -2,7 +2,9 @@
 import fs from "fs/promises";
 import path from "path";
 import { prettify, Test } from "tiny-jest";
-import { TestResult } from "tiny-jest/dist/Test";
+import { config } from "dotenv";
+
+config({ path: path.resolve(__dirname, "../test.env") });
 
 async function runTests(dir) {
   let passed = true;

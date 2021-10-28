@@ -32,15 +32,20 @@ export function buildPathRegExp(path: string): RegExp {
   );
 }
 
-export default function createRouter<C = any>(routes: Record<string, Route>) {
-  const map = new Map<string, Route>(Object.entries(routes));
+export const buildVariablePathMap = (routeMap: Map<string, Route>) => {
   const variablePaths = new Map<RegExp, string>();
-
-  for (const key of map.keys()) {
+  for (const key of routeMap.keys()) {
     if (/\/:/.test(key)) {
       variablePaths.set(buildPathRegExp(key), key);
     }
   }
+  return variablePaths;
+};
+
+export default function createRouter<C = any>(routes: Record<string, Route>) {
+  const map = new Map<string, Route>(Object.entries(routes));
+  const variablePaths = buildVariablePathMap(map);
+
   return async (
     { path, method }: { path: string; method: HTTPMethod },
     ctx: C,
