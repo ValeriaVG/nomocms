@@ -2,6 +2,7 @@
 import fs from "fs/promises";
 import path from "path";
 import { prettify, Test } from "tiny-jest";
+import { TestResult } from "tiny-jest/dist/Test";
 
 async function runTests(dir) {
   let passed = true;

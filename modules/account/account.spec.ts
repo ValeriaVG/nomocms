@@ -8,7 +8,7 @@ import { syncSchema } from "api";
 import account from ".";
 
 export const test = new Test("Modules/Account");
-const { it } = test;
+const { it, before, after } = test;
 
 const db = new Pool({
   user: "nomocms",
@@ -16,8 +16,12 @@ const db = new Pool({
   database: "nomotest",
 });
 
-it("can create an account & login", async () => {
+before(async () => {
   await db.query(`DROP SCHEMA public CASCADE; CREATE SCHEMA public;`);
+});
+after(() => db.end());
+
+it("can create an account & login", async () => {
   const modules = [account];
   await syncSchema(db, [account]);
   const context = { db };
