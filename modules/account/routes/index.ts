@@ -1,10 +1,10 @@
-import { createAccount } from "./accounts";
+import { createAccount, listAccounts } from "./accounts";
 import { getCurrentAccount, login, logout } from "./login";
 
 export default {
   "/account": {
     POST: createAccount,
-    //   GET: listAccounts,
+    GET: listAccounts,
   },
   // "/account/:id": {
   //   GET: getAccount,

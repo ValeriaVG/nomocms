@@ -6,6 +6,7 @@ import bcrypt from "bcryptjs";
 import { randomUUID } from "crypto";
 import { IncomingMessage } from "http";
 import { User } from "../types";
+import { UnauthorizedError } from "lib/errors";
 
 const SuperUser = {
   id: "superuser",
@@ -127,7 +128,7 @@ export const parseCookies = (cookies: string): Record<string, string> => {
   return Object.fromEntries(map.entries());
 };
 
-const getCurrentToken = (req: IncomingMessage): string | undefined => {
+export const getCurrentToken = (req: IncomingMessage): string | undefined => {
   const cookies = req.headers?.cookie;
   if (!cookies) return;
   const { token } = parseCookies(cookies);
@@ -136,17 +137,12 @@ const getCurrentToken = (req: IncomingMessage): string | undefined => {
   return token;
 };
 
-const UnauthorizedError = {
-  status: HTTPStatus.Unauthorized,
-  body: { error: "Unauthorized" },
-};
-
 export const logout: RouteHandler<{ db: Pool; req: IncomingMessage }> = async ({
   db,
   req,
 }) => {
   const token = getCurrentToken(req);
-  if (!token) return UnauthorizedError;
+  if (!token) throw UnauthorizedError;
   await db.query(`DELETE FROM account_tokens WHERE token=$1`, [token]);
   return {
     status: HTTPStatus.OK,
@@ -161,11 +157,11 @@ export const logout: RouteHandler<{ db: Pool; req: IncomingMessage }> = async ({
   };
 };
 
-export const getCurrentAccount: RouteHandler<{
-  db: Pool;
-  req: IncomingMessage;
-}> = async ({ db, req }) => {
-  const token = getCurrentToken(req);
+export const getUserByToken = async (
+  db: Pool,
+  token: string
+): Promise<User | undefined> => {
+  if (!token) return;
   const result = await db.query(
     `SELECT accounts.* , is_superuser
     FROM account_tokens
@@ -173,9 +169,18 @@ export const getCurrentAccount: RouteHandler<{
     WHERE token=$1 AND expires_at>now()`,
     [token]
   );
-  if (result.rowCount == 0) return UnauthorizedError;
+  if (result.rowCount == 0) return;
   const { id, email, is_superuser } = result.rows[0];
-  const user = is_superuser ? SuperUser : { id, email };
+  return is_superuser ? SuperUser : { id, email };
+};
+
+export const getCurrentAccount: RouteHandler<{
+  db: Pool;
+  req: IncomingMessage;
+}> = async ({ db, req }) => {
+  const token = getCurrentToken(req);
+  const user = await getUserByToken(db, token);
+  if (!user) throw UnauthorizedError;
   const tokenCookie = await updateToken(db, token);
   return {
     status: 200,

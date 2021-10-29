@@ -4,6 +4,7 @@ import { Migration } from "../db/migrations";
 import { HTTPMethod } from "lib/HTTPMethod";
 import createRouter, { Route } from "./router";
 import { HTTPStatus } from "lib/HTTPStatus";
+import { HTTPError } from "lib/errors";
 
 export interface AppModule<C = any> {
   routes?: Record<string, Route<C>>;
@@ -73,9 +74,14 @@ export default function createHandler<C>(
       }
       return res.end();
     } catch (err) {
-      console.error(err);
-      res.statusCode = HTTPStatus.InternalServerError;
-      res.write(`{"error":"Internal Server Error"}`);
+      if (err instanceof HTTPError) {
+        res.statusCode = err.status;
+        res.write(JSON.stringify({ error: err.message }));
+      } else {
+        console.error(err);
+        res.statusCode = HTTPStatus.InternalServerError;
+        res.write(`{"error":"Internal Server Error"}`);
+      }
       res.end();
     }
   };

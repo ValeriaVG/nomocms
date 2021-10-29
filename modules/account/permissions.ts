@@ -1,4 +1,7 @@
+import { IncomingMessage } from "http";
+import { UnauthorizedError } from "lib/errors";
 import { Pool } from "pg";
+import { getCurrentToken, getUserByToken } from "./routes/login";
 import { User } from "./types";
 
 export enum Permission {
@@ -27,4 +30,22 @@ export const checkPermission = async (
   if (!result.rowCount) return false;
   const [{ permissions }] = result.rows;
   return Boolean(permissions & permission);
+};
+
+export const ensureAccountPermission = async (
+  {
+    db,
+    req,
+  }: {
+    db: Pool;
+    req: IncomingMessage;
+  },
+  scope: string,
+  permission: Permission
+) => {
+  const token = getCurrentToken(req);
+  const user = await getUserByToken(db, token);
+  if (!user) throw UnauthorizedError;
+  const hasPermission = await checkPermission(db, { user, scope, permission });
+  if (!hasPermission) throw UnauthorizedError;
 };

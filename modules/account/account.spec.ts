@@ -55,8 +55,25 @@ it("can create an account & login", async () => {
   ).toBe(true);
 });
 
-it("can login as superuser", async () => {
+it("can login as superuser & list accounts", async () => {
   const superuser = { email: "clark.kent@daily.planet", password: "12345" };
   const app = http.createServer(createHandler(modules, { db }));
-  await request(app).post("/login").send(superuser).expect(200);
+  const loginResponse = await request(app)
+    .post("/login")
+    .send(superuser)
+    .expect(200);
+  const loginCookie = parseCookies(loginResponse.headers["set-cookie"][0]);
+  const result = await request(app)
+    .get("/account?query=user@domain.com&limit=1")
+    .set("Cookie", `token=${loginCookie.token}`)
+    .expect(200);
+  expect(result.body.items).toMatchObject([{ email: "user@domain.com" }]);
+  await request(app)
+    .get("/account?query=rubbish")
+    .set("Cookie", `token=${loginCookie.token}`)
+    .expect(200, { items: [] });
+  await request(app)
+    .get("/account?limit=0")
+    .set("Cookie", `token=${loginCookie.token}`)
+    .expect(200, { items: [] });
 });

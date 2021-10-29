@@ -4,6 +4,9 @@ import { Pool } from "pg";
 import bcrypt from "bcryptjs";
 import { randomUUID } from "crypto";
 import { createToken } from "./login";
+import { ensureInt } from "lib/typecast";
+import { IncomingMessage } from "http";
+import { ensureAccountPermission, Permission } from "../permissions";
 
 export const createAccount: RouteHandler<
   { db: Pool },
@@ -46,5 +49,37 @@ export const createAccount: RouteHandler<
 };
 export async function updateAccount() {}
 export async function deleteAccount() {}
+
 export async function getAccount() {}
-export async function listAccounts() {}
+export const listAccounts: RouteHandler<
+  { db: Pool; req: IncomingMessage },
+  { queryParams: URLSearchParams }
+> = async ({ db, req }, { queryParams }) => {
+  await ensureAccountPermission({ db, req }, "account", Permission.list);
+  const params = Object.fromEntries(queryParams.entries());
+  const limit = ensureInt(params.limit, 10);
+  const { query, cursor } = params;
+  const where = [`1=1`];
+  const values: any[] = [limit];
+  const i = () => values.length;
+  if (cursor) {
+    values.push(cursor);
+    where.push(`id>$${i()}`);
+  }
+  if (query) {
+    values.push(query);
+    where.push(`email LIKE $${i()}`);
+  }
+  const { rows } = await db.query(
+    `SELECT id,email,created_at,updated_at FROM accounts WHERE ${where.join(
+      " AND "
+    )} LIMIT $1`,
+    values
+  );
+  return {
+    status: 200,
+    body: {
+      items: rows,
+    },
+  };
+};
