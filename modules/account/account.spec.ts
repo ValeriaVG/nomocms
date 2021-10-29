@@ -7,16 +7,11 @@ import createHandler from "api/http/handler";
 import { syncSchema } from "api";
 import account from ".";
 import { parseCookies } from "./routes/login";
-import { superuser } from "api/config";
+import { createTestDB } from "lib/testDB";
 
+const db = createTestDB();
 export const test = new Test("Modules/Account");
 const { it, before, after } = test;
-
-const db = new Pool({
-  user: "nomocms",
-  password: "nomocms",
-  database: "nomotest",
-});
 
 before(async () => {
   await db.query(`DROP SCHEMA public CASCADE; CREATE SCHEMA public;`);

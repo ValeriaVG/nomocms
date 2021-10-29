@@ -5,12 +5,7 @@ import { Pool } from "pg";
 import bcrypt from "bcryptjs";
 import { randomUUID } from "crypto";
 import { IncomingMessage } from "http";
-
-export interface User {
-  id: string;
-  email: string;
-  isSuperUser?: boolean;
-}
+import { User } from "../types";
 
 const SuperUser = {
   id: "superuser",

@@ -6,7 +6,7 @@ export default {
       token uuid PRIMARY KEY,
       account_id uuid,
       is_superuser boolean default false,
-      created_at timestamp with time zone,
+      created_at timestamp with time zone DEFAULT NOW(),
       expires_at timestamp with time zone,
       CONSTRAINT fk_account
         FOREIGN KEY(account_id) 
