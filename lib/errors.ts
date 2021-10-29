@@ -12,3 +12,4 @@ export const UnauthorizedError = new HTTPError(
 );
 
 export const NotFoundError = new HTTPError(HTTPStatus.NotFound, "Not Found");
+export const BadRequest = new HTTPError(HTTPStatus.BadRequest, "Bad Request");

@@ -43,9 +43,20 @@ export const ensureAccountPermission = async (
   scope: string,
   permission: Permission
 ) => {
+  const user = await ensureLoggedIn({ db, req });
+  const hasPermission = await checkPermission(db, { user, scope, permission });
+  if (!hasPermission) throw UnauthorizedError;
+};
+
+export const ensureLoggedIn = async ({
+  db,
+  req,
+}: {
+  db: Pool;
+  req: IncomingMessage;
+}) => {
   const token = getCurrentToken(req);
   const user = await getUserByToken(db, token);
   if (!user) throw UnauthorizedError;
-  const hasPermission = await checkPermission(db, { user, scope, permission });
-  if (!hasPermission) throw UnauthorizedError;
+  return user;
 };

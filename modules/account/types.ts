@@ -3,3 +3,8 @@ export interface User {
   email: string;
   isSuperUser?: boolean;
 }
+
+export interface AccountSettings {
+  email: string;
+  password: string;
+}

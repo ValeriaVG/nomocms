@@ -1,4 +1,4 @@
-import { createAccount, listAccounts } from "./accounts";
+import { createAccount, getAccount, listAccounts } from "./accounts";
 import { getCurrentAccount, login, logout } from "./login";
 
 export default {
@@ -6,11 +6,11 @@ export default {
     POST: createAccount,
     GET: listAccounts,
   },
-  // "/account/:id": {
-  //   GET: getAccount,
-  //   DELETE: deleteAccount,
-  //   PUT: updateAccount,
-  // },
+  "/account/:id": {
+    GET: getAccount,
+    // DELETE: deleteAccount,
+    // PUT: updateAccount,
+  },
   "/account/login": {
     GET: getCurrentAccount,
     POST: login,

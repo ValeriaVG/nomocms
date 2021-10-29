@@ -6,7 +6,14 @@ import { randomUUID } from "crypto";
 import { createToken } from "./login";
 import { ensureInt } from "lib/typecast";
 import { IncomingMessage } from "http";
-import { ensureAccountPermission, Permission } from "../permissions";
+import {
+  checkPermission,
+  ensureAccountPermission,
+  ensureLoggedIn,
+  Permission,
+} from "../permissions";
+import { BadRequest, NotFoundError, UnauthorizedError } from "lib/errors";
+import { AccountSettings } from "../types";
 
 export const createAccount: RouteHandler<
   { db: Pool },
@@ -47,10 +54,7 @@ export const createAccount: RouteHandler<
     },
   };
 };
-export async function updateAccount() {}
-export async function deleteAccount() {}
 
-export async function getAccount() {}
 export const listAccounts: RouteHandler<
   { db: Pool; req: IncomingMessage },
   { queryParams: URLSearchParams }
@@ -83,3 +87,33 @@ export const listAccounts: RouteHandler<
     },
   };
 };
+
+export const getAccount: RouteHandler<
+  { db: Pool; req: IncomingMessage },
+  { params: { id: string }; body: Partial<AccountSettings> }
+> = async ({ db, req }, { params: { id } }) => {
+  if (!id) throw BadRequest;
+  const user = await ensureLoggedIn({ db, req });
+  const canEdit =
+    user.id === id ||
+    (await checkPermission(db, {
+      user,
+      scope: "account",
+      permission: Permission.read,
+    }));
+  if (!canEdit) throw UnauthorizedError;
+
+  const result = await db.query(
+    `SELECT id,email,created_at, updated_at FROM account WHERE id=$1`,
+    [id]
+  );
+  if (!result.rowCount) throw NotFoundError;
+  return {
+    status: 200,
+    body: {
+      user: result.rows[0],
+    },
+  };
+};
+export async function updateAccount() {}
+export async function deleteAccount() {}

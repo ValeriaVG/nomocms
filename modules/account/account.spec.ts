@@ -19,6 +19,8 @@ after(() => db.end());
 
 const modules = [account];
 
+const superuser = { email: "clark.kent@daily.planet", password: "12345" };
+
 it("can create an account & login", async () => {
   await syncSchema(db, modules);
   const app = http.createServer(createHandler(modules, { db }));
@@ -55,7 +57,6 @@ it("can create an account & login", async () => {
 });
 
 it("can login as superuser & list accounts", async () => {
-  const superuser = { email: "clark.kent@daily.planet", password: "12345" };
   const app = http.createServer(createHandler(modules, { db }));
   const loginResponse = await request(app)
     .post("/account/login")

@@ -5,7 +5,7 @@ import { Pool } from "pg";
 import bcrypt from "bcryptjs";
 import { randomUUID } from "crypto";
 import { IncomingMessage } from "http";
-import { User } from "../types";
+import { AccountSettings, User } from "../types";
 import { UnauthorizedError } from "lib/errors";
 
 const SuperUser = {
@@ -51,7 +51,7 @@ export const updateToken = async (db: Pool, token: string) => {
 
 const getUserByCredentials = async (
   db: Pool,
-  credentials: { email: string; password: string }
+  credentials: AccountSettings
 ): Promise<User | undefined> => {
   const email = credentials.email.trim().toLowerCase();
   const password = credentials.password;
@@ -71,28 +71,26 @@ const getUserByCredentials = async (
   return { id: existingUser.id, email: existingUser.email };
 };
 
-export const login: RouteHandler<
-  { db: Pool },
-  { body: { email: string; password: string } }
-> = async ({ db }, { body: { email, password } }) => {
-  const error = {
-    status: HTTPStatus.BadRequest,
-    body: {
-      error: "Incorrect credentials",
-    },
+export const login: RouteHandler<{ db: Pool }, { body: AccountSettings }> =
+  async ({ db }, { body: { email, password } }) => {
+    const error = {
+      status: HTTPStatus.BadRequest,
+      body: {
+        error: "Incorrect credentials",
+      },
+    };
+    if (!email || !password) return error;
+    const user = await getUserByCredentials(db, { email, password });
+    if (!user || (!user.id && !user.isSuperUser)) return error;
+    const tokenCookie = await createToken(db, user);
+    return {
+      status: 200,
+      body: { user },
+      headers: {
+        "Set-Cookie": tokenCookie,
+      },
+    };
   };
-  if (!email || !password) return error;
-  const user = await getUserByCredentials(db, { email, password });
-  if (!user || (!user.id && !user.isSuperUser)) return error;
-  const tokenCookie = await createToken(db, user);
-  return {
-    status: 200,
-    body: { user },
-    headers: {
-      "Set-Cookie": tokenCookie,
-    },
-  };
-};
 
 export const parseCookies = (cookies: string): Record<string, string> => {
   if (!cookies) return {};
