@@ -4,7 +4,7 @@
   const onSubmit = async (e) => {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.target).entries());
-    const response = await api.post("/login", data);
+    const response = await api.post("/account/login", data);
   };
 </script>
 

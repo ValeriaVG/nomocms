@@ -11,7 +11,7 @@ export default {
   //   DELETE: deleteAccount,
   //   PUT: updateAccount,
   // },
-  "/login": {
+  "/account/login": {
     GET: getCurrentAccount,
     POST: login,
     DELETE: logout,

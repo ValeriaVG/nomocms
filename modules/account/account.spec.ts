@@ -1,5 +1,4 @@
 import { Test, expect } from "tiny-jest";
-import { Pool } from "pg";
 import http from "http";
 import request from "supertest";
 
@@ -24,7 +23,7 @@ it("can create an account & login", async () => {
   await syncSchema(db, modules);
   const app = http.createServer(createHandler(modules, { db }));
   const credentials = { email: "User@domain.com", password: "12345" };
-  await request(app).post("/login").send(credentials).expect(400);
+  await request(app).post("/account/login").send(credentials).expect(400);
   const createAccountResponse = await request(app)
     .post("/account")
     .send(credentials)
@@ -38,12 +37,12 @@ it("can create an account & login", async () => {
   expect(createAccountResponse.headers["set-cookie"]).toBeTruthy;
 
   const loginResponse = await request(app)
-    .post("/login")
+    .post("/account/login")
     .send(credentials)
     .expect(200, createAccountResponse.body);
   const loginCookie = parseCookies(loginResponse.headers["set-cookie"][0]);
   const currentUserResponse = await request(app)
-    .get("/login")
+    .get("/account/login")
     .set("Cookie", `token=${loginCookie.token}`)
     .expect(200, loginResponse.body);
   expect(currentUserResponse.headers["set-cookie"]).toBeTruthy;
@@ -59,7 +58,7 @@ it("can login as superuser & list accounts", async () => {
   const superuser = { email: "clark.kent@daily.planet", password: "12345" };
   const app = http.createServer(createHandler(modules, { db }));
   const loginResponse = await request(app)
-    .post("/login")
+    .post("/account/login")
     .send(superuser)
     .expect(200);
   const loginCookie = parseCookies(loginResponse.headers["set-cookie"][0]);
