@@ -99,6 +99,5 @@ export default function createRouter<C = any>(routes: Record<string, Route>) {
         return routePath(pathWithVars, params);
       }
     }
-    return { status: HTTPStatus.NotFound };
   };
 }

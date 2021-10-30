@@ -75,9 +75,7 @@ it("should handle variables in the path", async () => {
   });
   expect(
     await routeRequest({ path: "/item/1/2/3", method: HTTPMethod.GET })
-  ).toMatchObject({
-    status: HTTPStatus.NotFound,
-  });
+  ).toBe(undefined);
   expect(
     await routeRequest({ path: "/a_a/b-b/c.c", method: HTTPMethod.POST })
   ).toMatchObject({
@@ -100,9 +98,7 @@ it("should handle variables in the path", async () => {
       path: `/aaa/aaaa/aaa/aaa/aaa/aaaa/aaaa/aaaaaa/aaaa/aaaa/aaa`,
       method: HTTPMethod.POST,
     })
-  ).toMatchObject({
-    status: 404,
-  });
+  ).toBe(undefined);
 
   it("should handle body & query parameters in the path", async () => {
     const routeRequest = createRouter({
