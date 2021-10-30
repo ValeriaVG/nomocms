@@ -77,3 +77,20 @@ it("can login as superuser & list accounts", async () => {
     .set("Cookie", `token=${loginCookie.token}`)
     .expect(200, { items: [] });
 });
+
+it("fails on incorrect requests", async () => {
+  const app = http.createServer(createHandler(modules, { db }));
+  await request(app).post("/account/login").send({}).expect(400);
+  await request(app)
+    .post("/account/login")
+    .send({ email: "not-email@@", password: "12345" })
+    .expect(400);
+  await request(app)
+    .post("/account/login")
+    .send({ email: "name.surname@domain.com", password: "1234" })
+    .expect(400);
+  await request(app)
+    .post("/account/login")
+    .send({ email: "name.surname@domain.com", password: 12345 })
+    .expect(400);
+});
