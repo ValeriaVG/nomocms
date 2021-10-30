@@ -1,4 +1,5 @@
 import { compile } from "svelte/compiler";
+import type { CompileOptions } from "svelte/types/compiler/interfaces";
 import { build } from "esbuild";
 import vm from "vm";
 import path from "path";
@@ -11,14 +12,7 @@ export default async function compileContent(
   source: string,
   parameters: Record<string, any> = {}
 ) {
-  const resultSSR = await compile(source, {
-    enableSourcemap: false,
-    generate: "ssr",
-    sveltePath: "svelte",
-    format: "cjs",
-    hydratable: true,
-    immutable: true,
-  });
+  const resultSSR = await compile(source, configSSR);
   const ctx = {
     require(path) {
       require("svelte/register");
@@ -36,50 +30,64 @@ export default async function compileContent(
     head,
   } = ctx.exports.default.render(parameters);
 
-  const domResult = await compile(source, {
-    enableSourcemap: false,
-    generate: "dom",
-    sveltePath: "svelte",
-    hydratable: true,
-    immutable: true,
-  });
+  const domResult = await compile(source, configDOM);
 
-  const { outputFiles: files } = await build({
-    write: false,
-    bundle: true,
-    outfile: "bundle.js",
-    splitting: false,
-    minify: true,
-    stdin: {
-      contents:
-        domResult.js.code +
-        `\n;new Component({target:document.body,hydrate:true})`,
-      resolveDir: modulesDir,
-    },
-    plugins: [
-      {
-        name: "module-resolver",
-        setup(build) {
-          build.onResolve({ filter: /\$/ }, async (args) => {
-            let name = args.path.slice(1);
-            for (const ext of ["", ".ts", ".js", ".svelte"]) {
-              const stats = await fs
-                .stat(path.resolve(modulesDir, name + ext))
-                .catch((_) => undefined);
-              if (stats?.isFile()) {
-                name += ext;
-                break;
-              }
-            }
-            return {
-              path: path.resolve(modulesDir, name),
-            };
-          });
-        },
-      },
-      sveltePlugin,
-    ],
-  });
+  const { outputFiles: files } = await build(
+    esBuildConfig(domResult.js.code, parameters)
+  );
   const bundle = files[0];
   return { html, css, head, js: Buffer.from(bundle.contents).toString() };
 }
+
+const configDOM: CompileOptions = {
+  enableSourcemap: false,
+  generate: "dom",
+  sveltePath: "svelte",
+  hydratable: true,
+  immutable: true,
+};
+
+const configSSR: CompileOptions = {
+  ...configDOM,
+  generate: "ssr",
+  format: "cjs",
+};
+
+const esBuildConfig = (code: string, parameters: Record<string, any>) => ({
+  write: false,
+  bundle: true,
+  outfile: "bundle.js",
+  splitting: false,
+  minify: true,
+  stdin: {
+    contents:
+      code +
+      `\n;new Component({target:document.body,hydrate:true,props:${JSON.stringify(
+        parameters || {}
+      )}})`,
+    resolveDir: modulesDir,
+  },
+  plugins: [
+    {
+      name: "module-resolver",
+      setup(build) {
+        build.onResolve({ filter: /\$/ }, async (args) => {
+          let name = args.path.slice(1);
+          for (const ext of ["", ".ts", ".js", ".svelte"]) {
+            const stats = await fs
+              .stat(path.resolve(modulesDir, name + ext))
+              .catch((_) => undefined);
+            if (stats?.isFile()) {
+              name += ext;
+              break;
+            }
+          }
+          return {
+            path: path.resolve(modulesDir, name),
+          };
+        });
+      },
+    },
+    sveltePlugin,
+  ],
+});

@@ -7,7 +7,7 @@ import { syncSchema } from "api";
 import account from "modules/account";
 import content from ".";
 import { createTestDB } from "lib/testDB";
-import parseCookies from "modules/account/lib/cookies";
+import parseCookies from "lib/cookies";
 
 const db = createTestDB();
 export const test = new Test("Modules/Content");
@@ -94,7 +94,7 @@ it("can preview content", async () => {
     .expect(200);
   expect(previewResponse.headers).toMatchObject({
     "content-type": "text/html",
-    "content-length": "6613",
+    "content-length": "6622",
   });
   expect(
     previewResponse.text.includes("<h1>Page Title</h1><p>Page Content</p>")

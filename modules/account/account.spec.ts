@@ -6,7 +6,7 @@ import createHandler from "api/http/handler";
 import { syncSchema } from "api";
 import account from ".";
 import { createTestDB } from "lib/testDB";
-import parseCookies from "./lib/cookies";
+import parseCookies from "lib/cookies";
 
 const db = createTestDB();
 export const test = new Test("Modules/Account");

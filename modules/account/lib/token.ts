@@ -2,7 +2,7 @@ import { randomUUID } from "crypto";
 import { IncomingMessage } from "http";
 import { Pool } from "pg";
 import { User } from "../types";
-import parseCookies from "./cookies";
+import parseCookies from "lib/cookies";
 import { SuperUser } from "./credentials";
 
 export const getCurrentToken = (req: IncomingMessage): string | undefined => {

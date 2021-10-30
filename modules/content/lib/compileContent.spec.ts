@@ -36,6 +36,7 @@ it("can compile with parameters", async () => {
   expect(result).toMatchObject({
     html: "<h1>Hello, NoMoCMS</h1>",
   });
+  expect(result.js.includes("NoMoCMS")).toBe(true);
 });
 
 it("can import from components", async () => {
