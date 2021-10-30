@@ -37,6 +37,6 @@ export function createAPIFetcher(url: string, fetchFn = fetch) {
 }
 
 export default createAPIFetcher(
-  "http://localhost:3030",
+  process.env.API_URL,
   (typeof window !== "undefined" && window?.fetch) || ((() => {}) as any)
 );

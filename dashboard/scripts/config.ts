@@ -9,6 +9,11 @@ export const esbuild: BuildOptions = {
   bundle: true,
   loader: { ".png": "file", ".svg": "file", ".jpeg": "file", ".jpg": "file" },
   plugins: [sveltePlugin],
+  define: {
+    "process.env.API_URL": JSON.stringify(
+      process.env.API_URL || "http://localhost:3030"
+    ),
+  },
 };
 
 export const indexHTML = path.resolve(__dirname, "..", "index.html");

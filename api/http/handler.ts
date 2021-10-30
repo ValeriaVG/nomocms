@@ -20,7 +20,10 @@ export interface AppModule<C extends Ctx = Ctx> {
 
 const setCORSHeaders = (res: ServerResponse) => {
   // TODO: Proper CORS
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.setHeader(
+    "Access-Control-Allow-Origin",
+    process.env.APP_URL || "http://localhost:3000"
+  );
   res.setHeader("Access-Control-Allow-Credentials", "true");
   res.setHeader("Vary", "Origin");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
