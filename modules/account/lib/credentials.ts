@@ -55,5 +55,6 @@ export const getUserByCredentials = async (
   if (!result.rowCount) return;
   const existingUser = result.rows[0];
   if (!(await bcrypt.compare(password, existingUser.pwhash))) return;
-  return { id: existingUser.id, email: existingUser.email };
+  delete existingUser.pwhash;
+  return existingUser;
 };

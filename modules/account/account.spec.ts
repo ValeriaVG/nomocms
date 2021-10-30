@@ -45,7 +45,7 @@ it("can create an account & login", async () => {
     .expect(200, createAccountResponse.body);
   const loginCookie = parseCookies(loginResponse.headers["set-cookie"][0]);
   const currentUserResponse = await request(app)
-    .get("/account/login")
+    .get("/account")
     .set("Cookie", `token=${loginCookie.token}`)
     .expect(200, loginResponse.body);
   expect(currentUserResponse.headers["set-cookie"]).toBeTruthy;
@@ -57,6 +57,50 @@ it("can create an account & login", async () => {
   ).toBe(true);
 });
 
+it("can crud an account", async () => {
+  await syncSchema(db, modules);
+  const app = http.createServer(createHandler(modules, ctx));
+  const credentials = { email: "editable@domain.com", password: "123456" };
+
+  await request(app).post("/account").send(credentials).expect(201);
+
+  const loginResponse = await request(app)
+    .post("/account/login")
+    .send(credentials)
+    .expect(200);
+  const loginCookie = parseCookies(loginResponse.headers["set-cookie"][0]);
+  const updateUserResponse = await request(app)
+    .patch("/account")
+    .send({ email: "updated@domain.com" })
+    .set("Cookie", `token=${loginCookie.token}`)
+    .expect(200);
+
+  await request(app)
+    .get("/account")
+    .set("Cookie", `token=${loginCookie.token}`)
+    .expect(200, updateUserResponse.body);
+  const newCredentials = { email: "updated@domain.com", password: "54321" };
+  const updaterPasswordResponse = await request(app)
+    .patch("/account")
+    .send(newCredentials)
+    .set("Cookie", `token=${loginCookie.token}`)
+    .expect(200);
+
+  await request(app)
+    .delete("/account/login")
+    .set("Cookie", `token=${loginCookie.token}`)
+    .expect(200);
+  await request(app)
+    .get("/account")
+    .set("Cookie", `token=${loginCookie.token}`)
+    .expect(401);
+
+  await request(app)
+    .post("/account/login")
+    .send(newCredentials)
+    .expect(200, updaterPasswordResponse.body);
+});
+
 it("can login as superuser & list accounts", async () => {
   const app = http.createServer(createHandler(modules, ctx));
   const loginResponse = await request(app)
@@ -65,16 +109,16 @@ it("can login as superuser & list accounts", async () => {
     .expect(200);
   const loginCookie = parseCookies(loginResponse.headers["set-cookie"][0]);
   const result = await request(app)
-    .get("/account?query=user@domain.com&limit=1")
+    .get("/accounts?query=user@domain.com&limit=1")
     .set("Cookie", `token=${loginCookie.token}`)
     .expect(200);
   expect(result.body.items).toMatchObject([{ email: "user@domain.com" }]);
   await request(app)
-    .get("/account?query=rubbish")
+    .get("/accounts?query=rubbish")
     .set("Cookie", `token=${loginCookie.token}`)
     .expect(200, { items: [] });
   await request(app)
-    .get("/account?limit=0")
+    .get("/accounts?limit=0")
     .set("Cookie", `token=${loginCookie.token}`)
     .expect(200, { items: [] });
 });

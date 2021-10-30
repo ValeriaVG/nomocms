@@ -55,13 +55,13 @@ export const getUserByToken = async (
 ): Promise<User | undefined> => {
   if (!token) return;
   const result = await db.query(
-    `SELECT accounts.* , is_superuser
+    `SELECT accounts.id, accounts.email,accounts.created_at,accounts.updated_at,is_superuser
       FROM account_tokens
       LEFT JOIN accounts ON accounts.id = account_id
       WHERE token=$1 AND expires_at>now()`,
     [token]
   );
   if (result.rowCount == 0) return;
-  const { id, email, is_superuser } = result.rows[0];
-  return is_superuser ? SuperUser : { id, email };
+  const { is_superuser, ...user } = result.rows[0];
+  return is_superuser ? SuperUser : user;
 };

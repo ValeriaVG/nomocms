@@ -9,7 +9,7 @@ export default {
       PRIMARY KEY(account_id,scope),
       CONSTRAINT fk_account
         FOREIGN KEY(account_id) 
-      REFERENCES accounts(id) 
+      REFERENCES accounts(id) ON DELETE CASCADE
     )`);
   },
   down: async (db: PoolClient) => {

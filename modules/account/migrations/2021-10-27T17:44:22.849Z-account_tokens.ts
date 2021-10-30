@@ -10,7 +10,7 @@ export default {
       expires_at timestamp with time zone,
       CONSTRAINT fk_account
         FOREIGN KEY(account_id) 
-      REFERENCES accounts(id)
+      REFERENCES accounts(id) ON DELETE CASCADE
     )`);
   },
   down: async (db: PoolClient) => {

@@ -7,11 +7,14 @@ import {
   checkPermission,
   ensureAccountPermission,
   ensureLoggedIn,
+  ensureSelfOrAllowed,
   Permission,
 } from "../lib/permissions";
-import { BadRequest, NotFoundError, UnauthorizedError } from "lib/errors";
-import { ensureCredentials } from "../lib/credentials";
+import { NotFoundError, UnauthorizedError } from "lib/errors";
+import { emailType, ensureCredentials, passwordType } from "../lib/credentials";
 import { createToken } from "../lib/token";
+import { ValidationError } from "lib/validation";
+import * as T from "typed";
 
 export const createAccount: RouteHandler = async ({ db }, { body }) => {
   const error = (error: string) => ({
@@ -32,12 +35,11 @@ export const createAccount: RouteHandler = async ({ db }, { body }) => {
   // Hash password
   const pwhash = await bcrypt.hash(password, 10);
   const id = randomUUID();
-  await db.query(`INSERT INTO accounts (id,email,pwhash) VALUES ($1,$2,$3)`, [
-    id,
-    email,
-    pwhash,
-  ]);
-  const user = { id, email };
+  const { rows } = await db.query(
+    `INSERT INTO accounts (id,email,pwhash) VALUES ($1,$2,$3) RETURNING id,email,created_at,updated_at`,
+    [id, email, pwhash]
+  );
+  const user = rows[0];
   const tokenCookie = await createToken(db, user);
   return {
     status: 201,
@@ -85,20 +87,10 @@ export const getAccount: RouteHandler = async (
   { db, req },
   { params: { id } }
 ) => {
-  if (!id) throw BadRequest;
-  const user = await ensureLoggedIn({ db, req });
-  const canEdit =
-    user.id === id ||
-    (await checkPermission(db, {
-      user,
-      scope: "account",
-      permission: Permission.read,
-    }));
-  if (!canEdit) throw UnauthorizedError;
-
+  const user = await ensureSelfOrAllowed({ db, req }, id, Permission.read);
   const result = await db.query(
     `SELECT id,email,created_at, updated_at FROM account WHERE id=$1`,
-    [id]
+    [user.id]
   );
   if (!result.rowCount) throw NotFoundError;
   return {
@@ -108,5 +100,59 @@ export const getAccount: RouteHandler = async (
     },
   };
 };
-export async function updateAccount() {}
-export async function deleteAccount() {}
+
+const accountType = T.object({
+  email: emailType,
+  password: T.optional(passwordType),
+});
+
+export const updateAccount: RouteHandler = async (
+  { db, req },
+  { queryParams, body }
+) => {
+  const user = await ensureLoggedIn({ db, req });
+  const id = queryParams.get("id") || user.id;
+  const canEdit =
+    user.id === id ||
+    (await checkPermission(db, {
+      user,
+      scope: "account",
+      permission: Permission.update,
+    }));
+  if (!canEdit) throw UnauthorizedError;
+
+  const validation = accountType(body);
+  if (validation.success === false)
+    throw new ValidationError(validation.errors);
+  const { email, password } = validation.value;
+  const update: Partial<{ email: string; pwhash: string }> = {
+    email,
+  };
+  if (password) update.pwhash = await bcrypt.hash(password, 10);
+  const { rows } = await db.query(
+    `UPDATE accounts SET ${Object.keys(update)
+      .map((key, i) => `${key}=$${i + 2}`)
+      .join(
+        ","
+      )},updated_at=NOW() WHERE id=$1 RETURNING id,email,updated_at,created_at`,
+    [id, ...Object.values(update)]
+  );
+  return { status: 200, body: { user: rows[0] } };
+};
+export const deleteAccount: RouteHandler = async (
+  { db, req },
+  { queryParams }
+) => {
+  const user = await ensureSelfOrAllowed(
+    { db, req },
+    queryParams.get("id"),
+    Permission.delete
+  );
+  await db.query(`DELETE FROM accounts WHERE id=$1`, [user.id]);
+  return {
+    status: 200,
+    body: {
+      message: "Account was deleted",
+    },
+  };
+};

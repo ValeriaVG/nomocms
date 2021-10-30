@@ -1,8 +1,9 @@
 import { IncomingMessage } from "http";
-import { UnauthorizedError } from "lib/errors";
+import { BadRequest, UnauthorizedError } from "lib/errors";
 import { Pool } from "pg";
 import { getCurrentToken, getUserByToken } from "./token";
 import { User } from "../types";
+import { Ctx } from "api/http/router";
 
 export enum Permission {
   all = 0b11111,
@@ -59,5 +60,23 @@ export const ensureLoggedIn = async ({
   const token = getCurrentToken(req);
   const user = await getUserByToken(db, token);
   if (!user) throw UnauthorizedError;
+  return user;
+};
+
+export const ensureSelfOrAllowed = async (
+  { db, req }: Ctx,
+  id: string,
+  permission: Permission
+) => {
+  if (!id) throw BadRequest;
+  const user = await ensureLoggedIn({ db, req });
+  const isAllowed =
+    user.id === id ||
+    (await checkPermission(db, {
+      user,
+      scope: "account",
+      permission,
+    }));
+  if (!isAllowed) throw UnauthorizedError;
   return user;
 };

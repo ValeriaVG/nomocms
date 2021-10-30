@@ -1,9 +1,5 @@
 import { RouteHandler } from "api/http/router";
 import { HTTPStatus } from "lib/HTTPStatus";
-import { Pool } from "pg";
-
-import { IncomingMessage } from "http";
-import { AccountSettings, User } from "../types";
 import { UnauthorizedError } from "lib/errors";
 import {
   createToken,
