@@ -29,7 +29,7 @@ You can set up a superuser account though the following environment variables:
 To run on local machine you'll need:
 
 - NodeJS (tested on v16.9.1) with NPM 7+
-- PostgreSQL with TimescaleDB extension enabled (or run `docker-compose up -d`)
+- PostgreSQL (or run `docker-compose up -d`)
 
 Project uses [NPM workspaces](https://docs.npmjs.com/cli/v7/using-npm/workspaces):
 
@@ -53,7 +53,8 @@ To run tests:
 
 ```
 npm run test # to run all
-npm run test -w api # to tun only api tests
+npm run test -w api # to run only the api tests
+npm run test -w modules/account # to run only the modules/account tests
 ```
 
 ## Disclaimer

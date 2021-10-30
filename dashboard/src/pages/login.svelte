@@ -1,10 +1,12 @@
 <script>
   import logo from "../logo.svg";
   import api from "../utils/api";
+  import { userStore } from "../stores";
   const onSubmit = async (e) => {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.target).entries());
-    const response = await api.post("/account/login", data);
+    const { user } = await api.post("/account/login", data);
+    if (user) userStore.set(user);
   };
 </script>
 

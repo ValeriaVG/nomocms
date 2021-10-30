@@ -3,7 +3,7 @@
   import Pages from "./pages/index.svelte";
   import Switch from "./elements/switch.svelte";
   import { onMount } from "svelte";
-  import { theme as themeStore } from "./stores";
+  import { themeStore } from "./stores";
 
   onMount(() => {
     const theme =

@@ -1,8 +1,9 @@
-import * as svelte from "svelte/compiler";
+import { compile, preprocess } from "svelte/compiler";
+import { transformSync } from "esbuild";
+import sveltePreprocess from "svelte-preprocess";
 import path from "path";
 import fs from "fs/promises";
-
-const sveltePlugin = {
+export default {
   name: "svelte",
   setup(build) {
     build.onLoad({ filter: /\.svelte$/ }, async (args) => {
@@ -10,8 +11,9 @@ const sveltePlugin = {
       const convertMessage = ({ message, start, end }: Record<string, any>) => {
         let location;
         if (start && end) {
-          let lineText = source.split(/\r\n|\r|\n/g)[start.line - 1];
-          let lineEnd = start.line === end.line ? end.column : lineText.length;
+          const lineText = source.split(/\r\n|\r|\n/g)[start.line - 1];
+          const lineEnd =
+            start.line === end.line ? end.column : lineText.length;
           location = {
             file: filename,
             line: start.line,
@@ -29,7 +31,21 @@ const sveltePlugin = {
 
       // Convert Svelte syntax to JavaScript
       try {
-        const { js, warnings } = svelte.compile(source, { filename });
+        const result = await preprocess(
+          source,
+          sveltePreprocess({
+            typescript({ content }) {
+              const { code, map } = transformSync(content, {
+                loader: "ts",
+              });
+              return { code, map };
+            },
+          }),
+          {
+            filename,
+          }
+        );
+        const { js, warnings } = compile(result.code, { filename });
         const contents = js.code + `//# sourceMappingURL=` + js.map.toUrl();
         return { contents, warnings: warnings.map(convertMessage) };
       } catch (e) {
@@ -38,4 +54,3 @@ const sveltePlugin = {
     });
   },
 };
-export default sveltePlugin;

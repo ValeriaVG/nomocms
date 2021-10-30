@@ -6,5 +6,5 @@ export interface User {
 }
 export type Theme = "dark" | "light";
 
-export const user = writable<User | null>(null);
-export const theme = writable<Theme>(null);
+export const userStore = writable<User | null>(null);
+export const themeStore = writable<Theme>(null);

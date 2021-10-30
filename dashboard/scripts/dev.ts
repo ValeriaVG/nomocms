@@ -1,13 +1,11 @@
 import path from "path";
 import { readFile, mkdir, writeFile } from "fs/promises";
 import { serve } from "esbuild";
-import createEngine from "lib/engine";
 import * as config from "./config";
 
 export const getHTML = async (props: { version?: string } = {}) => {
-  const engine = createEngine();
   const template = await readFile(config.indexHTML);
-  return engine.parseAndRender(template.toString(), props);
+  return template.toString().replace("<version>", props.version || "");
 };
 
 const startDevServer = async () => {
