@@ -18,4 +18,5 @@ export default {
     DELETE: logout,
   },
   "/account/access/:scope": checkAccountAccess,
+  "/account/access/:scope/:id": checkAccountAccess,
 };

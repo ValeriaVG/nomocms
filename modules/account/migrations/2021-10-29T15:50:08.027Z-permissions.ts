@@ -4,7 +4,7 @@ export default {
   up: async (db: PoolClient) => {
     await db.query(`CREATE TABLE IF NOT EXISTS account_permissions (
       account_id uuid NOT NULL,
-      scope varchar(256),
+      scope text,
       permissions integer NOT NULL,
       PRIMARY KEY(account_id,scope),
       CONSTRAINT fk_account
