@@ -23,6 +23,9 @@ const createTestResponse = (): any => ({
   hasHeader() {
     return false;
   },
+  get writableEnded() {
+    return this.finished;
+  },
 });
 
 it("handles simple requests", async () => {

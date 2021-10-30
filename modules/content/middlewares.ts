@@ -9,7 +9,7 @@ const contentMiddleware: Middleware = async (
   next: () => Promise<void>
 ) => {
   await next();
-  if (res.headersSent) return;
+  if (res.writableEnded) return;
   const url = new URL(req.url, "http://localhost");
   const result = await db.query(
     `SELECT * FROM content WHERE path=$1 AND published_at<= NOW() LIMIT 1`,
@@ -24,7 +24,10 @@ const contentMiddleware: Middleware = async (
         content: `<script>import Page404 from '$content/Page404.svelte'</script><Page404/>`,
       };
 
-  const { head, html, css, js } = await compileContent(page.content);
+  const { head, html, css, js } = await compileContent(
+    page.content,
+    page.parameters
+  );
 
   res.setHeader("content-type", "text/html");
   const content = Buffer.from(

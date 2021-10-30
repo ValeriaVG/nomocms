@@ -1,6 +1,6 @@
 import { Test, expect } from "tiny-jest";
-import compileContent from "./lib/compileContent";
-export const test = new Test("Modules/Content");
+import compileContent from "./compileContent";
+export const test = new Test("Modules/Content/compileContent");
 const { it } = test;
 it("can compile html source", async () => {
   const result = await compileContent(
@@ -21,6 +21,20 @@ it("can compile html source", async () => {
       '<h1 class="svelte-zpl6q0">Hello, world</h1>' +
       "\n    <button>Clicked: 0</button>",
     css: "h1.svelte-zpl6q0{color:red}",
+  });
+});
+
+it("can compile with parameters", async () => {
+  const result = await compileContent(
+    `<script>
+    export let name="world";
+    </script>
+    <h1>Hello, {name}</h1>`,
+    { name: "NoMoCMS" }
+  );
+
+  expect(result).toMatchObject({
+    html: "<h1>Hello, NoMoCMS</h1>",
   });
 });
 

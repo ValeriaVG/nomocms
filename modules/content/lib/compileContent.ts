@@ -7,7 +7,10 @@ import sveltePlugin from "lib/sveltePlugin";
 
 const modulesDir = path.resolve(__dirname, "..", "..");
 
-export default async function compileContent(source: string) {
+export default async function compileContent(
+  source: string,
+  parameters: Record<string, any> = {}
+) {
   const resultSSR = await compile(source, {
     enableSourcemap: false,
     generate: "ssr",
@@ -31,7 +34,7 @@ export default async function compileContent(source: string) {
     html,
     css: { code: css },
     head,
-  } = ctx.exports.default.render();
+  } = ctx.exports.default.render(parameters);
 
   const domResult = await compile(source, {
     enableSourcemap: false,

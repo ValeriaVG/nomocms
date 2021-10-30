@@ -51,12 +51,15 @@ export default function createHandler<C extends Omit<Ctx, "req">>(
     const url = new URL(req.url, "http://127.0.0.1");
     try {
       const body = await consumeJSON(req);
+      req["body"] = body;
       const result = await routePath(
         { path: url.pathname, method: req.method.toUpperCase() as HTTPMethod },
         ctx,
         { body, queryParams: url.searchParams }
       );
-      if (!result) return next();
+      if (!result) {
+        return next();
+      }
       res.statusCode = result.status || 200;
       if (result.headers) {
         for (const [header, value] of Object.entries(result.headers)) {
@@ -111,14 +114,15 @@ export const executeMiddlewares = async (
   let i = 0;
   const executeNextMiddleware = async () => {
     const middleware = middlewares[i++];
-    if (typeof middleware === "function")
+    if (typeof middleware === "function") {
       await middleware(ctx, res, executeNextMiddleware);
-    else {
-      res.statusCode = 404;
-      res.end();
     }
   };
   await executeNextMiddleware();
+  if (!res.writableEnded) {
+    res.statusCode = 404;
+    res.end();
+  }
 };
 
 async function consumeJSON(req: IncomingMessage) {
