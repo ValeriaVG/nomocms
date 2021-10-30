@@ -16,6 +16,7 @@ const run = async () => {
 
   const result = await build({
     ...config.esbuild,
+    minify: true,
     write: true,
     outdir: config.outdir,
   });
