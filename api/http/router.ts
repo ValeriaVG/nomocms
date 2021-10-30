@@ -1,7 +1,13 @@
+import { IncomingMessage } from "http";
 import { HTTPMethod } from "lib/HTTPMethod";
 import { HTTPStatus } from "lib/HTTPStatus";
+import { Pool } from "pg";
 import { Readable } from "stream";
 
+export interface Ctx {
+  db: Pool;
+  req: IncomingMessage;
+}
 export interface HandlerResponse<
   T = Record<string, any> | Array<any> | string | Buffer | Readable
 > {
@@ -10,15 +16,19 @@ export interface HandlerResponse<
   status: HTTPStatus;
 }
 export type RouteHandler<
-  C = any,
+  C extends Ctx = Ctx,
   O extends {
     body?: any;
     params?: Record<string, string>;
     queryParams?: URLSearchParams;
-  } = any
+  } = {
+    body?: any;
+    params?: Record<string, string>;
+    queryParams?: URLSearchParams;
+  }
 > = (ctx: C, input?: O) => Promise<HandlerResponse> | HandlerResponse;
 
-export type Route<C = any> =
+export type Route<C extends Ctx = any> =
   | RouteHandler<C>
   | Partial<Record<HTTPMethod, RouteHandler<C>>>;
 

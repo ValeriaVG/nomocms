@@ -1,24 +1,19 @@
 import { RouteHandler } from "api/http/router";
 import { HTTPStatus } from "lib/HTTPStatus";
-import { Pool } from "pg";
 import bcrypt from "bcryptjs";
 import { randomUUID } from "crypto";
-import { createToken, ensureCredentials } from "./login";
 import { ensureInt } from "lib/typecast";
-import { IncomingMessage } from "http";
 import {
   checkPermission,
   ensureAccountPermission,
   ensureLoggedIn,
   Permission,
-} from "../permissions";
+} from "../lib/permissions";
 import { BadRequest, NotFoundError, UnauthorizedError } from "lib/errors";
-import { AccountSettings } from "../types";
+import { ensureCredentials } from "../lib/credentials";
+import { createToken } from "../lib/token";
 
-export const createAccount: RouteHandler<
-  { db: Pool },
-  { body: { email: string; password: string } }
-> = async ({ db }, { body }) => {
+export const createAccount: RouteHandler = async ({ db }, { body }) => {
   const error = (error: string) => ({
     status: HTTPStatus.BadRequest,
     body: {
@@ -53,10 +48,10 @@ export const createAccount: RouteHandler<
   };
 };
 
-export const listAccounts: RouteHandler<
-  { db: Pool; req: IncomingMessage },
-  { queryParams: URLSearchParams }
-> = async ({ db, req }, { queryParams }) => {
+export const listAccounts: RouteHandler = async (
+  { db, req },
+  { queryParams }
+) => {
   await ensureAccountPermission({ db, req }, "account", Permission.list);
   const params = Object.fromEntries(queryParams.entries());
   const limit = ensureInt(params.limit, 10);
@@ -86,10 +81,10 @@ export const listAccounts: RouteHandler<
   };
 };
 
-export const getAccount: RouteHandler<
-  { db: Pool; req: IncomingMessage },
-  { params: { id: string }; body: Partial<AccountSettings> }
-> = async ({ db, req }, { params: { id } }) => {
+export const getAccount: RouteHandler = async (
+  { db, req },
+  { params: { id } }
+) => {
   if (!id) throw BadRequest;
   const user = await ensureLoggedIn({ db, req });
   const canEdit =

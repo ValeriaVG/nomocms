@@ -2,7 +2,7 @@ import { Test, expect } from "tiny-jest";
 import { createTestDB } from "lib/testDB";
 import account from ".";
 import { syncSchema } from "api";
-import { checkPermission, Permission } from "./permissions";
+import { checkPermission, Permission } from "./lib/permissions";
 import { randomUUID } from "crypto";
 
 export const test = new Test("Modules/Account/Permissions");

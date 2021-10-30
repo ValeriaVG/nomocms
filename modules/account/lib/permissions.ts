@@ -1,8 +1,8 @@
 import { IncomingMessage } from "http";
 import { UnauthorizedError } from "lib/errors";
 import { Pool } from "pg";
-import { getCurrentToken, getUserByToken } from "./routes/login";
-import { User } from "./types";
+import { getCurrentToken, getUserByToken } from "./token";
+import { User } from "../types";
 
 export enum Permission {
   all = 0b11111,
@@ -46,6 +46,7 @@ export const ensureAccountPermission = async (
   const user = await ensureLoggedIn({ db, req });
   const hasPermission = await checkPermission(db, { user, scope, permission });
   if (!hasPermission) throw UnauthorizedError;
+  return user;
 };
 
 export const ensureLoggedIn = async ({

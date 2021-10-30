@@ -1,5 +1,6 @@
 import { createAccount, getAccount, listAccounts } from "./accounts";
 import { getCurrentAccount, login, logout } from "./login";
+import { checkAccountAccess } from "./permissions";
 
 export default {
   "/account": {
@@ -16,4 +17,5 @@ export default {
     POST: login,
     DELETE: logout,
   },
+  "/account/access/:scope": checkAccountAccess,
 };

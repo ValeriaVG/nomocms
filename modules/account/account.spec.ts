@@ -5,8 +5,8 @@ import request from "supertest";
 import createHandler from "api/http/handler";
 import { syncSchema } from "api";
 import account from ".";
-import { parseCookies } from "./routes/login";
 import { createTestDB } from "lib/testDB";
+import parseCookies from "./lib/cookies";
 
 const db = createTestDB();
 export const test = new Test("Modules/Account");
@@ -20,10 +20,11 @@ after(() => db.end());
 const modules = [account];
 
 const superuser = { email: "clark.kent@daily.planet", password: "12345" };
+const ctx = { db } as any;
 
 it("can create an account & login", async () => {
   await syncSchema(db, modules);
-  const app = http.createServer(createHandler(modules, { db }));
+  const app = http.createServer(createHandler(modules, ctx));
   const credentials = { email: "User@domain.com", password: "12345" };
   await request(app).post("/account/login").send(credentials).expect(400);
   const createAccountResponse = await request(app)
@@ -57,7 +58,7 @@ it("can create an account & login", async () => {
 });
 
 it("can login as superuser & list accounts", async () => {
-  const app = http.createServer(createHandler(modules, { db }));
+  const app = http.createServer(createHandler(modules, ctx));
   const loginResponse = await request(app)
     .post("/account/login")
     .send(superuser)
@@ -79,7 +80,7 @@ it("can login as superuser & list accounts", async () => {
 });
 
 it("fails on incorrect requests", async () => {
-  const app = http.createServer(createHandler(modules, { db }));
+  const app = http.createServer(createHandler(modules, ctx));
   await request(app).post("/account/login").send({}).expect(400);
   await request(app)
     .post("/account/login")

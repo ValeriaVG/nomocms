@@ -5,7 +5,8 @@
     "test": "ts-node ../../tools/test.ts modules/account"
   },
   "dependencies": {
-    "bcryptjs": "^2.4.3"
+    "bcryptjs": "^2.4.3",
+    "is-email": "^1.0.2"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2"

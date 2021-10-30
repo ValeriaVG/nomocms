@@ -1,6 +1,7 @@
 import { Readable } from "stream";
 import { Test, expect } from "tiny-jest";
 import createHandler from "./handler";
+import { Ctx } from "./router";
 
 export const test = new Test("Request Handler");
 const { it } = test;
@@ -47,7 +48,7 @@ it("handles simple requests", async () => {
       },
     },
   ];
-  const context = { version: Math.random() };
+  const context = { version: Math.random() } as any;
   const handle = createHandler(modules, context);
   const indexResponse = createTestResponse();
   await handle({ url: "/", method: "GET" } as any, indexResponse);
@@ -89,7 +90,7 @@ it("handles simple requests", async () => {
         },
       },
     ];
-    const handle = createHandler(modules, {});
+    const handle = createHandler(modules, {} as any);
     const req: any = Readable.from(['{"id":1}']);
     req["url"] = "/a/b?q=search";
     req["method"] = "GET";

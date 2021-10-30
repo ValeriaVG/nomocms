@@ -12,7 +12,7 @@ import { Pool } from "pg";
 const port = process.env.PORT || 3030;
 const context = { db };
 
-const modules: Array<AppModule<typeof context>> = [version, account, content];
+const modules: Array<AppModule> = [version, account, content];
 
 export const server = http.createServer(createHandler(modules, context));
 

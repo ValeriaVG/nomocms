@@ -2,11 +2,11 @@ import { IncomingMessage, ServerResponse } from "http";
 import { Readable } from "stream";
 import { Migration } from "../db/migrations";
 import { HTTPMethod } from "lib/HTTPMethod";
-import createRouter, { Route } from "./router";
+import createRouter, { Ctx, Route } from "./router";
 import { HTTPStatus } from "lib/HTTPStatus";
 import { HTTPError } from "lib/errors";
 
-export interface AppModule<C = any> {
+export interface AppModule<C extends Ctx = Ctx> {
   routes?: Record<string, Route<C>>;
   migrations?: Array<Migration>;
 }
@@ -19,13 +19,13 @@ const setCORSHeaders = (res: ServerResponse) => {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 };
 
-export default function createHandler<C>(
-  modules: Array<AppModule<C>>,
+export default function createHandler<C extends Omit<Ctx, "req">>(
+  modules: Array<AppModule<C & { req: IncomingMessage }>>,
   context: C
 ) {
   const routes = modules.reduceRight(
     (a, m) => ({ ...a, ...(m.routes || {}) }),
-    {} as Record<string, Route<C>>
+    {} as Record<string, Route<C & { req: IncomingMessage }>>
   );
   const routePath = createRouter<{ req: IncomingMessage }>(routes);
 

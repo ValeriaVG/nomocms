@@ -105,7 +105,7 @@ it("should handle variables in the path", async () => {
   });
 
   it("should handle body & query parameters in the path", async () => {
-    const routeRequest = createRouter<{}>({
+    const routeRequest = createRouter({
       "/test": (_, { body, queryParams }) => ({
         status: 200,
         body: { id: body.id, q: queryParams.get("q") },
