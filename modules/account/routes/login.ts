@@ -1,3 +1,4 @@
+import * as T from "typed";
 import { superuser } from "api/config";
 import { RouteHandler } from "api/http/router";
 import { HTTPStatus } from "lib/HTTPStatus";
@@ -7,6 +8,12 @@ import { randomUUID } from "crypto";
 import { IncomingMessage } from "http";
 import { AccountSettings, User } from "../types";
 import { UnauthorizedError } from "lib/errors";
+import { emailType, passwordType, ValidationError } from "lib/validation";
+
+export const credentialsType = T.object({
+  email: emailType,
+  password: passwordType,
+});
 
 const SuperUser = {
   id: "superuser",
@@ -49,12 +56,18 @@ export const updateToken = async (db: Pool, token: string) => {
   return cookie;
 };
 
+export const ensureCredentials = (credentials: any) => {
+  const validation = credentialsType(credentials);
+  if (validation.success === false)
+    throw new ValidationError(validation.errors);
+  return validation.value;
+};
+
 const getUserByCredentials = async (
   db: Pool,
   credentials: AccountSettings
 ): Promise<User | undefined> => {
-  const email = credentials.email.trim().toLowerCase();
-  const password = credentials.password;
+  const { email, password } = ensureCredentials(credentials);
   if (
     superuser.email &&
     email === superuser.email &&

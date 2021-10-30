@@ -32,7 +32,9 @@
     "migration": "ts-node tools/migrate.ts"
   },
   "dependencies": {
+    "is-email": "^1.0.2",
     "liquidjs": "^9.28.3",
-    "pg": "^8.7.1"
+    "pg": "^8.7.1",
+    "typed": "^1.1.2"
   }
 }

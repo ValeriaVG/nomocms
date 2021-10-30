@@ -3,7 +3,7 @@ import { HTTPStatus } from "lib/HTTPStatus";
 import { Pool } from "pg";
 import bcrypt from "bcryptjs";
 import { randomUUID } from "crypto";
-import { createToken } from "./login";
+import { createToken, ensureCredentials } from "./login";
 import { ensureInt } from "lib/typecast";
 import { IncomingMessage } from "http";
 import {
@@ -25,9 +25,7 @@ export const createAccount: RouteHandler<
       error,
     },
   });
-  if (!body.email || !body.password)
-    return error("Email and password fields are required");
-  const email = body.email.trim().toLowerCase();
+  const { email, password } = ensureCredentials(body);
   // Check if exists
   const {
     rows: [{ exists }],
@@ -37,7 +35,7 @@ export const createAccount: RouteHandler<
   );
   if (exists) return error("Account with this email is already registered");
   // Hash password
-  const pwhash = await bcrypt.hash(body.password, 10);
+  const pwhash = await bcrypt.hash(password, 10);
   const id = randomUUID();
   await db.query(`INSERT INTO accounts (id,email,pwhash) VALUES ($1,$2,$3)`, [
     id,
