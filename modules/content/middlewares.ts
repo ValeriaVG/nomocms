@@ -2,6 +2,7 @@ import { Middleware } from "api/http/handler";
 import { Ctx } from "api/http/router";
 import { ServerResponse } from "http";
 import compileContent from "./lib/compileContent";
+import toHTMLBuffer from "./lib/toHTMLBuffer";
 
 const contentMiddleware: Middleware = async (
   { req, db }: Ctx,
@@ -30,29 +31,7 @@ const contentMiddleware: Middleware = async (
   );
 
   res.setHeader("content-type", "text/html");
-  const content = Buffer.from(
-    [
-      "<!DOCTYPE html>",
-      '<html lang="en">',
-      "<head>",
-      '<meta charset="UTF-8">',
-      '<meta http-equiv="X-UA-Compatible" content="IE=edge">',
-      '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
-      head,
-      "<style>",
-      css,
-      "</style>",
-      "</head>",
-      "<body>",
-      ,
-      html,
-      "<script>",
-      js,
-      "</script>",
-      "</body>",
-      "</html>",
-    ].join("")
-  );
+  const content = toHTMLBuffer({ head, html, css, js });
   res.setHeader("content-length", content.byteLength);
   res.write(content);
   res.end();
