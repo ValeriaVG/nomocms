@@ -107,21 +107,16 @@ async function consumeJSON(req: IncomingMessage) {
 
 const makeRoutesMiddleware =
   <C extends Ctx>(routes: Record<string, Route<C>>): Middleware =>
-  async (
-    ctx: { db: Pool; req: IncomingMessage },
-    res: ServerResponse,
-    next
-  ) => {
+  async (ctx, res, next) => {
     const routePath = createRouter<{ req: IncomingMessage }>(routes);
     const req = ctx.req;
     const url = new URL(req.url, "http://127.0.0.1");
     try {
-      const body = await consumeJSON(req);
-      req["body"] = body;
+      req.body = await consumeJSON(req);
       const result = await routePath(
         { path: url.pathname, method: req.method.toUpperCase() as HTTPMethod },
         ctx,
-        { body, queryParams: url.searchParams }
+        { body: req.body, queryParams: url.searchParams }
       );
       if (!result) {
         return next();
@@ -132,29 +127,7 @@ const makeRoutesMiddleware =
           res.setHeader(header, value as string);
         }
       }
-      if (result.body instanceof Readable) {
-        // TODO: Warn that it needs length, if missing
-        result.body.pipe(res);
-        return;
-      }
-      if (result.body) {
-        if (
-          !res.hasHeader("content-type") &&
-          !Buffer.isBuffer(result.body) &&
-          typeof result.body !== "string"
-        ) {
-          res.setHeader("content-type", "application/json");
-        }
-        const buffer =
-          result.body instanceof Buffer
-            ? result.body
-            : typeof result.body === "string"
-            ? Buffer.from(result.body)
-            : Buffer.from(JSON.stringify(result.body));
-        res.setHeader("content-length", buffer.byteLength);
-        res.write(buffer);
-      }
-      return res.end();
+      return sendResponse(res, result.body);
     } catch (err) {
       if (err instanceof HTTPError) {
         res.statusCode = err.status;
@@ -167,3 +140,35 @@ const makeRoutesMiddleware =
       res.end();
     }
   };
+
+const sendResponse = (
+  res: ServerResponse,
+  body: Record<string, any> | Array<any> | string | Buffer | Readable
+) => {
+  if (!body) return res.end();
+  if (body instanceof Readable) {
+    if (!res.hasHeader("content-length")) {
+      throw new Error(
+        "Content-Length header is required when response is a stream"
+      );
+    }
+    body.pipe(res);
+    return;
+  }
+  const isBodyBuffer = Buffer.isBuffer(body);
+  const isBodyString = typeof body === "string";
+  if (!res.hasHeader("content-type") && !isBodyBuffer && !isBodyString) {
+    // Set "default" content type
+    res.setHeader("content-type", "application/json");
+  }
+  const buffer = isBodyBuffer
+    ? body
+    : isBodyString
+    ? Buffer.from(body)
+    : Buffer.from(JSON.stringify(body));
+
+  res.setHeader("content-length", buffer.byteLength);
+  res.write(buffer);
+
+  return res.end();
+};

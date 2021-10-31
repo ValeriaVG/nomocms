@@ -6,7 +6,7 @@ import { Readable } from "stream";
 
 export interface Ctx {
   db: Pool;
-  req: IncomingMessage;
+  req: IncomingMessage & { body?: any };
 }
 export interface HandlerResponse<
   T = Record<string, any> | Array<any> | string | Buffer | Readable

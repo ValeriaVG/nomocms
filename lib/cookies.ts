@@ -26,18 +26,18 @@ export default function parseCookies(cookies: string): Record<string, string> {
     map: new Map(),
   };
   for (const c of cookies) {
-    switch (c) {
-      case "=":
-        flush(state);
-        break;
-      case ";":
-        flush(state, true);
-        break;
-      default:
-        if (state.isParsingKey) state.key += c;
-        else state.value += c;
-    }
+    processChar(state, c);
   }
   flush(state);
   return Object.fromEntries(state.map.entries());
 }
+
+const processChar = (state: ParserState, c: string) => {
+  if (c === "=") return flush(state);
+  if (c === ";") return flush(state, true);
+  if (state.isParsingKey) {
+    state.key += c;
+    return;
+  }
+  state.value += c;
+};

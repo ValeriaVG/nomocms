@@ -24,16 +24,23 @@ export function createAPIFetcher(url: string, fetchFn = fetch) {
     const result = await response.json();
     return result as T;
   };
-  return {
-    get: <T>(path: string) => exec<T>(path, { method: HTTPMethod.GET }),
-    post: <T>(path: string, body: any) =>
-      exec<T>(path, { method: HTTPMethod.POST, body }),
-    put: <T>(path: string, body: any) =>
-      exec<T>(path, { method: HTTPMethod.PUT, body }),
-    patch: <T>(path: string, body: any) =>
-      exec<T>(path, { method: HTTPMethod.PUT, body }),
-    delete: <T>(path: string) => exec<T>(path, { method: HTTPMethod.DELETE }),
-  };
+
+  return Object.fromEntries(
+    ["get", "post", "put", "patch", "delete"].map((method) => {
+      const methodUC = method.toUpperCase() as HTTPMethod;
+      if (["get", "delete"].includes(method))
+        return [
+          method,
+          <T>(path: string) => exec<T>(path, { method: methodUC }),
+        ];
+      return [
+        method,
+        <T>(path: string, body?: any) =>
+          exec<T>(path, { method: methodUC, body }),
+      ];
+    })
+  ) as Record<"get" | "delete", <T>(path: string) => T> &
+    Record<"post" | "put" | "patch", <T>(path: string, body?: any) => T>;
 }
 
 export default createAPIFetcher(
