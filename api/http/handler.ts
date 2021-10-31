@@ -131,10 +131,12 @@ const makeRoutesMiddleware =
     } catch (err) {
       if (err instanceof HTTPError) {
         res.statusCode = err.status;
+        res.setHeader("content-type", "application/json");
         res.write(JSON.stringify({ error: err.message }));
       } else {
         console.error(err);
         res.statusCode = HTTPStatus.InternalServerError;
+        res.setHeader("content-type", "application/json");
         res.write(`{"error":"Internal Server Error"}`);
       }
       res.end();

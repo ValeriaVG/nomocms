@@ -21,7 +21,10 @@ export function createAPIFetcher(url: string, fetchFn = fetch) {
       headers || {}
     );
     const response = await fetchFn(`${url}${path}`, options);
-    const result = await response.json();
+    const result =
+      response?.headers?.get("content-type") === "application/json"
+        ? await response.json()
+        : await response.text();
     return result as T;
   };
 

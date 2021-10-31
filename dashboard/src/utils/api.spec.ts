@@ -7,8 +7,12 @@ const { it } = test;
 it("can fetch data", async () => {
   const fakeFetch: any = async (url: string, options: any) => {
     return {
+      headers: new Map([["content-type", "application/json"]]),
       json() {
         return { url, options };
+      },
+      text() {
+        return "";
       },
     };
   };
