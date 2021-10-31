@@ -39,8 +39,11 @@ export function createAPIFetcher(url: string, fetchFn = fetch) {
           exec<T>(path, { method: methodUC, body }),
       ];
     })
-  ) as Record<"get" | "delete", <T>(path: string) => T> &
-    Record<"post" | "put" | "patch", <T>(path: string, body?: any) => T>;
+  ) as Record<"get" | "delete", <T>(path: string) => Promise<T>> &
+    Record<
+      "post" | "put" | "patch",
+      <T>(path: string, body?: any) => Promise<T>
+    >;
 }
 
 export default createAPIFetcher(

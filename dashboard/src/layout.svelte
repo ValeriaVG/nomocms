@@ -8,6 +8,7 @@
     --primary-hover: rgb(116, 52, 180);
     --secondary-color: #87d787;
     --neutral-color: #eceff1;
+    --border-color:rgba(255,255,255,0.08)
     min-height: 100vh;
     padding: 0;
     margin: 0;
@@ -16,11 +17,13 @@
     --bg-color: #040404;
     --text-color: white;
     --neutral-color: rgba(255, 255, 255, 0.08);
+    --border-color:rgba(255,255,255,0.08)
   }
   :global(html[data-theme="light"]) {
     --bg-color: #eceff1;
     --text-color: #212121;
     --neutral-color: #fafafa;
+    --border-color:rgba(0,0,0,0.08)
   }
   :global(body) {
     font-family: Arial, Helvetica, sans-serif;

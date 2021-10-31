@@ -5,6 +5,20 @@
   import { userStore, pathStore } from "../stores";
   import api from "../utils/api";
   import { onMount } from "svelte";
+  import Home from "./home.svelte";
+  import Content from "./content.svelte";
+  let Page = Home;
+  const choosePage = (path) => {
+    console.log(path);
+    if (path === "/") {
+      Page = Home;
+      return;
+    }
+    if (path.startsWith("/content")) {
+      Page = Content;
+      return;
+    }
+  };
 
   let user = { email: "", id: "" };
   let version = "";
@@ -18,6 +32,7 @@
     userStore.set(null);
   };
   onMount(async () => {
+    choosePage(document.location.pathname);
     const result = await api.get("/version");
     version = result.version;
     const { items } = await api.get("/content?limit=99");
@@ -26,7 +41,7 @@
   });
 
   pathStore.subscribe((path) => {
-    console.log(path);
+    choosePage(path);
   });
 </script>
 
@@ -71,7 +86,7 @@
     </nav>
   </aside>
   <main>
-    <h1>Welcome,{user.email}</h1>
+    <svelte:component this={Page} />
   </main>
   <footer>
     <a
@@ -128,6 +143,8 @@
   }
   main {
     margin-right: 1rem;
+    display: flex;
+    flex-direction: column;
   }
   aside ul a,
   aside ul button {
