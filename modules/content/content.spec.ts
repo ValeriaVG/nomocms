@@ -35,6 +35,7 @@ it("can create content", async () => {
     .post("/content")
     .set("Cookie", `token=${loginCookie.token}`)
     .send({
+      title: "Home Page",
       path: "/",
       content: "<h1>Page Title</h1><p>Page Content</p>",
     })
@@ -54,7 +55,11 @@ it("can create content", async () => {
 
   const updateResponse = await request(app)
     .put(`/content/${id}`)
-    .send({ path: "/", content: "<h1>New Page Title</h1><p>Page Content</p>" })
+    .send({
+      path: "/",
+      title: "New Page Title",
+      content: "<h1>New Page Title</h1><p>Page Content</p>",
+    })
     .set("Cookie", `token=${loginCookie.token}`)
     .expect(200);
 
@@ -89,12 +94,14 @@ it("can preview content", async () => {
     .post("/content/preview")
     .set("Cookie", `token=${loginCookie.token}`)
     .send({
-      content: "<h1>Page Title</h1><p>Page Content</p>",
+      title: "Page Title",
+      content:
+        "<script>export let title=''</script><h1>{title}</h1><p>Page Content</p>",
     })
     .expect(200);
   expect(previewResponse.headers).toMatchObject({
     "content-type": "text/html",
-    "content-length": "6622",
+    "content-length": "6792",
   });
   expect(
     previewResponse.text.includes("<h1>Page Title</h1><p>Page Content</p>")

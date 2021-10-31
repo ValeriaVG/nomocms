@@ -12,6 +12,7 @@ import compileContent from "../lib/compileContent";
 import toHTMLBuffer from "../lib/toHTMLBuffer";
 
 const contentType = T.object({
+  title: T.string,
   path: T.string,
   parent_id: T.optional(T.nullable(T.string)),
   content: T.string,
@@ -20,6 +21,7 @@ const contentType = T.object({
 });
 
 const previewContentType = T.object({
+  title: T.string,
   content: T.string,
   parameters: T.any,
 });
@@ -29,7 +31,7 @@ export const createPage: RouteHandler = async ({ db, req }, { body }) => {
   const validation = contentType(body);
   if (validation.success === false)
     throw new ValidationError(validation.errors);
-  const { content, parameters, published_at, parent_id, path } =
+  const { content, title, parameters, published_at, parent_id, path } =
     validation.value;
 
   await compileContent(content, parameters);
@@ -38,8 +40,16 @@ export const createPage: RouteHandler = async ({ db, req }, { body }) => {
   const {
     rows: [page],
   } = await db.query(
-    `INSERT INTO content (id,content, parameters, published_at, parent_id, path) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`,
-    [id, content, parameters, published_at || new Date(), parent_id, path]
+    `INSERT INTO content (id,title,content, parameters, published_at, parent_id, path) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
+    [
+      id,
+      title,
+      content,
+      parameters,
+      published_at || new Date(),
+      parent_id,
+      path,
+    ]
   );
   return {
     status: 201,
@@ -58,7 +68,7 @@ export const updatePage: RouteHandler = async (
   const validation = contentType(body);
   if (validation.success === false)
     throw new ValidationError(validation.errors);
-  const { content, parameters, published_at, parent_id, path } =
+  const { content, title, parameters, published_at, parent_id, path } =
     validation.value;
 
   await compileContent(content, parameters);
@@ -66,8 +76,16 @@ export const updatePage: RouteHandler = async (
   const {
     rows: [page],
   } = await db.query(
-    `UPDATE content SET content=$1, parameters=$2, published_at=$3, parent_id=$4, path=$5, updated_at=NOW() WHERE id=$6 RETURNING *`,
-    [content, parameters, published_at || new Date(), parent_id, path, id]
+    `UPDATE content SET content=$1,title=$2, parameters=$3, published_at=$4, parent_id=$5, path=$6, updated_at=NOW() WHERE id=$7 RETURNING *`,
+    [
+      content,
+      title,
+      parameters,
+      published_at || new Date(),
+      parent_id,
+      path,
+      id,
+    ]
   );
   return {
     status: 200,
@@ -114,8 +132,11 @@ export const previewPage: RouteHandler = async ({ db, req }, { body }) => {
   const validation = previewContentType(body);
   if (validation.success === false)
     throw new ValidationError(validation.errors);
-  const { content, parameters } = validation.value;
-  const { head, html, css, js } = await compileContent(content, parameters);
+  const { content, parameters, title } = validation.value;
+  const { head, html, css, js } = await compileContent(content, {
+    title,
+    ...parameters,
+  });
   const htmlBuffer = toHTMLBuffer({ head, html, css, js });
   return {
     status: 200,
@@ -137,7 +158,7 @@ export const listPages: RouteHandler = async ({ db, req }, { queryParams }) => {
   const i = () => values.length;
   if (cursor) {
     values.push(cursor);
-    where.push(`id>$${i()}`);
+    where.push(`parent_path>$${i()}`);
   }
   if (query) {
     values.push(query);
@@ -153,7 +174,9 @@ export const listPages: RouteHandler = async ({ db, req }, { queryParams }) => {
     where.push(`parent_path @ '*.${parent}.*{0,2}'`);
   }
   const { rows } = await db.query(
-    `SELECT * FROM content WHERE ${where.join(" AND ")} LIMIT $1`,
+    `SELECT * FROM content WHERE ${where.join(
+      " AND "
+    )} ORDER BY parent_path ASC LIMIT $1`,
     values
   );
   return {

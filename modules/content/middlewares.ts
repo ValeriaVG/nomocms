@@ -25,10 +25,10 @@ const contentMiddleware: Middleware = async (
         content: `<script>import Page404 from '$content/Page404.svelte'</script><Page404/>`,
       };
 
-  const { head, html, css, js } = await compileContent(
-    page.content,
-    page.parameters
-  );
+  const { head, html, css, js } = await compileContent(page.content, {
+    title: page.title,
+    ...page.parameters,
+  });
 
   res.setHeader("content-type", "text/html");
   const content = toHTMLBuffer({ head, html, css, js });

@@ -1,11 +1,15 @@
 <script>
   import logo from "../logo.svg";
   import ThemeSwitch from "../elements/theme-switch.svelte";
-  import { userStore } from "../stores";
+  import { onLinkClicked } from "../utils/link";
+  import { userStore, pathStore } from "../stores";
   import api from "../utils/api";
   import { onMount } from "svelte";
-  let user = { email: "" };
+
+  let user = { email: "", id: "" };
   let version = "";
+  const rootPage = { id: "root", title: "Home Page", path: "/" };
+  let pages = [rootPage];
   userStore.subscribe((currentUser) => {
     user = currentUser;
   });
@@ -16,6 +20,13 @@
   onMount(async () => {
     const result = await api.get("/version");
     version = result.version;
+    const { items } = await api.get("/content?limit=99");
+    const idxPage = items.find((p) => p.path === "/");
+    pages = idxPage ? items : [rootPage, ...items];
+  });
+
+  pathStore.subscribe((path) => {
+    console.log(path);
   });
 </script>
 
@@ -29,17 +40,32 @@
   <aside>
     <nav>
       <ul>
-        <li>
-          <a href="/content/root"> Home Page</a><button
-            class="add"
-            title="Add page">+</button
-          >
-        </li>
+        {#each pages as page}
+          <li>
+            <a href="/content/{page.id}" on:click={onLinkClicked}>
+              {page.title}</a
+            >
+            <a
+              href="/content/{page.id}/new"
+              on:click={onLinkClicked}
+              class="add"
+              title="Add page to {page.title}">+</a
+            >
+          </li>
+        {/each}
       </ul>
     </nav>
     <nav>
       <ul>
-        <li><a href="/settings">Settings</a></li>
+        <li><a href="/users" on:click={onLinkClicked}>Users</a></li>
+        <li><a href="/settings" on:click={onLinkClicked}>Settings</a></li>
+      </ul>
+    </nav>
+    <nav>
+      <ul>
+        <li>
+          <a href="/users/{user.id}" on:click={onLinkClicked}>{user.email}</a>
+        </li>
         <li><button on:click={logout}>Log out</button></li>
       </ul>
     </nav>
@@ -67,7 +93,7 @@
       "aside ."
       "footer footer";
     grid-template-rows: 4.5rem 1fr;
-    grid-template-columns: 20% 1fr;
+    grid-template-columns: 16rem 1fr;
     row-gap: 0;
     column-gap: 2rem;
   }
@@ -121,7 +147,6 @@
     cursor: pointer;
   }
   aside a:hover,
-  aside a.active,
   ul button:hover {
     background: var(--primary-color);
     color: white;
@@ -129,8 +154,14 @@
   }
   aside ul li {
     display: flex;
+    flex-wrap: wrap;
   }
-  aside nav ul li button.add {
+  aside ul ul {
+    width: 100%;
+    box-sizing: border-box;
+    padding-left: 1rem;
+  }
+  aside nav ul li a.add {
     margin: auto 1rem;
     background: transparent;
     flex: 0;
@@ -148,7 +179,7 @@
     text-align: center;
     transition: 0.4s;
   }
-  aside nav ul li button.add:hover {
+  aside nav ul li a.add:hover {
     opacity: 1;
     background: var(--text-color);
     color: var(--bg-color);
