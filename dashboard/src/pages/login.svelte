@@ -1,6 +1,7 @@
 <script>
   import logo from "../logo.svg";
   import api from "../utils/api";
+  import ThemeSwitch from "../elements/theme-switch.svelte";
   import { userStore } from "../stores";
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -10,6 +11,9 @@
   };
 </script>
 
+<div class="switch">
+  <ThemeSwitch />
+</div>
 <main>
   <form on:submit={onSubmit}>
     <img src={logo} alt="NoMoCMS" />
@@ -75,5 +79,11 @@
     border: none;
     border-radius: 0.25rem;
     margin-top: 0.25rem;
+  }
+
+  .switch {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
   }
 </style>

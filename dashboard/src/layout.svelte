@@ -7,20 +7,20 @@
     --primary-color: #8f58c7;
     --primary-hover: rgb(116, 52, 180);
     --secondary-color: #87d787;
-    --neutral-color: #f8f8f8;
+    --neutral-color: #eceff1;
     min-height: 100vh;
     padding: 0;
     margin: 0;
   }
   :global(html[data-theme="dark"]) {
-    --bg-color: black;
+    --bg-color: #040404;
     --text-color: white;
     --neutral-color: rgba(255, 255, 255, 0.08);
   }
   :global(html[data-theme="light"]) {
-    --bg-color: #fafafa;
-    --text-color: black;
-    --neutral-color: white;
+    --bg-color: #eceff1;
+    --text-color: #212121;
+    --neutral-color: #fafafa;
   }
   :global(body) {
     font-family: Arial, Helvetica, sans-serif;
@@ -28,9 +28,13 @@
     line-height: 1.2;
     margin: 0;
     padding: 0;
-    background: var(--bg-color);
+    background-color: var(--bg-color);
     color: var(--text-color);
     width: 100%;
-    min-height: 100vh;
+    height: 100vh;
+  }
+  :global(html) {
+    background-color: var(--bg-color);
+    color: var(--text-color);
   }
 </style>
