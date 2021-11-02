@@ -9,7 +9,7 @@
   },
   "devDependencies": {
     "@types/codemirror": "^5.60.5",
-    "esbuild": "^0.13.10",
+    "esbuild": "^0.13.12",
     "svelte": "^3.44.1",
     "svelte-preprocess": "^4.9.8"
   },
