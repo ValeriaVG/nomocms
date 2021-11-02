@@ -132,20 +132,38 @@ export const previewPage: RouteHandler = async ({ db, req }, { body }) => {
   const validation = previewContentType(body);
   if (validation.success === false)
     throw new ValidationError(validation.errors);
+
   const { content, parameters, title } = validation.value;
-  const { head, html, css, js } = await compileContent(content, {
-    title,
-    ...parameters,
-  });
-  const htmlBuffer = toHTMLBuffer({ head, html, css, js });
-  return {
-    status: 200,
-    body: htmlBuffer,
-    headers: {
-      "content-type": "text/html",
-      "content-length": htmlBuffer.byteLength.toString(),
-    },
-  };
+  try {
+    const { head, html, css, js } = await compileContent(content, {
+      title,
+      ...parameters,
+    });
+
+    const htmlBuffer = toHTMLBuffer({ head, html, css, js });
+    return {
+      status: 200,
+      body: htmlBuffer,
+      headers: {
+        "content-type": "text/html",
+        "content-length": htmlBuffer.byteLength.toString(),
+      },
+    };
+  } catch (err) {
+    const htmlBuffer = Buffer.from(
+      `<html><body><h1>Failed to compile</h1><p>${err.message}</p>${
+        err.frame ? `<textarea>${err.frame}</textarea>` : ""
+      }</body></html>`
+    );
+    return {
+      status: 400,
+      body: htmlBuffer,
+      headers: {
+        "content-type": "text/html",
+        "content-length": htmlBuffer.byteLength.toString(),
+      },
+    };
+  }
 };
 
 export const listPages: RouteHandler = async ({ db, req }, { queryParams }) => {

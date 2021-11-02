@@ -4,17 +4,22 @@
   let value = "";
   let title = "";
   let preview = "";
+  let timer = null;
+
   const getPreview = async (params) => {
-    const result = await api.post("/content/preview", params);
-    if (typeof result === "string") preview = result;
-    else console.error(result.error);
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(async () => {
+      const result = await api.post("/content/preview", params);
+      if (typeof result === "string") preview = result;
+      else console.error(result.error);
+    }, 500);
   };
   $: getPreview({ content: value, title });
 </script>
 
 <div class="split">
   <div class="editor"><Editor bind:value /></div>
-  <iframe srcdoc={preview} />
+  <iframe srcdoc={preview} title="preview" />
 </div>
 
 <style>

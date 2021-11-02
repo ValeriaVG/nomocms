@@ -106,4 +106,13 @@ it("can preview content", async () => {
   expect(
     previewResponse.text.includes("<h1>Page Title</h1><p>Page Content</p>")
   ).toBe(true);
+
+  await request(app)
+    .post("/content/preview")
+    .set("Cookie", `token=${loginCookie.token}`)
+    .send({
+      title: "Page Title",
+      content: "<script>export let v=''</script><h1>{title}</h1>",
+    })
+    .expect(400);
 });
