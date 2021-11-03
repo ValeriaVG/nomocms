@@ -51,10 +51,9 @@ it("can create an account & login", async () => {
   expect(currentUserResponse.headers["set-cookie"]).toBeTruthy;
   const cookie = parseCookies(currentUserResponse.headers["set-cookie"][0]);
   expect(cookie.token).toEqual(loginCookie.token);
-  expect(
-    new Date(cookie.Expires as string).getTime() >=
-      new Date(loginCookie.Expires as string).getTime()
-  ).toBe(true);
+  expect(new Date(cookie.Expires as string).getTime()).toBeGreaterThanOrEqual(
+    new Date(loginCookie.Expires as string).getTime()
+  );
 });
 
 it("can crud an account", async () => {

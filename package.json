@@ -9,7 +9,7 @@
     "nyc": "^15.1.0",
     "source-map-support": "^0.5.20",
     "supertest": "^6.1.6",
-    "tiny-jest": "^1.1.2",
+    "tiny-jest": "^1.2.1",
     "ts-node": "^10.4.0",
     "tsconfig-paths": "^3.11.0",
     "typescript": "^4.4.4"
