@@ -137,7 +137,7 @@ export const previewPage: RouteHandler = async ({ db, req }, { body }) => {
   try {
     const { head, html, css, js } = await compileContent(content, {
       title,
-      ...parameters,
+      ...(typeof parameters === "string" ? JSON.parse(parameters) : parameters),
     });
 
     const htmlBuffer = toHTMLBuffer({ head, html, css, js });
