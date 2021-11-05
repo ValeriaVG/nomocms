@@ -1,6 +1,6 @@
 <script>
   import { onMount } from "svelte";
-  import CodeMirror from "../utils/codemirror";
+  import CodeMirror from "./codemirror";
   let codeSection = null;
   export let value = "";
   export let mode = {

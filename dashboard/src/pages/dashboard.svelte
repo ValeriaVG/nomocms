@@ -6,18 +6,26 @@
   import api from "../utils/api";
   import { onMount } from "svelte";
   import Home from "./home.svelte";
-  import Content from "./content.svelte";
+  import createRouter from "../utils/router";
+  import modules from "modules/dashboard";
+
+  const routePath = createRouter(
+    modules.reduceRight((a, c) => {
+      if (!c) return a;
+      return { ...a, ...c };
+    }, {})
+  );
   let Page = Home;
+  let params = {};
   const choosePage = (path) => {
-    console.log(path);
-    if (path === "/") {
+    const result = routePath(path);
+    // TODO: change to 404
+    if (!result) {
       Page = Home;
+      params = {};
       return;
     }
-    if (path.startsWith("/content")) {
-      Page = Content;
-      return;
-    }
+    [Page, params] = result;
   };
 
   let user = { email: "", id: "" };
@@ -86,7 +94,7 @@
     </nav>
   </aside>
   <main>
-    <svelte:component this={Page} />
+    <svelte:component this={Page} {...params} />
   </main>
   <footer>
     <a

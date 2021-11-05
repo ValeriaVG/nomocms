@@ -1,6 +1,7 @@
 <script>
-  import Editor from "../elements/editor.svelte";
-  import api from "../utils/api";
+  import Editor from "./editor.svelte";
+  import api from "dashboard/src/utils/api";
+  //export let id = "";
   let value = "";
   let title = "";
   let preview = "";

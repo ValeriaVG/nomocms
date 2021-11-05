@@ -3,6 +3,7 @@ import { HTTPMethod } from "lib/HTTPMethod";
 import { HTTPStatus } from "lib/HTTPStatus";
 import { Pool } from "pg";
 import { Readable } from "stream";
+import { buildVariablePathMap } from "lib/router";
 
 export interface Ctx {
   db: Pool;
@@ -31,26 +32,6 @@ export type RouteHandler<
 export type Route<C extends Ctx = any> =
   | RouteHandler<C>
   | Partial<Record<HTTPMethod, RouteHandler<C>>>;
-
-export function buildPathRegExp(path: string): RegExp {
-  const routePath = path.startsWith("/") ? path : "/" + path;
-  return new RegExp(
-    `^${routePath
-      .replace(/:([a-z]+)/gi, "(?<$1>[a-z-0-9-_.]+)")
-      .replace("/", "/")}$`,
-    "i"
-  );
-}
-
-export const buildVariablePathMap = (routeMap: Map<string, Route>) => {
-  const variablePaths = new Map<RegExp, string>();
-  for (const key of routeMap.keys()) {
-    if (/\/:/.test(key)) {
-      variablePaths.set(buildPathRegExp(key), key);
-    }
-  }
-  return variablePaths;
-};
 
 export default function createRouter<C = any>(routes: Record<string, Route>) {
   const map = new Map<string, Route>(Object.entries(routes));

@@ -5,7 +5,7 @@ import request from "supertest";
 import createHandler from "api/http/handler";
 import { syncSchema } from "api";
 import account from "modules/account";
-import content from ".";
+import content from "./index";
 import { createTestDB } from "lib/testDB";
 import parseCookies from "lib/cookies";
 
