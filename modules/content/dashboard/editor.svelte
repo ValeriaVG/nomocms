@@ -7,6 +7,7 @@
     name: "handlebars",
     base: "text/html",
   };
+  let codeEditor = null;
   onMount(() => {
     codeEditor = CodeMirror(codeSection, {
       value,
@@ -23,6 +24,10 @@
     });
     codeEditor.on("changes", (doc) => (value = doc.getValue()));
   });
+  $: {
+    if (codeEditor && codeEditor.getDoc().getValue() !== value)
+      codeEditor.getDoc().setValue(value);
+  }
 </script>
 
 <section bind:this={codeSection} />

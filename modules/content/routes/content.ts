@@ -47,7 +47,7 @@ export const createPage: RouteHandler = async ({ db, req }, { body }) => {
       content,
       parameters,
       published_at || new Date(),
-      parent_id,
+      parent_id || null,
       path,
     ]
   );
@@ -175,7 +175,7 @@ export const listPages: RouteHandler = async ({ db, req }, { queryParams }) => {
   const values: any[] = [limit];
   const i = () => values.length;
   if (cursor) {
-    values.push(cursor);
+    values.push(cursor.replace("-", "_"));
     where.push(`parent_path>$${i()}`);
   }
   if (query) {
@@ -188,13 +188,13 @@ export const listPages: RouteHandler = async ({ db, req }, { queryParams }) => {
       parent_id
     )
   ) {
-    values.push(parent);
-    where.push(`parent_path @ '*.${parent}.*{0,2}'`);
+    values.push(parent_id.replace("-", "_"));
+    where.push(`parent_path @ '*.${parent_id}.*{0,2}'`);
   }
   const { rows } = await db.query(
     `SELECT * FROM content WHERE ${where.join(
       " AND "
-    )} ORDER BY parent_path ASC LIMIT $1`,
+    )} ORDER BY parent_path,path ASC LIMIT $1`,
     values
   );
   return {

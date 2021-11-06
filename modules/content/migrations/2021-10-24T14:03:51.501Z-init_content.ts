@@ -24,11 +24,11 @@ export default {
       BEGIN
           IF NEW.parent_id IS NULL THEN
               NEW.parent_path = 'root'::ltree;
-          ELSEIF TG_OP = 'INSERT' OR OLD.parent_id IS NULL OR OLD.parent_id != NEW.parent_id THEN
-              SELECT parent_path || id::text FROM content WHERE id = NEW.parent_id INTO path;
-              IF path IS NULL THEN
-                  RAISE EXCEPTION 'Invalid parent_id %', NEW.parent_id;
-              END IF;
+          ELSEIF TG_OP = 'INSERT' THEN
+              SELECT parent_path || REPLACE(id::text,'-','_') FROM content WHERE id = NEW.parent_id INTO path;
+              NEW.parent_path = path;
+          ELSEIF OLD.parent_id IS NULL OR OLD.parent_id != NEW.parent_id THEN
+              SELECT COALESCE(parent_path,id::text) FROM content WHERE id = NEW.parent_id INTO path;
               NEW.parent_path = path;
           END IF;
           RETURN NEW;
