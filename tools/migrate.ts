@@ -8,6 +8,7 @@ const [_, __, command, ...args] = process.argv;
 
 const commands = {
   create: async (mod: string, name: string) => {
+    if (!name) throw new Error("Migration name is required");
     const relativeDir = path.join("../modules", mod, "migrations");
     const dirPath = path.join(__dirname, relativeDir);
     try {
@@ -15,7 +16,7 @@ const commands = {
     } catch (err) {
       console.error(err);
     }
-    const nameWithTimestamp = `${new Date().toISOString()}-${name}`;
+    const nameWithTimestamp = `${Date.now()}_${name}`;
     const fileName = `${nameWithTimestamp}.ts`;
 
     await fs.writeFile(

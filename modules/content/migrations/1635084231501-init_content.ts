@@ -1,6 +1,6 @@
 import { PoolClient } from "pg";
 export default {
-  name: "2021-10-24T14:03:51.501Z-init_content",
+  name: "1635084231501-init_content",
   up: async (db: PoolClient) => {
     await db.query(`CREATE EXTENSION IF NOT EXISTS ltree`);
     await db.query(`CREATE TABLE IF NOT EXISTS content (

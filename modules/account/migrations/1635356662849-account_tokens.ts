@@ -1,6 +1,6 @@
 import { PoolClient } from "pg";
 export default {
-  name: "2021-10-27T17:44:22.849Z-account_tokens",
+  name: "1635356662849-account_tokens",
   up: async (db: PoolClient) => {
     await db.query(`CREATE TABLE IF NOT EXISTS account_tokens (
       token uuid PRIMARY KEY,

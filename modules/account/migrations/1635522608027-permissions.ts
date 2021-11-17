@@ -1,6 +1,6 @@
 import { PoolClient } from "pg";
 export default {
-  name: "2021-10-29T15:50:08.027Z-permissions",
+  name: "1635522608027-permissions",
   up: async (db: PoolClient) => {
     await db.query(`CREATE TABLE IF NOT EXISTS account_permissions (
       account_id uuid NOT NULL,
