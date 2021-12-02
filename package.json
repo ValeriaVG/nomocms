@@ -2,7 +2,7 @@
   "name": "nomocms",
   "version": "0.2.0-beta",
   "devDependencies": {
-    "@istanbuljs/nyc-config-typescript": "^1.0.1",
+    "@istanbuljs/nyc-config-typescript": "^1.0.2",
     "@types/node": "^16.11.11",
     "@types/pg": "^8.6.1",
     "@types/supertest": "^2.0.11",
