@@ -11,7 +11,7 @@
     "@types/codemirror": "^5.60.5",
     "esbuild": "^0.14.5",
     "svelte": "^3.44.3",
-    "svelte-preprocess": "^4.10.0"
+    "svelte-preprocess": "^4.10.1"
   },
   "dependencies": {
     "codemirror": "^5.64.0"
