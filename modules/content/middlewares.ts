@@ -18,12 +18,15 @@ const contentMiddleware: Middleware = async (
   );
   const isFound = result.rowCount > 0;
   res.statusCode = isFound ? 200 : 404;
-  if (req.method === "OPTIONS") return res.end();
+  if (req.method === "OPTIONS") {
+    res.end();
+    return
+  }
   const page = isFound
     ? result.rows[0]
     : {
-        content: `<script>import Page404 from '$content/Page404.svelte'</script><Page404/>`,
-      };
+      content: `<script>import Page404 from '$content/Page404.svelte'</script><Page404/>`,
+    };
 
   const { head, html, css, js } = await compileContent(page.content, {
     title: page.title,

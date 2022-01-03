@@ -107,41 +107,42 @@ async function consumeJSON(req: IncomingMessage) {
 
 const makeRoutesMiddleware =
   <C extends Ctx>(routes: Record<string, Route<C>>): Middleware =>
-  async (ctx, res, next) => {
-    const routePath = createRouter<{ req: IncomingMessage }>(routes);
-    const req = ctx.req;
-    const url = new URL(req.url, "http://127.0.0.1");
-    try {
-      req.body = await consumeJSON(req);
-      const result = await routePath(
-        { path: url.pathname, method: req.method.toUpperCase() as HTTPMethod },
-        ctx,
-        { body: req.body, queryParams: url.searchParams }
-      );
-      if (!result) {
-        return next();
-      }
-      res.statusCode = result.status || 200;
-      if (result.headers) {
-        for (const [header, value] of Object.entries(result.headers)) {
-          res.setHeader(header, value as string);
+    async (ctx, res, next) => {
+      const routePath = createRouter<{ req: IncomingMessage }>(routes);
+      const req = ctx.req;
+      const url = new URL(req.url, "http://127.0.0.1");
+      try {
+        req.body = await consumeJSON(req);
+        const result = await routePath(
+          { path: url.pathname, method: req.method.toUpperCase() as HTTPMethod },
+          ctx,
+          { body: req.body, queryParams: url.searchParams }
+        );
+        if (!result) {
+          return next();
         }
+        res.statusCode = result.status || 200;
+        if (result.headers) {
+          for (const [header, value] of Object.entries(result.headers)) {
+            res.setHeader(header, value as string);
+          }
+        }
+        await sendResponse(res, result.body);
+        return
+      } catch (err) {
+        if (err instanceof HTTPError) {
+          res.statusCode = err.status;
+          res.setHeader("content-type", "application/json");
+          res.write(JSON.stringify({ error: err.message }));
+        } else {
+          console.error(err);
+          res.statusCode = HTTPStatus.InternalServerError;
+          res.setHeader("content-type", "application/json");
+          res.write(`{"error":"Internal Server Error"}`);
+        }
+        res.end();
       }
-      return sendResponse(res, result.body);
-    } catch (err) {
-      if (err instanceof HTTPError) {
-        res.statusCode = err.status;
-        res.setHeader("content-type", "application/json");
-        res.write(JSON.stringify({ error: err.message }));
-      } else {
-        console.error(err);
-        res.statusCode = HTTPStatus.InternalServerError;
-        res.setHeader("content-type", "application/json");
-        res.write(`{"error":"Internal Server Error"}`);
-      }
-      res.end();
-    }
-  };
+    };
 
 const sendResponse = (
   res: ServerResponse,
@@ -166,8 +167,8 @@ const sendResponse = (
   const buffer = isBodyBuffer
     ? body
     : isBodyString
-    ? Buffer.from(body)
-    : Buffer.from(JSON.stringify(body));
+      ? Buffer.from(body)
+      : Buffer.from(JSON.stringify(body));
 
   res.setHeader("content-length", buffer.byteLength);
   res.write(buffer);

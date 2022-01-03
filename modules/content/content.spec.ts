@@ -101,7 +101,7 @@ it("can preview content", async () => {
     .expect(200);
   expect(previewResponse.headers).toMatchObject({
     "content-type": "text/html",
-    "content-length": "6792",
+    "content-length": "6465",
   });
   expect(
     previewResponse.text.includes("<h1>Page Title</h1><p>Page Content</p>")
