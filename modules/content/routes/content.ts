@@ -7,7 +7,7 @@ import {
   ensureAccountPermission,
   Permission,
 } from "modules/account/lib/permissions";
-import * as T from "typed";
+import * as T from "lib/typed";
 import compileContent from "../lib/compileContent";
 import toHTMLBuffer from "../lib/toHTMLBuffer";
 
@@ -151,8 +151,7 @@ export const previewPage: RouteHandler = async ({ db, req }, { body }) => {
     };
   } catch (err) {
     const htmlBuffer = Buffer.from(
-      `<html><body><h1>Failed to compile</h1><p>${err.message}</p>${
-        err.frame ? `<textarea>${err.frame}</textarea>` : ""
+      `<html><body><h1>Failed to compile</h1><p>${err.message}</p>${err.frame ? `<textarea>${err.frame}</textarea>` : ""
       }</body></html>`
     );
     return {

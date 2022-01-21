@@ -1,4 +1,4 @@
-import * as T from "typed";
+import * as T from "lib/typed";
 import { superuser } from "api/config";
 import bcrypt from "bcryptjs";
 import isEmail from "is-email";

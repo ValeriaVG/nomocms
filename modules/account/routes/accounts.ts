@@ -14,7 +14,7 @@ import { NotFoundError, UnauthorizedError } from "lib/errors";
 import { emailType, ensureCredentials, passwordType } from "../lib/credentials";
 import { createToken } from "../lib/token";
 import { ValidationError } from "lib/validation";
-import * as T from "typed";
+import * as T from "lib/typed";
 
 export const createAccount: RouteHandler = async ({ db }, { body }) => {
   const error = (error: string) => ({
