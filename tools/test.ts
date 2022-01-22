@@ -14,7 +14,7 @@ async function runTests(dir) {
       const filePath = path.join(dir, file);
       const stat = await fs.stat(filePath);
       if (stat.isDirectory()) {
-        await runTests(filePath);
+        passed = await runTests(filePath);
       } else if (/\.(test|spec)\.ts$/.test(file)) {
         const mod = await import(filePath);
         const test = mod.test || mod.default || mod;
@@ -22,7 +22,8 @@ async function runTests(dir) {
           test.title && console.info(test.title);
           const res = await test.run();
           prettify(res);
-          passed = res.every((t) => t.passed);
+          if (res.some(t => !t.passed))
+            passed = false
         }
       }
     }
@@ -37,5 +38,8 @@ const directories = dirs.length ? dirs : ["api", "modules", "dashboard", "lib"];
 Promise.all(
   directories.map((dir) => runTests(path.resolve(__dirname, "..", dir)))
 ).then((results) => {
-  if (!results.every(Boolean)) process.exit(-1);
+  if (!results.every(Boolean)) {
+    console.error("Test failed")
+    process.exit(-1);
+  }
 });
