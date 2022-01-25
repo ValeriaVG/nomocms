@@ -10,6 +10,6 @@
     "ts-node-dev": "^1.1.8"
   },
   "dependencies": {
-    "dotenv": "^14.2.0"
+    "dotenv": "^14.3.0"
   }
 }
