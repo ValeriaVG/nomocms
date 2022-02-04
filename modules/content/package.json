@@ -6,7 +6,7 @@
   },
   "dependencies": {
     "esbuild": "^0.14.16",
-    "svelte": "^3.46.3",
+    "svelte": "^3.46.4",
     "svelte-preprocess": "^4.10.2"
   }
 }
