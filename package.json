@@ -33,7 +33,7 @@
     "migration": "ts-node tools/migrate.ts"
   },
   "dependencies": {
-    "pg": "^8.7.1",
+    "pg": "^8.7.3",
     "svelte-preprocess": "^4.10.2"
   }
 }
