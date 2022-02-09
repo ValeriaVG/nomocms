@@ -5,7 +5,7 @@
     "test": "ts-node ../../tools/test.ts modules/content"
   },
   "dependencies": {
-    "esbuild": "^0.14.19",
+    "esbuild": "^0.14.20",
     "svelte": "^3.46.4",
     "svelte-preprocess": "^4.10.2"
   }
