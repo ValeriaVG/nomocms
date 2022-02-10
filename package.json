@@ -34,6 +34,6 @@
   },
   "dependencies": {
     "pg": "^8.7.3",
-    "svelte-preprocess": "^4.10.2"
+    "svelte-preprocess": "^4.10.3"
   }
 }
