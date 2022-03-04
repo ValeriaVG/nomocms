@@ -11,7 +11,7 @@
     "supertest": "^6.2.2",
     "tiny-jest": "^1.2.1",
     "ts-node": "^10.5.0",
-    "tsconfig-paths": "^3.12.0",
+    "tsconfig-paths": "^3.13.0",
     "typescript": "^4.5.5",
     "uuid": "^8.3.2"
   },
