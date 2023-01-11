@@ -1,4 +1,4 @@
-# ![NoMoCMS](./logo.svg)
+# ![NoMoCMS](./logo.svg) (previously)
 
 > ⚠️ Important: Master branch is not yet stable as project is undergoing massive refactoring ⚠️
 
