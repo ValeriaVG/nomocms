@@ -1,4 +1,6 @@
-# ![NoMoCMS](./logo.svg) (previously)
+# ![NoMoCMS](./logo.svg) 
+
+(Being Renamed to AuCMS)
 
 > ⚠️ Important: Master branch is not yet stable as project is undergoing massive refactoring ⚠️
 
